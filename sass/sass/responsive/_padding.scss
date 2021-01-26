@@ -1,0 +1,83 @@
+$padding-step: 6;
+$max-padding: 60px;
+
+// loop over the breakpoints
+// padding x
+@each $key, $value in $breakpoints {
+  @for $i from 0 through $padding-step {
+    .px-#{$key}-#{$padding-step - $i} {
+      padding-left: #{(($padding-step - $i) / $padding-step) * $max-padding};
+      padding-right: #{(($padding-step - $i) / $padding-step) * $max-padding};
+    }
+    .pl-#{$key}-#{$padding-step - $i} {
+      padding-left: #{(($padding-step - $i) / $padding-step) * $max-padding};
+    }
+    .pr-#{$key}-#{$padding-step - $i} {
+      padding-right: #{(($padding-step - $i) / $padding-step) * $max-padding};
+    }
+  }
+}
+
+@each $key, $value in $breakpoints-inv {
+  @for $i from 0 through $padding-step {
+    .px-#{$key}-#{$padding-step - $i} {
+      @include break($key) {
+        padding-left: #{(($padding-step - $i) / $padding-step) * $max-padding};
+        padding-right: #{(($padding-step - $i) / $padding-step) * $max-padding};
+      }
+    }
+
+    .pl-#{$key}-#{$padding-step - $i} {
+      @include break($key) {
+        padding-left: #{(($padding-step - $i) / $padding-step) * $max-padding};
+      }
+    }
+
+    .pr-#{$key}-#{$padding-step - $i} {
+      @include break($key) {
+        padding-right: #{(($padding-step - $i) / $padding-step) * $max-padding};
+      }
+    }
+  }
+}
+
+// padding y
+@each $key, $value in $breakpoints {
+  @for $i from 0 through $padding-step {
+    .py-#{$key}-#{$padding-step - $i} {
+      padding-top: #{(($padding-step - $i) / $padding-step) * $max-padding};
+      padding-bottom: #{(($padding-step - $i) / $padding-step) * $max-padding};
+    }
+
+    .pt-#{$key}-#{$padding-step - $i} {
+      padding-top: #{(($padding-step - $i) / $padding-step) * $max-padding};
+    }
+
+    .pb-#{$key}-#{$padding-step - $i} {
+      padding-bottom: #{(($padding-step - $i) / $padding-step) * $max-padding};
+    }
+  }
+}
+
+@each $key, $value in $breakpoints-inv {
+  @for $i from 0 through $padding-step {
+    .py-#{$key}-#{$padding-step - $i} {
+      @include break($key) {
+        padding-top: #{(($padding-step - $i) / $padding-step) * $max-padding};
+        padding-bottom: #{(($padding-step - $i) / $padding-step) * $max-padding};
+      }
+    }
+
+    .pt-#{$key}-#{$padding-step - $i} {
+      @include break($key) {
+        padding-top: #{(($padding-step - $i) / $padding-step) * $max-padding};
+      }
+    }
+
+    .pb-#{$key}-#{$padding-step - $i} {
+      @include break($key) {
+        padding-bottom: #{(($padding-step - $i) / $padding-step) * $max-padding};
+      }
+    }
+  }
+}

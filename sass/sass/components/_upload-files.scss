@@ -1,0 +1,51 @@
+.upload-files {
+  //border: 2px dashed #ccc;
+  border: $default-border;
+  border-radius: $default-border-radius;
+  padding-bottom: $default-padding;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  //background: var(--bg-primary);
+  background: transparent;
+  height: 100%;
+  //min-height: 100px;
+  .closeable-list {
+    &__content {
+      border: none;
+      min-height: 0;
+      padding-top: $default-padding;
+    }
+  }
+
+  &.dragover {
+    border-color: var(--my-active-color);
+  }
+  &__info {
+    padding-top: $default-padding;
+    display: flex;
+    flex-direction: column;
+    &__icon {
+      font-size: 2rem;
+      display: flex;
+      justify-content: center;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+    &__label {
+      display: flex;
+      justify-content: center;
+      white-space: nowrap;
+      &__select {
+        font-weight: 400;
+      }
+      &__hover {
+        &:hover {
+          font-weight: 700;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,229 @@
+.floating-wrapper {
+  margin-top: 20px;
+  width: 100%;
+  position: relative;
+  input[type="checkbox"] {
+    position: absolute;
+    top: 14px;
+    cursor: pointer;
+
+    &.right {
+      right: -2px;
+    }
+  }
+
+  & .floating__input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--separate-color);
+    background: transparent;
+    appearance: none;
+    outline: none;
+    font-size: 1rem;
+    font-family: $default-font-family;
+    font-weight: 400;
+    color: var(--primary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    &:focus {
+      border-bottom: $thin-active-border;
+      padding: 15px 2px 2px 20px ;
+      text-decoration: none;
+      &.check {
+        padding: 15px 2px 2px 20px;
+        &.right {
+          padding: 15px 20px 2px 20px;
+        }
+      }
+      &::placeholder {
+        color: transparent;
+      }
+
+
+    }
+
+    padding: 15px 2px 2px 20px;
+    &.check {
+      padding: 15px 2px 2px 20px;
+      &.right {
+        padding: 15px 20px 2px 20px;
+      }
+    }
+
+  }
+
+  & .dropdown-icon {
+    position: absolute;
+    top: 17px;
+    cursor: pointer;
+    right: 5px;
+    &.right {
+      right: 20px;
+    };
+  }
+
+  select {
+    padding: 2px 2px 2px 20px;
+    margin-top: 15px;
+    width: 100%;
+    border: none;
+    //border-bottom: 1px solid var(--separate-color);
+    border-bottom: 1px solid transparent;
+    background: transparent;
+    color: var(--primary);
+    -webkit-appearance: none;
+    -webkit-border-radius: 0px;
+    border-radius: 0;
+    outline: none;
+    font-size: 1rem;
+    font-family: $default-font-family;
+    font-weight: 400;
+
+    &:focus {
+      border-bottom: $thin-active-border;
+
+    }
+    &.check {
+      padding: 0px 0px 2px 20px;
+    }
+    &.right {
+      padding: 0px 0px 2px 2px;
+    }
+
+  }
+
+  label {
+    display: block;
+    max-height: 0;
+    color: var(--readonly-text-color);
+    &::before {
+      content: attr(data-content);
+      display: inline-block;
+      left: 2px;
+      position: relative;
+    }
+
+    &:hover:not(.disabled) {
+      color: var(--link-color);
+      cursor: pointer;
+    }
+  }
+}
+
+.floating__input:placeholder-shown {
+  padding: 15px 20px 2px 5px !important;
+  text-decoration: none !important;
+  &.check {
+    padding: 15px 2px 2px 20px !important;
+    &.right {
+      padding: 15px 20px 2px 5px !important;
+    }
+  }
+
+}
+
+.floating__input:placeholder-shown + .floating__label::before {
+  transform: translate3d(0, -2.0rem, 0) scale3d(1, 0, 1);
+}
+
+.floating__label::before,
+.floating__input:focus + .floating__label::before {
+  //font-size: 0.8rem;
+  transform: translate3d(0, -2.8rem, 0) scale3d(1, 1, 1);
+}
+
+.floating__input:not(:placeholder-shown)  {
+  border-bottom: 1px solid transparent;
+}
+
+.floating-filter-wrapper {
+  margin-top: 20px;
+  width: 100%;
+  position: relative;
+  background: transparent;
+
+  & .floating-filter__input {
+    width: 100%;
+    border: none;
+    //border-bottom: 1px solid transparent;
+    border-bottom: 1px solid var(--separate-color);
+    color: var(--primary);
+    appearance: none;
+    outline: none;
+    background: transparent;
+    &:focus {
+      border-bottom: $thin-active-border;
+      color: var(--my-active-color);
+      &::placeholder {
+        color: transparent;
+      }
+    }
+    &:valid {
+      padding: 15px 2px 2px 5px;
+    }
+
+    &:invalid {
+      padding: 15px 2px 2px 50%;
+    }
+
+  }
+
+  & .floating-filter__checkbox {
+    color: var(--primary);
+    margin-left: 50%;
+    margin-top: 11px;
+  }
+
+  label {
+    display: block;
+    max-height: 0;
+    color: var(--readonly-text-color);
+    &::before {
+      content: attr(data-content);
+      display: inline-block;
+      left: 2px;
+      position: relative;
+    }
+  }
+
+  select:focus {
+    width: 100%;
+  }
+
+  .search-progress {
+    position: absolute;
+    top: 14px;
+    right: 20px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+
+.floating-filter__input:placeholder-shown + .floating-filter__label::before {
+  transform: translate3d(0, -2.0rem, 0) scale3d(1, 0, 1);
+}
+
+.floating-filter__label::before,
+.floating-filter__input:focus + .floating-filter__label::before {
+  transform: translate3d(0, -2.7rem, 0) scale3d(1, 0.9, 1);
+}
+
+.floating-filter__select {
+  display: flex;
+  position: absolute;
+  width: 48%;
+  top: 12px;
+  cursor: pointer;
+}
+
+.floating-filter__input:invalid  ~ .floating-filter__select {
+  display: flex;
+}
+
+//.floating-filter__select,
+.floating-filter__input:valid ~ .floating-filter__select {
+  display: none;
+}
+

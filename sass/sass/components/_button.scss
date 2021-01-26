@@ -1,0 +1,66 @@
+.btn-flat {
+  @include create-flat-button();
+}
+
+.btn-small-round-flat {
+  @include create-flat-button();
+  border-radius: 50%;
+  padding: $small-padding;
+  min-width: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.btn-round-flat {
+  @include create-flat-button();
+  border-radius: 50%;
+  min-width: 0;
+  width: 30px;
+  height: 30px;
+  padding: $small-padding;
+}
+
+.btn-primary {
+  @include create-button('bg-primary', 'primary');
+}
+
+.btn-danger {
+  @include create-button('bg-danger', 'danger');
+}
+
+.btn-success {
+  @include create-button('bg-success', 'success');
+}
+
+.btn-info {
+  @include create-button('bg-info', 'info');
+}
+
+.btn-normal {
+  @include create-button('bg-normal', 'normal');
+}
+
+.btn-small-primary {
+  @include create-small-button('bg-primary', 'primary');
+}
+
+.btn-small-danger {
+  @include create-small-button('bg-danger', 'danger');
+}
+
+.btn-small-success {
+  @include create-small-button('bg-success', 'success');
+}
+
+.btn-small-info {
+  @include create-small-button('bg-info', 'info');
+}
+
+.btn-small-normal {
+  @include create-small-button('bg-normal', 'normal');
+}
+
+
+button:disabled {
+  color: gray;
+}

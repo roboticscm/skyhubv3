@@ -1,0 +1,82 @@
+$margin-step: 6;
+$max-margin: 30px;
+// loop over the breakpoints
+// margin x
+@each $key, $value in $breakpoints {
+  @for $i from 0 through $margin-step {
+    .mx-#{$key}-#{$margin-step - $i} {
+      margin-left: #{(($margin-step - $i) / $margin-step) * $max-margin};
+      margin-right: #{(($margin-step - $i) / $margin-step) * $max-margin};
+    }
+    .ml-#{$key}-#{$margin-step - $i} {
+      margin-left: #{(($margin-step - $i) / $margin-step) * $max-margin};
+    }
+    .mr-#{$key}-#{$margin-step - $i} {
+      margin-right: #{(($margin-step - $i) / $margin-step) * $max-margin};
+    }
+  }
+}
+
+@each $key, $value in $breakpoints-inv {
+  @for $i from 0 through $margin-step {
+    .mx-#{$key}-#{$margin-step - $i} {
+      @include break($key) {
+        margin-left: #{(($margin-step - $i) / $margin-step) * $max-margin};
+        margin-right: #{(($margin-step - $i) / $margin-step) * $max-margin};
+      }
+    }
+
+    .ml-#{$key}-#{$margin-step - $i} {
+      @include break($key) {
+        margin-left: #{(($margin-step - $i) / $margin-step) * $max-margin};
+      }
+    }
+
+    .mr-#{$key}-#{$margin-step - $i} {
+      @include break($key) {
+        margin-right: #{(($margin-step - $i) / $margin-step) * $max-margin};
+      }
+    }
+  }
+}
+
+// margin y
+@each $key, $value in $breakpoints {
+  @for $i from 0 through $margin-step {
+    .my-#{$key}-#{$margin-step - $i} {
+      margin-top: #{(($margin-step - $i) / $margin-step) * $max-margin};
+      margin-bottom: #{(($margin-step - $i) / $margin-step) * $max-margin};
+    }
+
+    .mt-#{$key}-#{$margin-step - $i} {
+      margin-top: #{(($margin-step - $i) / $margin-step) * $max-margin};
+    }
+
+    .mb-#{$key}-#{$margin-step - $i} {
+      margin-bottom: #{(($margin-step - $i) / $margin-step) * $max-margin};
+    }
+  }
+}
+
+@each $key, $value in $breakpoints-inv {
+  @for $i from 0 through $margin-step {
+    .my-#{$key}-#{$margin-step - $i} {
+      @include break($key) {
+        margin-top: #{(($margin-step - $i) / $margin-step) * $max-margin};
+        margin-bottom: #{(($margin-step - $i) / $margin-step) * $max-margin};
+      }
+    }
+
+    .mt-#{$key}-#{$margin-step - $i} {
+      @include break($key) {
+        margin-top: #{(($margin-step - $i) / $margin-step) * $max-margin};
+      }
+    }
+
+    .mb-#{$key}-#{$margin-step - $i} {
+      @include break($key) {
+        margin-bottom: #{(($margin-step - $i) / $margin-step) * $max-margin};
+      }
+    }
+  }
+}

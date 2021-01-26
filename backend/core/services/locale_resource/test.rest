@@ -1,0 +1,13 @@
+
+
+GET http://localhost:9091/locale-resource/initial?locale=vi-VN
+Content-Type: application/json
+
+
+###
+
+GET http://localhost:9091/locale-resource
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjkzNzc2MzU3ODUsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJyb290IiwiZnVsbE5hbWUiOiJUT0RPLi4uIn0.aoIr7AvuBFOz8yrR5YeNyCxMDC3jYF7LPwef2jQIhVIXJTaSaqnS6R8N5VMG_XwyF3aLrhAOF7xDJkQHIX98AwbuK1QIhrakfD5DSjtFZZnLMve9PwdxRiRYDeyU6ToUyzJRJN62e53aLkUYcyWgn5HatXDumh5BeboydROMoqQ
+
+###

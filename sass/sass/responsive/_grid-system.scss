@@ -1,0 +1,81 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+// // using flex
+// // grid row
+// .row {
+//   display: flex;
+//   flex-flow: row wrap;
+//   padding-top: $small-padding;
+//   padding-bottom: $small-padding;
+//   width: 100%;
+// }
+
+// @for $i from 1 through $cols {
+//   .col-#{$i} {
+//     flex: 0 0 #{($i) / $cols * 100%};
+//   }
+// }
+
+// // loop over the breakpoints
+// @each $key, $value in $breakpoints {
+//   @for $i from 0 to $cols {
+//     .col-#{$key}-#{$cols - $i} {
+//       flex: 0 0 #{(($cols - $i) / $cols) * 100%};
+//     }
+//   }
+// }
+
+// @each $key, $value in $breakpoints-inv {
+//   @for $i from 0 to $cols {
+//     .col-#{$key}-#{$cols - $i} {
+//       @include break($key) {
+//         flex: 0 0 #{(($cols - $i) / $cols) * 100%};
+//       }
+//     }
+//   }
+// }
+
+// using grid
+// grid row
+.row {
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  padding-top: $small-padding;
+  padding-bottom: $small-padding;
+  grid-column-gap: 10px;
+}
+
+@for $i from 1 through $cols {
+  .col-#{$i} {
+    grid-column-start: span $i;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+// loop over the breakpoints
+@each $key, $value in $breakpoints {
+  @for $i from 0 to $cols {
+    .col-#{$key}-#{$cols - $i} {
+      grid-column-start: span ($cols - $i);
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  }
+}
+
+@each $key, $value in $breakpoints-inv {
+  @for $i from 0 to $cols {
+    .col-#{$key}-#{$cols - $i} {
+      @include break($key) {
+        grid-column-start: span ($cols - $i);
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+    }
+  }
+}

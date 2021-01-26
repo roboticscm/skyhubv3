@@ -1,0 +1,32 @@
+.tabs-container {
+  &__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+    border-bottom: 1px solid #dee2e6;
+    &__item {
+      &__title {
+        position: relative;
+        top: 1px;
+        border: 1px solid transparent;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+        display: block;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        //background-color: var(--bg-form);
+        &:hover {
+          border-color: #e9ecef #e9ecef #dee2e6;
+        }
+      }
+
+      &__active &__title{
+        color: var(--my-active-color);
+        background-color: var(--bg-form);
+        border-color: var(--border-color)  var(--border-color) var(--bg-form);
+      }
+    }
+  }
+}

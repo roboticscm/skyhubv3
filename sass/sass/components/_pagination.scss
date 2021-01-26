@@ -1,0 +1,10 @@
+.pagination {
+    & button {
+      margin-left: 0;
+      outline: none;
+    }
+
+    & select {
+      outline: none;
+    }
+  }

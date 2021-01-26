@@ -1,0 +1,37 @@
+
+
+POST http://localhost:9091/auth/login
+Content-Type: application/json
+
+{
+    "username": "root",
+    "password": "2019"
+}
+
+###
+
+
+POST http://localhost:9091/auth/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjkzNzc2MDMwODUsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJyb290IiwiZnVsbE5hbWUiOiJUT0RPLi4uIn0.O3X68ZrwA_IdEAHbvnjRg7zT89GoIJwsEoYONaoAIzmoTgKo_tt1EvE0fJ7T58L_obKq-hkZni1xkXXfYCnuLUnKvSS_G_A4hcxIWqWRbP1UdO1WWVbaj4JlIvlLvHqLzCIUGMLvRUsNLQkwnijAr-z4L95k70329232WU1HPkk"
+}
+
+###
+
+DELETE http://localhost:9091/auth/logout
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoicm9vdCIsImZ1bGxOYW1lIjoiVE9ETy4uLiJ9.rJIQW81EeQTsYBBZbEuUKmu_oLsbn02W-ebDJJ-SoDXJU6H0qKQ58G_jWwS0vnnAbwZ9w59gVb3fmwb1ZbcNN9SRNXHw_oS3IcQ-Vm8oBeX-AZ6BGGWr-0iEROWrlIYgSLrlPh6BRUZCTEIWgGISSwxRQQzi4cDnRT7qIvZixtM
+
+###
+
+
+PUT http://localhost:9091/auth/change-pw
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjkzNzc2MDc2MzAsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJyb290IiwiZnVsbE5hbWUiOiJUT0RPLi4uIn0.xKlSPYS3E98BuNkJsZxTtjvSaBviDflffMaMexxV_WCGbY8ARy1iSTuPbXIwngXQml6u7gh6OCjkpMyygm8i_X135wgAp08g541-_hh8CdgiZe5CJTx3u0Oqr6vvx1ibPiKHNeBmkVZ_OpjyCWGdiAco1QBzqGWTNDv7DIh83CM
+
+{
+    "currentPassword": "2020",
+    "newPassword": "2019"
+}

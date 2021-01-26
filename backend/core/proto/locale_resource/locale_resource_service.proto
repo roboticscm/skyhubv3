@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package locale_resource;
+
+option go_package = ".;pt";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+message InitialLocaleResourceRequest {
+    string locale = 1;
+}
+
+message LocaleResourceResponseItem {
+  string category = 1;
+  string type_group = 2;
+  string key = 3;
+  string value = 4;
+}
+
+message InitialLocaleResourceResponse {
+    repeated LocaleResourceResponseItem data = 1;
+}
+
+message GetLocaleResourceResponse {
+    repeated LocaleResourceResponseItem data = 1;
+}
+
+service LocaleResourceService {
+    rpc InitialHandler(InitialLocaleResourceRequest) returns (InitialLocaleResourceResponse) {
+      option (google.api.http) = {
+        get : "/locale-resource/initial"
+      };
+    };
+
+    rpc GetHandler(google.protobuf.Empty) returns (GetLocaleResourceResponse) {
+        option (google.api.http) = {
+          get : "/locale-resource"
+        };
+      };
+}

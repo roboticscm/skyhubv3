@@ -1,0 +1,9 @@
+.default-border {
+  border: $default-border;
+}
+
+
+.default-rounded-border {
+  border: $default-border;
+  border-radius: $default-border-radius;
+}

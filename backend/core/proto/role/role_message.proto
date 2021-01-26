@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package role;
+
+option go_package = ".;pt";
+
+message Role {
+
+  int64 id = 1 [ jstype = JS_STRING ];
+  int64 org_id = 2 [ jstype = JS_STRING ];
+  string code = 3;
+  string name = 4;
+  int32 sort = 5;
+  bool disabled = 6;
+  int64 created_by = 7;
+  int64 created_at = 8;
+  int64 updated_by = 9;
+  int64 updated_at = 10;
+  int64 deleted_by = 11;
+  int64 deleted_at = 12;
+  int32 version = 13;
+}

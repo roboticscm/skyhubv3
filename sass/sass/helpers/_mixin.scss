@@ -1,0 +1,95 @@
+// media query mixin
+@mixin break($size) {
+  @media (max-width: map-get($breakpoints, $size)) {
+    @content;
+  }
+}
+
+@mixin create-flat-button() {
+  padding: $button-padding;
+  color: var(--primary);
+  //background-color: var(--bg-primary);
+  background-color: transparent;
+  border-radius: $more-border-radius;
+  cursor: pointer;
+  font-family: $default-font-family;
+  font-weight: 400;
+  font-size: 1rem;
+  margin-top: $default-padding;
+  margin-left: $default-padding;
+  min-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px solid var(--button-border-color);
+  font-weight: 400;
+  outline: none;
+  text-align: center;
+  &:hover:not(.disabled) {
+    border: $default-border;
+    background-color: var(--bg-tertiary);
+  }
+  &:focus {
+    border: $default-border;
+    font-weight: 500;
+    //background-color: var(--bg-tertiary);
+  }
+  &:disabled {
+    color: var(--disabled-text-color);
+  }
+}
+
+
+@mixin create-button($bg-color, $color) {
+  padding: $button-padding;
+  color: var(--#{$color});
+  background-color: var(--#{$bg-color});
+  border-radius: $default-border-radius;
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 1rem;
+  margin-left: $default-padding;
+  //margin-right: $small-padding;
+}
+
+@mixin create-small-button($bg-color, $color) {
+  padding: $small-button-padding;
+  color: var(--#{$color});
+  background-color: var(--#{$bg-color});
+  border-radius: $small-default-border-radius;
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 0.8rem;
+  margin-left: $small-padding;
+  //margin-right: $small-padding;
+}
+
+@mixin create-active-item () {
+  cursor: pointer;
+  border-bottom: $active-border;
+  //background: var(--bg-tertiary);
+  color: var(--my-active-color) !important;
+}
+
+@mixin create-hover-item () {
+  cursor: pointer;
+  border-bottom: $active-border !important;
+  background-color: var(--selection-bgcolor) !important;
+  //outline: $default-border;
+  color: var(--my-active-color) !important;
+}
+
+@mixin create-hover-item-without-border () {
+  cursor: pointer;
+  //border-bottom: $active-border !important;
+  background-color: var(--selection-bgcolor) !important;
+  //outline: $default-border;
+  color: var(--my-active-color) !important;
+}
+
+@mixin create-thin-hover-item () {
+  cursor: pointer;
+  border-bottom: $thin-active-border;
+  outline: $default-border;
+  color: var(--my-active-color) !important;
+}

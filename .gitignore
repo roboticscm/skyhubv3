@@ -1,0 +1,17 @@
+.DS_Store
+node_modules
+dist
+package-lock.json
+yarn.lock
+yarn-error.log
+.vscode
+backend/core/yarn.locke
+backend/core/main
+backend/core/go.sum
+database/~*.xlsx
+web/node_modules
+web/yarn.lock
+web/yarn-error.log
+backend/core/pt
+backend/core/doc
+web/src/pt

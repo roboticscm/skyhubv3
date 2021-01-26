@@ -1,0 +1,98 @@
+@mixin create-dropdown-content {
+  display: none;
+  position: fixed;
+  background-color: var(--bg-primary);
+  //min-width: 180px;
+  //max-width: 400px;
+  width: 300px;
+  box-shadow: $default-box-shadow;
+  z-index: $highest-z-index;
+  max-height: 80vh;
+  overflow: auto;
+  font-family: $default-font-family;
+  &__selected {
+    //@include create-hover_item();
+    border: 1px solid var(--active-border-color) !important;
+    //color: var(--my-active-color) !important;
+    font-weight: 500 !important;
+  }
+}
+
+.right-dropdown-content {
+  @include create-dropdown-content();
+  //transform: translateY($large-padding);
+  right: $default-padding;
+}
+
+.left-dropdown-content {
+  @include create-dropdown-content();
+  left: $default-padding;
+}
+
+.dropdown-content {
+  @include create-dropdown-content();
+  //transform: translateX(-$large-padding);
+  //transform: translateY($large-padding);
+}
+
+.dropdown-item {
+  color: var(--primary);
+  font-size: $default-font-size;
+  font-weight: 400;
+  padding: 12px 16px;
+  display: block;
+  text-align: left;
+  margin-top: $small-padding;
+  white-space: nowrap;
+  //border-bottom: 1px solid transparent;
+  border: 1px solid transparent;
+  &:hover {
+    //@include create-hover-item-without-border();
+    border: 1px solid var(--hover-border-color);
+  }
+
+  i {
+    font-size: $default-font-size;
+  }
+
+  img {
+    width: $default-font-size;
+    height: $default-font-size;
+  }
+}
+
+.filter-dropdown-content {
+  background: var(--bg-primary);
+  display: none;
+  position: absolute;
+  top: 13px;
+  box-shadow: $default-box-shadow;
+  z-index: $highest-z-index;
+  max-height: 80vh;
+  overflow: auto;
+}
+
+.filter-dropdown-item {
+  font-size: 1.1rem;
+  padding: 12px 5px;
+  display: block;
+  text-align: left;
+  margin-top: $small-padding;
+  white-space: nowrap;
+  border: $default-transparent-border;
+  &:hover {
+    border-color: var(--hover-border-color);
+  }
+}
+
+.show-dropdown {
+  display: block;
+}
+
+.filter-active-item {
+  font-weight: 900;
+}
+
+.dropdown-mark-icon {
+  width: 20px;
+}

@@ -1,0 +1,13 @@
+{
+    "debug": true,
+    "authenticate": false,
+	"dbServer": "172.16.22.17",
+    "dbPort": 5434,
+    "dbName": "skyhubv3",
+    "dbTimeOut": 3,
+    "dbReconnect": 2,
+	"dbUser": "skyhubv3",
+    "dbPassword": "skyhubv3",
+    "privateKey": "Skyhub@010116",
+    "jwtExpDuration": 100000000000
+}

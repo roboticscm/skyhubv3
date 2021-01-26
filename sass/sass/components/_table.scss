@@ -1,0 +1,136 @@
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  // overflow: auto;
+  color: var(--primary);
+  // background: var(--bg-primary);
+}
+
+.table thead th {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  resize: horizontal;
+  overflow: hidden;
+  cursor: pointer;
+  padding: $default-padding;
+  text-align: center;
+  // background-color: var(--bg-primary);
+  // color: var(--primary);
+}
+
+.table .freeze {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 0;
+  overflow: hidden;
+}
+
+.table .row-number {
+  font-weight: normal;
+  color: var(--readonly-text-color);
+  width: 30px;
+}
+
+.table thead .freeze {
+  z-index: 3;
+}
+
+.table tbody .freeze {
+  z-index: 2;
+}
+
+.table tr:not(.selected) td,
+.table tr:not(.selected) th {
+  border: 1px solid var(--border-color);
+  padding: $default-padding;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0;
+}
+
+.table td,
+.table th {
+  padding:  $default-padding;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0;
+}
+
+
+.table tbody tr td:hover {
+  border: $thin-active-border;
+  background: var(--selection-cell-bgcolor);
+}
+
+.table tbody tr:hover {
+  background-color: var(--selection-row-bgcolor);
+  cursor: pointer;
+}
+
+.table tbody tr:hover th {
+  background-color: var(--selection-row-bgcolor);
+  cursor: pointer;
+}
+
+.table tr {
+  color: var(--primary);
+}
+
+.table tr:nth-child(even) {
+  background-color: var(--table-row-bgcolor);
+}
+
+
+.table tr:not(.selected) th {
+  padding: $default-padding;
+  text-align: center;
+  background-color: var(--bg-primary);
+}
+
+.table tbody tr.selected {
+  background-color: var(--selection-row-bgcolor);
+  color: var(--selection-color);
+  border: 1px solid var(--active-border-color);
+  font-weight: 500;
+}
+
+.table .checked-column {
+  width: 30px;
+  min-width: 30px;
+}
+
+.table-one-column {
+  border-collapse: separate;
+}
+
+.table-one-column tr:not(.selected) td,
+.table-one-column tr:not(.selected) th  {
+  border: 1px solid transparent;
+  padding: 12px 5px;
+}
+
+.table-one-column tr:nth-child(even) {
+  background-color: var(--bg-primary);
+}
+
+.table-one-column tbody tr td:hover {
+  border: 1px solid var(--hover-border-color);
+  background: var(--bg-primary);
+}
+
+.table-one-column tbody tr:hover {
+  background: var(--bg-primary);
+}
+
+.table-one-column tbody tr:hover th {
+  background: var(--bg-primary);
+}
+
+.table-one-column tbody tr.selected td {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--active-border-color) !important;
+  padding: 12px 5px;
+}
