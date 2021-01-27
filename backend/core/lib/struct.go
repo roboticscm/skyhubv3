@@ -12,7 +12,7 @@ func ProtoToStruct(source interface{}, dest interface{}) error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(convertKeys(jsonOut, false), dest)
+	return json.Unmarshal(convertKeys(jsonOut, strcase.LowerCamelCase), dest)
 }
 
 //StructToProto function
@@ -21,10 +21,10 @@ func StructToProto(source interface{}, dest interface{}) error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(convertKeys(jsonOut, true), dest)
+	return json.Unmarshal(convertKeys(jsonOut, strcase.SnakeCase), dest)
 }
 
-func convertKeys(j json.RawMessage, usedSnackCase bool) json.RawMessage {
+func convertKeys(j json.RawMessage, caseConvert func(string) string) json.RawMessage {
 	m := make(map[string]json.RawMessage)
 	if err := json.Unmarshal([]byte(j), &m); err != nil {
 		var resultArray []map[string]interface{}
@@ -36,7 +36,7 @@ func convertKeys(j json.RawMessage, usedSnackCase bool) json.RawMessage {
 				if err != nil {
 					return j
 				}
-				result = append(result, convertKeys(jsonOut, usedSnackCase)...)
+				result = append(result, convertKeys(jsonOut, caseConvert)...)
 				if index < len(resultArray)-1 {
 					result = append(result, ([]byte(","))...)
 				}
@@ -49,15 +49,10 @@ func convertKeys(j json.RawMessage, usedSnackCase bool) json.RawMessage {
 	}
 
 	for k, v := range m {
-		var fixed string
-		if usedSnackCase {
-			fixed = strcase.SnakeCase(k)
-		} else {
-			fixed = strcase.LowerCamelCase(k)
-		}
+		fixed := caseConvert(k)
 
 		delete(m, k)
-		m[fixed] = convertKeys(v, usedSnackCase)
+		m[fixed] = convertKeys(v, caseConvert)
 	}
 
 	b, err := json.Marshal(m)

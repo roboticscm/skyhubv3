@@ -29,6 +29,13 @@ func CustomError(code codes.Code, message string, field string, trace interface{
 		if err != nil {
 			return err
 		}
+
+		//TODO
+		// var metadata = new grpc.Metadata()
+		// metadata.set('key1', 'value2')
+		// metadata.set('key2', 'value2')
+		// jsErr.metadata = metadata;
+
 		return st.Err()
 	}
 

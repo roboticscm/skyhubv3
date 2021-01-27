@@ -18,15 +18,20 @@ func NewStore() *Store {
 	return &Store{}
 }
 
-//GetInitial handler
-func (store *Store) GetInitial(locale string) ([]models.LocaleResource, error) {
+//Find function
+func (store *Store) Find(companyID int64, locale string) ([]models.LocaleResource, error) {
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
 
 	o := orm.NewOrm()
 	langs := []models.LocaleResource{}
 
-	if _, err := o.Raw("select * from find_language(?, ?)", nil, locale).QueryRows(&langs); err != nil {
+	companyIDRef := &companyID
+	if companyID < 1 {
+		companyIDRef = nil
+	}
+
+	if _, err := o.Raw("select * from find_language(?, ?)", &companyIDRef, locale).QueryRows(&langs); err != nil {
 		return nil, errors.Error500(err)
 	}
 

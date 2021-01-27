@@ -1,11 +1,9 @@
-import { RxHttp } from './rx-http';
 import { isDebugMode } from './debug';
 import { StringUtil } from './string-util';
-import { BaseUrl } from './constants';
 import { grpcLocaleResourceClient } from './grpc';
 
 import {
-  InitialLocaleResourceRequest
+  FindLocaleResourceRequest
 } from "src/pt/proto/locale_resource/locale_resource_service_pb";
 
 
@@ -100,13 +98,13 @@ function initCategoryHelper(i, category) {
   }
 }
 
-export const findLanguage = (companyId, locale, initial = false) => {
+export const findLanguage = (companyId, locale) => {
   return new Promise((resolve, reject) => {
-    const req = new InitialLocaleResourceRequest();
-    req.setLocale("vi-VN");
-    grpcLocaleResourceClient.initialHandler(req).then(res => {
+    const req = new FindLocaleResourceRequest();
+    req.setLocale(locale);
+    req.setCompanyId(`${companyId}`);
+    grpcLocaleResourceClient.findHandler(req).then(res => {
       I18N = res.toObject().dataList;
-      console.log(I18N)
       convertLocaleResource();
       resolve(I18N);
     }).catch(err => reject(err));

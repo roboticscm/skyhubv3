@@ -5,7 +5,7 @@
   import { fromPromise } from 'rxjs/internal-compatibility';
   import { BaseUrl } from 'src/lib/constants';
   import { T } from 'src/lib/locale';
-  import Form from 'src/lib/form/form';
+  import Form from 'src/lib/grpc-form/form';
   import { SObject } from 'src/lib/sobject';
   import { ButtonType, ButtonId } from 'src/components/ui/button/types';
   import TreeView from 'src/components/ui/tree-view';
@@ -22,6 +22,9 @@
   import { LoginInfo } from 'src/store/login-info';
   import { NotifyListener } from 'src/store/notify-listener';
   import { SkyLogStore } from 'src/store/skylog';
+  import { grpcRoleClient } from 'src/lib/grpc';
+  import { UpsertRoleRequest } from 'src/pt/proto/role/role_service_pb';
+  import { protoFromObject } from 'src/lib/grpc';
 
   // Props
   export let view;
@@ -206,11 +209,7 @@
         switchMap((_) => {
           /* submit data to API server*/
           saveRunning$.next(true);
-          return form.post(BaseUrl.SYSTEM, 'role').pipe(
-            catchError((error) => {
-              return of(error);
-            }),
-          );
+          return fromPromise(grpcUpsert());
         }),
       )
       .subscribe({
@@ -245,6 +244,18 @@
           saveRunning$.next(false);
         },
       });
+  };
+
+  const grpcUpsert = () => {
+    return new Promise((resolve, reject) => {
+      const req = protoFromObject(UpsertRoleRequest, form.data())
+      grpcRoleClient
+        .upsertHandler(req)
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((err) => reject(err));
+    });
   };
 
   const doSelect = (data) => {

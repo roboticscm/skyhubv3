@@ -15,7 +15,7 @@ type AuthStore interface {
 
 //LocaleResourceStore interface
 type LocaleResourceStore interface {
-	GetInitial(locale string) ([]models.LocaleResource, error)
+	Find(companyId int64, locale string) ([]models.LocaleResource, error)
 }
 
 //RoleStore interface

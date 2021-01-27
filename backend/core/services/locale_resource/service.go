@@ -3,7 +3,6 @@ package locale_resource
 import (
 	"context"
 
-	"google.golang.org/protobuf/types/known/emptypb"
 	"suntech.com.vn/skygroup/lib"
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skygroup/store"
@@ -21,9 +20,9 @@ func NewService(store store.LocaleResourceStore) *Service {
 	}
 }
 
-//InitialHandler function
-func (service *Service) InitialHandler(ctx context.Context, req *pt.InitialLocaleResourceRequest) (*pt.InitialLocaleResourceResponse, error) {
-	langs, err := service.Store.GetInitial(req.Locale)
+//FindHandler function
+func (service *Service) FindHandler(ctx context.Context, req *pt.FindLocaleResourceRequest) (*pt.FindLocaleResourceResponse, error) {
+	langs, err := service.Store.Find(req.CompanyId, req.Locale)
 	if err != nil {
 		return nil, err
 	}
@@ -33,12 +32,7 @@ func (service *Service) InitialHandler(ctx context.Context, req *pt.InitialLocal
 		return nil, err
 	}
 
-	return &pt.InitialLocaleResourceResponse{
+	return &pt.FindLocaleResourceResponse{
 		Data: localeResources,
 	}, nil
-}
-
-//GetHandler function
-func (service *Service) GetHandler(ctx context.Context, _ *emptypb.Empty) (*pt.GetLocaleResourceResponse, error) {
-	return &pt.GetLocaleResourceResponse{}, nil
 }

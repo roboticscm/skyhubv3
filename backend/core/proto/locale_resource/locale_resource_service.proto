@@ -4,11 +4,6 @@ package locale_resource;
 
 option go_package = ".;pt";
 import "google/api/annotations.proto";
-import "google/protobuf/empty.proto";
-
-message InitialLocaleResourceRequest {
-    string locale = 1;
-}
 
 message LocaleResourceResponseItem {
   string category = 1;
@@ -16,25 +11,19 @@ message LocaleResourceResponseItem {
   string key = 3;
   string value = 4;
 }
-
-message InitialLocaleResourceResponse {
-    repeated LocaleResourceResponseItem data = 1;
+message FindLocaleResourceRequest {
+  int64 company_id = 1 [ jstype = JS_STRING];
+  string locale = 2;
 }
 
-message GetLocaleResourceResponse {
+message FindLocaleResourceResponse {
     repeated LocaleResourceResponseItem data = 1;
 }
 
 service LocaleResourceService {
-    rpc InitialHandler(InitialLocaleResourceRequest) returns (InitialLocaleResourceResponse) {
+    rpc FindHandler(FindLocaleResourceRequest) returns (FindLocaleResourceResponse) {
       option (google.api.http) = {
-        get : "/locale-resource/initial"
+        get : "/locale-resource"
       };
     };
-
-    rpc GetHandler(google.protobuf.Empty) returns (GetLocaleResourceResponse) {
-        option (google.api.http) = {
-          get : "/locale-resource"
-        };
-      };
 }

@@ -6,8 +6,8 @@ ROOT_DOC_DIR=doc
 SERVICES_DOC_DIR=services
 MESSAGES_DOC_DIR=messages
 SOURCE_PROTO_DIR=proto
-#GOPATH=/Users/khailv/go
-GOPATH=C:\Users\khailv\go
+GOPATH=/Users/khailv/go
+WGOPATH=C:\Users\khailv\go
 gen-go:
 	rm -Rf  ${OUT_DIR}
 	rm -Rf ${ROOT_DOC_DIR}
@@ -51,11 +51,11 @@ wgen-web:
 	if exist ${WJS_OUT_DIR} rd /q /s ${WJS_OUT_DIR}
 	mkdir ${WJS_OUT_DIR}
 	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_message.proto) \
-		-I. -I${GOPATH}/src \
+		-I. -I${WGOPATH}/src \
 		--js_out=import_style=commonjs,binary:${JS_OUT_DIR} \
 		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:${JS_OUT_DIR}
 	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_service.proto) google/api/annotations.proto google/api/http.proto \
-		-I. -I${GOPATH}/src \
+		-I. -I${WGOPATH}/src \
 		--proto_path=${SOURCE_PROTO_DIR} \
 		--js_out=import_style=commonjs,binary:${JS_OUT_DIR} \
 		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:${JS_OUT_DIR}

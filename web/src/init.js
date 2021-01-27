@@ -6,7 +6,7 @@ import MobileDetect from 'mobile-detect';
 
 export const init = () => {
   return new Promise((resolve, reject) => {
-    findLanguage(-1, Browser.getLanguage(), true)
+    findLanguage(-1, Browser.getLanguage())
       .then((res) => {
         RxHttp.get({
           url: 'https://api.ipify.org?format=jsonp',
