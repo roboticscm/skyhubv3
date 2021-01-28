@@ -35,8 +35,20 @@ func MakeUpdate(ctx context.Context, model interface{}) {
 func MakeUpdateWithID(userID int64, model interface{}) {
 	now, _ := lib.GetCurrentMillis()
 
-	reflect.ValueOf(model).Elem().FieldByName("UpdatedBy").Set(reflect.ValueOf(&userID))
-	reflect.ValueOf(model).Elem().FieldByName("UpdatedAt").Set(reflect.ValueOf(&now))
+	updatedByField := reflect.ValueOf(model).Elem().FieldByName("UpdatedBy")
+	if updatedByField.Kind() == reflect.Ptr {
+		updatedByField.Set(reflect.ValueOf(&userID))
+	} else {
+		updatedByField.Set(reflect.ValueOf(userID))
+	}
+
+	updatedAtField := reflect.ValueOf(model).Elem().FieldByName("UpdatedAt")
+	if updatedAtField.Kind() == reflect.Ptr {
+		updatedAtField.Set(reflect.ValueOf(&now))
+	} else {
+		updatedAtField.Set(reflect.ValueOf(now))
+	}
+
 }
 
 //MakeInsert function
@@ -50,7 +62,8 @@ func MakeInsertWithID(userID int64, model interface{}) {
 	now, _ := lib.GetCurrentMillis()
 	disabled := false
 	var version int32 = 1
-	reflect.ValueOf(model).Elem().FieldByName("CreatedBy").Set(reflect.ValueOf(&userID))
+	lib.SetReflectValue(reflect.ValueOf(model).Elem().FieldByName("CreatedBy"), userID)
+	// reflect.ValueOf(model).Elem().FieldByName("CreatedBy").Set(reflect.ValueOf(&userID))
 	reflect.ValueOf(model).Elem().FieldByName("CreatedAt").Set(reflect.ValueOf(&now))
 	reflect.ValueOf(model).Elem().FieldByName("Disabled").Set(reflect.ValueOf(&disabled))
 	if reflect.ValueOf(model).Elem().FieldByName("Version").IsValid() {

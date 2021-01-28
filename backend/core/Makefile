@@ -6,7 +6,7 @@ ROOT_DOC_DIR=doc
 SERVICES_DOC_DIR=services
 MESSAGES_DOC_DIR=messages
 SOURCE_PROTO_DIR=proto
-GOPATH=/Users/khailv/go
+#GOPATH=/Users/khailv/go
 WGOPATH=C:\Users\khailv\go
 gen-go:
 	rm -Rf  ${OUT_DIR}
