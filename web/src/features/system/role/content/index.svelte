@@ -207,21 +207,22 @@
         ),
         filter((value) => value !== 'fail') /* filter if pass verify permission*/,
         switchMap((_) => {
-          /* submit data to API server*/
+          /*Call grpc on server*/
           saveRunning$.next(true);
-          return fromPromise(grpcUpsert());
+          return fromPromise(grpcUpsert()).pipe(
+            catchError((error) => {
+              return of({ hasError: true, error });
+            }),
+          );
         }),
       )
       .subscribe({
         /* do something after form submit*/
         next: (res) => {
-          if (res.response && res.response.data) {
-            // if error
-            if (res.response.data.field) {
-              form.errors.errors = form.recordErrors(res.response.data);
-            } else {
-              scRef.snackbarRef().showUnknownError(res.response.data.message || res.response.data);
-            }
+          if (res.hasError) {
+            console.log(res.error);
+            //error occured
+            form.errors.errors = form.recordErrors(res.error);
           } else {
             // success
             if ($isUpdateMode$) {
@@ -237,10 +238,11 @@
               doAddNew();
             }
           }
+
           saveRunning$.next(false);
         },
         error: (error) => {
-          errorSection('Role - doSaveOrUpdate', error);
+          errorSection(error);
           saveRunning$.next(false);
         },
       });
@@ -248,7 +250,7 @@
 
   const grpcUpsert = () => {
     return new Promise((resolve, reject) => {
-      const req = protoFromObject(UpsertRoleRequest, form.data())
+      const req = protoFromObject(UpsertRoleRequest, form.data());
       grpcRoleClient
         .upsertHandler(req)
         .then((res) => {
@@ -363,6 +365,10 @@
     },
   };
   // ============================== //HOOK ==========================
+
+  const onClickTest = () => {
+    console.log('aaaa');
+  };
 </script>
 
 <!--Invisible Element-->
@@ -485,6 +491,7 @@
           on:check={onCheckOrgTree}
           bind:this={orgTreeRef}
           id={'orgTree' + view.getViewName() + 'Id'}
+          name="orgId"
           data={$dataList$}
           disabled={$isReadOnlyMode$}
           radioType="all">

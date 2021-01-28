@@ -3,6 +3,7 @@
   import { genUUID } from 'src/lib/random';
 
   export let id = genUUID();
+  export let name;
   export let data = undefined;
   export let data$ = undefined;
   export let disabled = false;
@@ -263,7 +264,7 @@
 
 <div class="tree-wrapper">
   <slot name="label" />
-  <ul {id} class="stree ztree" />
+  <ul {id} {name} class="stree ztree" />
   {#if !_data || _data.length === 0}
     <div class="no-data">
       <img src={noDataImage} alt="" />

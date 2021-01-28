@@ -61,13 +61,20 @@ export default class Form {
   }
 
 
-  recordErrors(errors) {
-    if (errors.field) {
-      this.errors.record({ [errors.field]: errors.message });
+  recordErrors(error) {
+    if (error.message && typeof error.message === 'string') {
+      const { field, message } = JSON.parse(error.message)
+      if (field) {
+        this.errors.record({ [field]: message });
+      } else {
+        this.errors.record(error);
+      }
+      
     } else {
-      this.errors.record(errors);
+      this.errors.record(error);
     }
 
     return this.errors.errors;
   }
+
 }
