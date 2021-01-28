@@ -27,12 +27,14 @@ func (store *Store) Upsert(userID int64, input models.Role) (*models.Role, error
 
 	o := orm.NewOrm()
 	if input.Id != 0 {
-		isDuplicated, _ := db.IsTextValueDuplicated("role", "code", *input.Code, input.Id)
-		if isDuplicated {
-			return nil, errors.DuplicatedError("code")
+		if input.Code != nil {
+			isDuplicated, _ := db.IsTextValueDuplicated("role", "code", *input.Code, input.Id)
+			if isDuplicated {
+				return nil, errors.DuplicatedError("code")
+			}
 		}
 
-		isDuplicated, _ = db.IsTextValueDuplicated("role", "name", *input.Name, input.Id)
+		isDuplicated, _ := db.IsTextValueDuplicated("role", "name", *input.Name, input.Id)
 		if isDuplicated {
 			return nil, errors.DuplicatedError("name")
 		}
@@ -58,12 +60,14 @@ func (store *Store) Upsert(userID int64, input models.Role) (*models.Role, error
 		return &role, nil
 	}
 
-	isExisted, _ := db.IsTextValueExisted("role", "code", *input.Code)
-	if isExisted {
-		return nil, errors.ExistedError("code")
+	if input.Code != nil {
+		isExisted, _ := db.IsTextValueExisted("role", "code", *input.Code)
+		if isExisted {
+			return nil, errors.ExistedError("code")
+		}
 	}
 
-	isExisted, _ = db.IsTextValueExisted("role", "name", *input.Name)
+	isExisted, _ := db.IsTextValueExisted("role", "name", *input.Name)
 	if isExisted {
 		return nil, errors.ExistedError("name")
 	}

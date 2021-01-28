@@ -19,6 +19,7 @@ type BeegoDB struct {
 
 //Init function: Register DB Model
 func (db *BeegoDB) Init(conf config.Configuration) {
+	orm.Debug = conf.Debug
 	//=============BEGIN EDIT SECTION================
 	// orm.RegisterModel(new(LocaleResource))
 	orm.RegisterModel(new(RefreshToken))

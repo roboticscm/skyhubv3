@@ -12,7 +12,11 @@ import (
 
 //CustomError function
 func CustomError(code codes.Code, message string, field string, trace interface{}) error {
-	st := status.New(code, message)
+	fullMsg, _ := json.Marshal(map[string]interface{}{
+		"field":   field,
+		"message": message,
+	})
+	st := status.New(code, string(fullMsg))
 	if field != "" {
 		var js []byte
 		if trace != nil {
@@ -21,7 +25,7 @@ func CustomError(code codes.Code, message string, field string, trace interface{
 
 		v := &errdetails.BadRequest_FieldViolation{
 			Field:       field,
-			Description: string(js),
+			Description: message + string(js),
 		}
 		br := &errdetails.BadRequest{}
 		br.FieldViolations = append(br.FieldViolations, v)
@@ -29,12 +33,6 @@ func CustomError(code codes.Code, message string, field string, trace interface{
 		if err != nil {
 			return err
 		}
-
-		//TODO
-		// var metadata = new grpc.Metadata()
-		// metadata.set('key1', 'value2')
-		// metadata.set('key2', 'value2')
-		// jsErr.metadata = metadata;
 
 		return st.Err()
 	}
