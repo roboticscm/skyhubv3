@@ -36,7 +36,7 @@ func (db *BeegoDB) Init(conf config.Configuration) {
 
 reconnect:
 	if err := orm.RegisterDataBase("default", "postgres", DBConnectionStr); err != nil {
-		logger.Info("Coneect to database error", err)
+		logger.Info("Connect to database error", err)
 		logger.Infof("Try to reconnect in %v second(s)", conf.DBReconnect)
 		time.Sleep(time.Duration(conf.DBReconnect) * time.Second)
 		goto reconnect

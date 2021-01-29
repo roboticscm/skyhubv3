@@ -12,15 +12,20 @@ func SetReflectValue(field reflect.Value, value interface{}) {
 		logger.Infof("Field [%v] does not exist", field)
 		return
 	}
+
+	if value == nil {
+		return
+	}
+
 	switch field.Interface().(type) {
 	case int64:
-		field.Set(reflect.ValueOf(value.(int64)))
+		field.Set(reflect.ValueOf(ToI64(value)))
 	case *int64:
-		field.Set(reflect.ValueOf(AddrOfInt64(value.(int64))))
+		field.Set(reflect.ValueOf(ToI64Ptr(value)))
 	case int32:
-		field.Set(reflect.ValueOf(value.(int32)))
+		field.Set(reflect.ValueOf(ToI32(value)))
 	case *int32:
-		field.Set(reflect.ValueOf(AddrOfInt32(value.(int32))))
+		field.Set(reflect.ValueOf(ToI32Ptr(value)))
 	case string:
 		field.Set(reflect.ValueOf(value.(string)))
 	case *string:

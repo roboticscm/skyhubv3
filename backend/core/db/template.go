@@ -2,10 +2,13 @@ package db
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/astaxie/beego/orm"
+	"github.com/stoewer/go-strcase"
 	"suntech.com.vn/skygroup/jwt"
 	"suntech.com.vn/skygroup/lib"
 )
@@ -98,8 +101,19 @@ func IsTextValueExisted(tableName string, columnName string, value string) (bool
 func GetOneByID(tableName string, id int64, outStruct interface{}) error {
 	const sql = `SELECT * FROM get_one_by_id($1, $2) as json`
 	query := DefaultQuery()
-	if err := query.Select(sql, []interface{}{tableName, id}, outStruct); err != nil {
+	var jsOut string
+	if err := query.Select(sql, []interface{}{tableName, id}, &jsOut); err != nil {
 		return err
 	}
+
+	if strings.HasPrefix(jsOut, "[") && strings.HasSuffix(jsOut, "]") {
+		jsOut = strings.TrimSuffix(strings.TrimPrefix(jsOut, "["), "]")
+	}
+
+	convertedJS := lib.ConvertKeys([]byte(jsOut), strcase.LowerCamelCase)
+	if err := json.Unmarshal(convertedJS, outStruct); err != nil {
+		return err
+	}
+
 	return nil
 }

@@ -12,7 +12,7 @@ func ProtoToStruct(source interface{}, dest interface{}) error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(convertKeys(jsonOut, strcase.LowerCamelCase), dest)
+	return json.Unmarshal(ConvertKeys(jsonOut, strcase.LowerCamelCase), dest)
 }
 
 //StructToProto function
@@ -21,10 +21,10 @@ func StructToProto(source interface{}, dest interface{}) error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(convertKeys(jsonOut, strcase.SnakeCase), dest)
+	return json.Unmarshal(ConvertKeys(jsonOut, strcase.SnakeCase), dest)
 }
 
-func convertKeys(j json.RawMessage, caseConvert func(string) string) json.RawMessage {
+func ConvertKeys(j json.RawMessage, caseConvert func(string) string) json.RawMessage {
 	m := make(map[string]json.RawMessage)
 	if err := json.Unmarshal([]byte(j), &m); err != nil {
 		var resultArray []map[string]interface{}
@@ -36,7 +36,7 @@ func convertKeys(j json.RawMessage, caseConvert func(string) string) json.RawMes
 				if err != nil {
 					return j
 				}
-				result = append(result, convertKeys(jsonOut, caseConvert)...)
+				result = append(result, ConvertKeys(jsonOut, caseConvert)...)
 				if index < len(resultArray)-1 {
 					result = append(result, ([]byte(","))...)
 				}
@@ -52,7 +52,7 @@ func convertKeys(j json.RawMessage, caseConvert func(string) string) json.RawMes
 		fixed := caseConvert(k)
 
 		delete(m, k)
-		m[fixed] = convertKeys(v, caseConvert)
+		m[fixed] = ConvertKeys(v, caseConvert)
 	}
 
 	b, err := json.Marshal(m)

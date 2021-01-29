@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"sync"
 
 	"github.com/stoewer/go-strcase"
 	"suntech.com.vn/skygroup/lib"
@@ -12,7 +13,8 @@ import (
 
 //Query struct
 type Query struct {
-	DB *sql.DB
+	mutex sync.RWMutex
+	DB    *sql.DB
 }
 
 //NewQuery function
@@ -66,6 +68,8 @@ func checkOutParam(out interface{}) (outParamType, error) {
 
 //Select function
 func (q *Query) Select(sql string, params []interface{}, out ...interface{}) error {
+	q.mutex.Lock()
+	defer q.mutex.Unlock()
 	paramType, err := checkOutParam(out)
 	if err != nil {
 		return err

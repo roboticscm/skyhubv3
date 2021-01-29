@@ -19,3 +19,53 @@ func ToInt64(source interface{}) (int64, error) {
 	}
 	return num, nil
 }
+
+//ToI64 convert interface{} to int64.
+func ToI64(source interface{}) int64 {
+	num, err := ToInt64(source)
+	if err != nil {
+		return 0
+	}
+
+	return num
+}
+
+//ToI64Ptr convert interface{} to *int64.
+func ToI64Ptr(source interface{}) *int64 {
+	num, err := ToInt64(source)
+	if err != nil {
+		return nil
+	}
+
+	return &num
+}
+
+//ToInt32 convert interface{} to int32.
+func ToInt32(source interface{}) (int32, error) {
+	num, err := ToInt64(source)
+	if err != nil {
+		return 0, err
+	}
+
+	return int32(num), nil
+}
+
+//ToI32 convert interface{} to int32.
+func ToI32(source interface{}) int32 {
+	num, err := ToInt32(source)
+	if err != nil {
+		return 0
+	}
+
+	return num
+}
+
+//ToI32Ptr convert interface{} to *int32.
+func ToI32Ptr(source interface{}) *int32 {
+	num, err := ToInt32(source)
+	if err != nil {
+		return nil
+	}
+
+	return &num
+}
