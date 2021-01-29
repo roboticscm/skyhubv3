@@ -14,3 +14,8 @@ func AddrOfInt32(value int32) *int32 {
 func AddrOfString(value string) *string {
 	return &value
 }
+
+//AddrOfBool function
+func AddrOfBool(value bool) *bool {
+	return &value
+}

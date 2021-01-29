@@ -2,8 +2,7 @@ package db
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
+	"fmt"
 	"reflect"
 
 	"github.com/astaxie/beego/orm"
@@ -34,20 +33,9 @@ func MakeUpdate(ctx context.Context, model interface{}) {
 //MakeUpdateWithID function
 func MakeUpdateWithID(userID int64, model interface{}) {
 	now, _ := lib.GetCurrentMillis()
-
-	updatedByField := reflect.ValueOf(model).Elem().FieldByName("UpdatedBy")
-	if updatedByField.Kind() == reflect.Ptr {
-		updatedByField.Set(reflect.ValueOf(&userID))
-	} else {
-		updatedByField.Set(reflect.ValueOf(userID))
-	}
-
-	updatedAtField := reflect.ValueOf(model).Elem().FieldByName("UpdatedAt")
-	if updatedAtField.Kind() == reflect.Ptr {
-		updatedAtField.Set(reflect.ValueOf(&now))
-	} else {
-		updatedAtField.Set(reflect.ValueOf(now))
-	}
+	md := reflect.ValueOf(model).Elem()
+	lib.SetReflectField(md, md.FieldByName("UpdatedBy"), "UpdatedBy", userID)
+	lib.SetReflectField(md, md.FieldByName("UpdatedAt"), "UpdatedAt", now)
 
 }
 
@@ -60,15 +48,11 @@ func MakeInsert(ctx context.Context, model interface{}) {
 //MakeInsertWithID function
 func MakeInsertWithID(userID int64, model interface{}) {
 	now, _ := lib.GetCurrentMillis()
-	disabled := false
-	var version int32 = 1
-	lib.SetReflectValue(reflect.ValueOf(model).Elem().FieldByName("CreatedBy"), userID)
-	// reflect.ValueOf(model).Elem().FieldByName("CreatedBy").Set(reflect.ValueOf(&userID))
-	reflect.ValueOf(model).Elem().FieldByName("CreatedAt").Set(reflect.ValueOf(&now))
-	reflect.ValueOf(model).Elem().FieldByName("Disabled").Set(reflect.ValueOf(&disabled))
-	if reflect.ValueOf(model).Elem().FieldByName("Version").IsValid() {
-		reflect.ValueOf(model).Elem().FieldByName("Version").Set(reflect.ValueOf(&version))
-	}
+	md := reflect.ValueOf(model).Elem()
+	lib.SetReflectField(md, md.FieldByName("CreatedBy"), "CreatedBy", userID)
+	lib.SetReflectField(md, md.FieldByName("CreatedAt"), "CreatedAt", now)
+	lib.SetReflectField(md, md.FieldByName("Disabled"), "Disabled", false)
+	lib.SetReflectField(md, md.FieldByName("Version"), "Version", int32(1))
 }
 
 //MakeDelete function
@@ -80,47 +64,42 @@ func MakeDelete(ctx context.Context, model interface{}) {
 //MakeDeleteWithID function
 func MakeDeleteWithID(userID int64, model interface{}) {
 	now, _ := lib.GetCurrentMillis()
-
-	reflect.ValueOf(model).Elem().FieldByName("DeletedBy").Set(reflect.ValueOf(&userID))
-	reflect.ValueOf(model).Elem().FieldByName("DeletedAt").Set(reflect.ValueOf(&now))
+	md := reflect.ValueOf(model).Elem()
+	lib.SetReflectField(md, md.FieldByName("DeletedBy"), "DeletedBy", userID)
+	lib.SetReflectField(md, md.FieldByName("DeletedAt"), "DeletedAt", now)
 }
 
 //IsTextValueDuplicated function
 func IsTextValueDuplicated(tableName string, columnName string, value string, id int64) (bool, error) {
-	o := orm.NewOrm()
-	var maps []orm.Params
-	const sql = `SELECT * FROM is_text_value_duplicated(?, ?, ?, ?) as "isDuplicated"`
-	if _, err := o.Raw(sql, tableName, columnName, value, id).Values(&maps); err != nil {
-		return false, errors.New("SYS.MSG.LOAD_OBJECT_ERROR")
-	}
-	result, err := lib.ToBool(maps[0]["isDuplicated"])
+	query := DefaultQuery()
+	var result bool
 
-	return result, err
+	if err := query.Select(`SELECT * FROM is_text_value_duplicated($1, $2, $3, $4) as "isDuplicated"`, []interface{}{tableName, columnName, value, id}, &result); err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	return result, nil
 }
 
 //IsTextValueExisted function
 func IsTextValueExisted(tableName string, columnName string, value string) (bool, error) {
-	o := orm.NewOrm()
-	var maps []orm.Params
-	const sql = `SELECT * FROM is_text_value_existed(?, ?, ?) as "isExisted"`
-	if _, err := o.Raw(sql, tableName, columnName, value).Values(&maps); err != nil {
-		return false, errors.New("SYS.MSG.LOAD_OBJECT_ERROR")
-	}
-	result, err := lib.ToBool(maps[0]["isExisted"])
+	query := DefaultQuery()
+	var result bool
 
-	return result, err
+	if err := query.Select(`SELECT * FROM is_text_value_existed($1, $2, $3) as "isExisted"`, []interface{}{tableName, columnName, value}, &result); err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	return result, nil
+
 }
 
 //GetOneByID function
 func GetOneByID(tableName string, id int64, outStruct interface{}) error {
-	const sql = `SELECT * FROM get_one_by_id(?, ?) as json`
-
-	jsOut, err := SelectJSON(sql, tableName, id)
-
-	if err != nil {
+	const sql = `SELECT * FROM get_one_by_id($1, $2) as json`
+	query := DefaultQuery()
+	if err := query.Select(sql, []interface{}{tableName, id}, outStruct); err != nil {
 		return err
 	}
-
-	json.Unmarshal([]byte(jsOut.(string)), outStruct)
 	return nil
 }

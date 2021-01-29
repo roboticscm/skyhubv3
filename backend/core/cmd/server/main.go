@@ -34,6 +34,7 @@ func init() {
 	beeGoDB.Init(conf)
 	// sync db -> Dangerous -> May lost your database
 	// beeGoDB.Sync()
+	db.Init(conf)
 
 	//Set JwtManager global instance
 	jwt.JwtManagerInstance = jwt.NewJwtManager()
@@ -42,9 +43,13 @@ func init() {
 	mapFunc["authentication.Service"] = map[string]interface{}{"grpc": pt.RegisterAuthServiceServer, "rest": pt.RegisterAuthServiceHandlerFromEndpoint, "instance": authentication.NewService(jwt.JwtManagerInstance, authentication.NewStore())}
 	mapFunc["locale_resource.Service"] = map[string]interface{}{"grpc": pt.RegisterLocaleResourceServiceServer, "rest": pt.RegisterLocaleResourceServiceHandlerFromEndpoint, "instance": locale_resource.NewService(locale_resource.NewStore())}
 	mapFunc["role.Service"] = map[string]interface{}{"grpc": pt.RegisterRoleServiceServer, "rest": pt.RegisterRoleServiceHandlerFromEndpoint, "instance": role.NewService(role.NewStore())}
-
 }
 func main() {
+
+	// var role []models.Role
+	// db.GetOneByID("role", 1, &role)
+	// fmt.Println(role)
+
 	port := flag.Int("port", 0, "Port to listen on")
 	mode := flag.String("mode", "", "Mode grpc or rest")
 	grpcEndPoint := flag.String("endpoint", "", "GRPC end point")
@@ -80,173 +85,6 @@ func main() {
 		}
 		server_helper.StartRESTServer(listener2, *grpcEndPoint, mapFunc, services...)
 	}
+
+	defer db.MainDB.Close()
 }
-
-// package main
-
-// import (
-// 	"fmt"
-// )
-
-// func call(args []interface{}) {
-// 	for i, n := range args {
-// 		fmt.Println(i, n)
-// 	}
-// }
-
-// type A struct {
-// 	a string
-// }
-
-// func main() {
-// 	aa := []A{A{"a"}, A{"b"}}
-// 	l := []interface{}{aa}
-// 	call(l)
-// }
-
-// package main
-
-// import (
-// 	"database/sql"
-// 	"fmt"
-// 	"reflect"
-// 	"time"
-
-// 	_ "github.com/lib/pq"
-// 	"suntech.com.vn/skygroup/lib"
-// 	"suntech.com.vn/skygroup/models"
-// )
-
-// var DB *sql.DB
-
-// //Query struct
-// type Query struct {
-// 	db *sql.DB
-// }
-
-// //NewQuery function
-// func NewQuery(db *sql.DB) *Query {
-// 	return &Query{db: db}
-// }
-
-// //Select function
-// func (q *Query) Select(sql string, params []interface{}, out ...interface{}) error {
-// 	rows, err := DB.Query(sql, params...)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	columns, err := rows.Columns()
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	count := len(columns)
-
-// 	for rows.Next() {
-// 		values := make([]interface{}, count)
-// 		valuePtrs := make([]interface{}, count)
-// 		for i := range columns {
-// 			valuePtrs[i] = &values[i]
-// 		}
-// 		rows.Scan(valuePtrs...)
-// 		fields := []string{}
-// 		for i, col := range columns {
-// 			val := values[i]
-
-// 			b, ok := val.([]byte)
-// 			var v interface{}
-// 			if ok {
-// 				v = string(b)
-// 			} else {
-// 				v = val
-// 			}
-
-// 			fields = append(fields, col)
-// 			values[i] = v
-// 		}
-
-// 		fillOut(fields, values, out)
-// 	}
-
-// 	return nil
-// }
-
-// func fillOut(fields []string, values []interface{}, out interface{}) {
-// 	outValues := reflect.ValueOf(out)
-// 	for i := 0; i < outValues.Len(); i++ {
-// 		ele := outValues.Index(i).Elem().Elem()
-
-// 		if ele.Kind() == reflect.Slice {
-
-// 		} else if ele.Kind() == reflect.Struct {
-// 			field := outValues.Index(i).Elem().Elem().FieldByName("Name")
-// 			if field.Kind() == reflect.Ptr {
-// 				field.Set(reflect.ValueOf(lib.AddrOfString("abc")))
-// 			} else {
-// 				field.Set(reflect.ValueOf("abc"))
-// 			}
-
-// 			field = outValues.Index(i).Elem().Elem().FieldByName("Id")
-// 			if field.Kind() == reflect.Ptr {
-// 				field.Set(reflect.ValueOf(lib.AddrOfInt64(10)))
-// 			} else {
-// 				field.Set(reflect.ValueOf(int64(10)))
-// 			}
-// 		} else {
-// 			outValues.Index(i).Elem().Elem().Set(reflect.ValueOf(int64(30)))
-// 		}
-// 	}
-// 	if true {
-
-// 		// typeOf := reflect.TypeOf(field)
-// 		// if typeOf.Kind() == reflect.Slice {
-// 		// 	typeOf = typeOf.Elem()
-// 		// 	fmt.Println(typeOf.Kind())
-// 		// 	// newitem := reflect.New(t)
-// 		// 	// newitem.Elem().FieldByName("Name").SetString("aaaa")
-// 		// }
-// 	}
-// 	// }
-// }
-
-// //ConnectDB function
-// func ConnectDB() *sql.DB {
-// 	var err error
-// 	connectionStr := "user=skyhubv3 password=skyhubv3 host=172.16.22.17 port=5434 dbname=skyhubv3 connect_timeout=3 sslmode=disable"
-// 	DB, err = sql.Open("postgres", connectionStr)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		fmt.Println("Reconnect database in 2 seconds")
-// 		time.Sleep(2 * time.Second)
-// 		return ConnectDB()
-// 	} else {
-// 		if err := DB.Ping(); err != nil {
-// 			fmt.Println(err)
-// 			fmt.Println("Reconnect database in 2 seconds")
-// 			time.Sleep(2 * time.Second)
-// 			return ConnectDB()
-// 		}
-// 	}
-
-// 	fmt.Println("Connected")
-
-// 	return DB
-// }
-
-// func init() {
-// 	DB = ConnectDB()
-// }
-
-// func main() {
-// 	query := NewQuery(DB)
-
-// 	var role models.Role
-// 	var v1, v2 int64
-// 	if err := query.Select("select id, code, name from role where name like $1 ", []interface{}{"%a%"}, &role, &v1, &v2); err != nil {
-// 		fmt.Println(err)
-// 	}
-
-// 	fmt.Println(role.Id, *role.Name, v1, v2)
-// 	defer DB.Close()
-// }

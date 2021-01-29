@@ -1,5 +1,5 @@
 {
-    "debug": true,
+    "debug": false,
     "authenticate": false,
 	"dbServer": "172.16.22.17",
     "dbPort": 5434,

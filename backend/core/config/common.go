@@ -11,10 +11,10 @@ type Configuration struct {
 	Debug          bool          `json:"debug"`
 	Authenticate   bool          `json:"authenticate"`
 	DBServer       string        `json:"dbServer"`
-	DBPort         string        `json:"dbPort"`
+	DBPort         int32         `json:"dbPort"`
 	DBName         string        `json:"dbName"`
-	DBTimeOut      int64         `json:"dbTimeOut"`
-	DBReconnect    int64         `json:"dbReconnect"`
+	DBTimeOut      int32         `json:"dbTimeOut"`
+	DBReconnect    int32         `json:"dbReconnect"`
 	DBUser         string        `json:"dbUser"`
 	DBPassword     string        `json:"dbPassword"`
 	PrivateKey     string        `json:"privateKey"`

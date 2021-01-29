@@ -3,7 +3,7 @@ package locale_resource
 import (
 	"sync"
 
-	"github.com/astaxie/beego/orm"
+	"suntech.com.vn/skygroup/db"
 	"suntech.com.vn/skygroup/errors"
 	"suntech.com.vn/skygroup/models"
 )
@@ -23,7 +23,6 @@ func (store *Store) Find(companyID int64, locale string) ([]models.LocaleResourc
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
 
-	o := orm.NewOrm()
 	langs := []models.LocaleResource{}
 
 	companyIDRef := &companyID
@@ -31,7 +30,8 @@ func (store *Store) Find(companyID int64, locale string) ([]models.LocaleResourc
 		companyIDRef = nil
 	}
 
-	if _, err := o.Raw("select * from find_language(?, ?)", &companyIDRef, locale).QueryRows(&langs); err != nil {
+	query := db.DefaultQuery()
+	if err := query.Select("SELECT * FROM find_language($1, $2)", []interface{}{&companyIDRef, locale}, &langs); err != nil {
 		return nil, errors.Error500(err)
 	}
 
