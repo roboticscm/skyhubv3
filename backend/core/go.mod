@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/astaxie/beego v1.12.3
+	github.com/cespare/reflex v0.3.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/golang/mock v1.4.4
 	github.com/golang/protobuf v1.4.3

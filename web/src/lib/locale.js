@@ -1,5 +1,7 @@
 import { isDebugMode } from './debug';
 import { StringUtil } from './string-util';
+import { RxHttp } from './rx-http';
+import { BaseUrl } from './constants';
 import { grpcLocaleResourceClient } from './grpc';
 
 import {
@@ -112,7 +114,7 @@ export const findLanguage = (companyId, locale) => {
 
   //   RxHttp.get({
   //     baseUrl: BaseUrl.SYSTEM,
-  //     url: initial ? 'locale-resource/get-initial' : 'locale-resource',
+  //     url: 'locale-resource',
   //     params: {
   //       companyId,
   //       locale,

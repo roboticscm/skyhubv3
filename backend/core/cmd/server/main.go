@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"time"
 
 	_ "github.com/lib/pq"
 	"suntech.com.vn/skygroup/cmd/server/server_helper"
@@ -13,9 +12,7 @@ import (
 	"suntech.com.vn/skygroup/db"
 	"suntech.com.vn/skygroup/jwt"
 	"suntech.com.vn/skygroup/keys"
-	"suntech.com.vn/skygroup/lib"
 	"suntech.com.vn/skygroup/logger"
-	"suntech.com.vn/skygroup/models"
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skygroup/services/authentication"
 	"suntech.com.vn/skygroup/services/locale_resource"
@@ -50,14 +47,15 @@ func init() {
 }
 func main() {
 
-	start := time.Now().UnixNano() / int64(time.Millisecond)
-	query := db.DefaultQuery()
-	var localeResources []models.LocaleResource
-	query.Select("select * from locale_resource", nil, &localeResources)
-	end1 := time.Now().UnixNano() / int64(time.Millisecond)
+	// start := time.Now().UnixNano() / int64(time.Millisecond)
+	// query := db.DefaultQuery()
+	// var localeResources []models.LocaleResource
+	// query.Select("select * from locale_resource", nil, &localeResources)
+	// end1 := time.Now().UnixNano() / int64(time.Millisecond)
 
-	lib.Print(false, localeResources)
-	fmt.Println(end1 - start)
+	// lib.Print(false, localeResources)
+	// fmt.Println(end1 - start)
+
 	port := flag.Int("port", 0, "Port to listen on")
 	mode := flag.String("mode", "", "Mode grpc or rest")
 	grpcEndPoint := flag.String("endpoint", "", "GRPC end point")
