@@ -88,5 +88,8 @@ mock-all:
 build:
 	go build cmd/server/main.go 
 
+wclient:
+	go run cmd/client/main.go -server 0.0.0.0:9090
+
 	
 	
