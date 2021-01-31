@@ -25,6 +25,7 @@ func NewService(jwtManager *jwt.JwtManager, store store.AuthStore) *Service {
 
 //LoginHandler function return *LoginResponse
 func (service *Service) LoginHandler(ctx context.Context, req *pt.LoginRequest) (*pt.LoginResponse, error) {
+
 	account, err := service.Store.Login(req.Username, req.Password)
 	if err != nil {
 		return nil, err
@@ -40,6 +41,11 @@ func (service *Service) LoginHandler(ctx context.Context, req *pt.LoginRequest) 
 	}
 
 	service.Store.UpdateFreshToken(account.Id, refreshToken)
+
+	//TODO add transaction
+	if err := ctx.Err(); err == context.DeadlineExceeded || err == context.Canceled {
+		return nil, err
+	}
 
 	return &pt.LoginResponse{
 		AccessToken:  accessToken,

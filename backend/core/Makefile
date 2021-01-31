@@ -91,5 +91,6 @@ build:
 wclient:
 	go run cmd/client/main.go -server 0.0.0.0:9090
 
-	
+client:
+	reflex -r '\.go' -s -- sh -c "go run cmd/client/main.go -server 127.0.0.1:9090"	
 	

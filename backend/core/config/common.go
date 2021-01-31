@@ -19,6 +19,7 @@ type Configuration struct {
 	DBPassword     string        `json:"dbPassword"`
 	PrivateKey     string        `json:"privateKey"`
 	JwtExpDuration time.Duration `json:"jwtExpDuration"`
+	CallTimeout    int32         `json:"callTimeout"`
 }
 
 //GlobalConfig store configuration globally
