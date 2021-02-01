@@ -1,9 +1,11 @@
 import { BaseUrl } from './constants';
 import { LocaleResourceServicePromiseClient } from "src/pt/proto/locale_resource/locale_resource_service_grpc_web_pb";
+import { AuthServicePromiseClient } from "src/pt/proto/auth/auth_service_grpc_web_pb";
 import { RoleServicePromiseClient } from "src/pt/proto/role/role_service_grpc_web_pb";
 import _ from 'lodash';
 
 export const grpcLocaleResourceClient = new LocaleResourceServicePromiseClient(BaseUrl.GRPC_CORE);
+export const grpcAuthClient = new AuthServicePromiseClient(BaseUrl.GRPC_CORE);
 export const grpcRoleClient = new RoleServicePromiseClient(BaseUrl.GRPC_CORE);
 
 export const protoFromObject = (ProtoClass, plain_obj) => {

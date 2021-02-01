@@ -4,9 +4,11 @@ import { RxHttp } from 'src/lib/rx-http';
 import { LoginInfo } from 'src/store/login-info';
 import MobileDetect from 'mobile-detect';
 
+
 export const init = () => {
   
   return new Promise((resolve, reject) => {
+
     findLanguage(-1, Browser.getLanguage())
       .then((res) => {
         console.log(res)

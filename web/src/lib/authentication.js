@@ -1,8 +1,15 @@
 import { RxHttp } from 'src/lib/rx-http';
 import { BaseUrl } from 'src/lib/constants';
 import { LoginInfo } from 'src/store/login-info';
+import { grpcAuthClient } from 'src/lib/grpc';
+
+import {
+  LoginRequest
+} from "src/pt/proto/auth/auth_service_pb";
+
 
 const axios = require('axios');
+export let defaultHeader = {};
 
 export class Authentication {
   static logout = () => {
@@ -50,7 +57,6 @@ export class Authentication {
       sessionStorage.setItem('refreshToken', refreshToken);
       sessionStorage.setItem('userId', userId);
     }
-
     window.location.replace('/');
   };
 
@@ -62,46 +68,38 @@ export class Authentication {
     return (token || '').length > 0;
   };
 
+
   static loginAPI = (username, password) => {
-    return new Promise((resolve, reject) => {
-      const auth = {
-        username: username,
-        password: password,
-      };
-      RxHttp.post({
-        baseUrl: BaseUrl.SYSTEM,
-        url: 'auth/login',
-        auth,
-      }).subscribe(
-        (res) => {
-          resolve(res.data);
-        },
-        (err) => {
-          reject(err);
-        },
-      );
-    });
+    const req = new LoginRequest();
+    req.setUsername(username);
+    req.setPassword(password);
+    return grpcAuthClient.loginHandler(req);
   };
 
   static logoutAPI = () => {
-    return new Promise((resolve, reject) => {
-      RxHttp.delete({
-        baseUrl: BaseUrl.SYSTEM,
-        url: `auth/logout?userId=${LoginInfo.getUserId()}`,
-      }).subscribe(
-        (res) => {
-          resolve(res.data);
-        },
-        (err) => {
-          reject(err);
-        },
-      );
-    });
+    return grpcAuthClient.logoutHandler(); 
+    // return new Promise((resolve, reject) => {
+    //   RxHttp.delete({
+    //     baseUrl: BaseUrl.SYSTEM,
+    //     url: `auth/logout?userId=${LoginInfo.getUserId()}`,
+    //   }).subscribe(
+    //     (res) => {
+    //       resolve(res.data);
+    //     },
+    //     (err) => {
+    //       reject(err);
+    //     },
+    //   );
+    // });
   };
 
   static setHeader = (token) => {
     axios.defaults.headers['Content-Type'] = 'application/json';
     axios.defaults.headers['Authorization'] = `Bearer ${token}`;
+
+    defaultHeader = {
+      authorization: 'Bearer ' + token,
+    }
   };
 
   static refreshAPI = (refreshToken) => {

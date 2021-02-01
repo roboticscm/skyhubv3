@@ -10,9 +10,9 @@ import (
 
 var (
 	publicMethods = map[string]bool{
-		"/AuthService/LoginHandler":             true,
-		"/AuthService/RefreshTokenHandler":      true,
-		"/LocaleResourceService/InitialHandler": true,
+		"/authentication.AuthService/LoginHandler":           true,
+		"/authentication.AuthService/RefreshTokenHandler":    true,
+		"/locale_resource.LocaleResourceService/FindHandler": true,
 	}
 )
 

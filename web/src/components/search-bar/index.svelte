@@ -41,6 +41,7 @@
     searching$.next(true);
     Authentication.loginAPI(username, password)
       .then((res) => {
+        res = res.toObject();
         if (res.accessToken) {
           if (remember) {
             localStorage.setItem('username', username);
@@ -52,6 +53,7 @@
         }
       })
       .catch((err) => {
+        console.log(err)
         searching$.next(false);
         snackbarRef && snackbarRef.show(T(`SYS.MSG.AUTHENTICATION_ERROR`));
       });

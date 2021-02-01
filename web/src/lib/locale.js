@@ -111,26 +111,6 @@ export const findLanguage = (companyId, locale) => {
       resolve(I18N);
     }).catch(err => reject(err));
   });
-
-  //   RxHttp.get({
-  //     baseUrl: BaseUrl.SYSTEM,
-  //     url: 'locale-resource',
-  //     params: {
-  //       companyId,
-  //       locale,
-  //     },
-  //   }).subscribe(
-  //     (res) => {
-  //       I18N = res.data;
-  //       console.log(I18N)
-  //       convertLocaleResource();
-  //       resolve(res.data);
-  //     },
-  //     (err) => {
-  //       reject(err);
-  //     },
-  //   );
-  // });
 };
 
 const defaultValue = (key) => {

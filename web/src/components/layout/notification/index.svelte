@@ -275,7 +275,7 @@
       <div class="message-modal__body__content__image">
         {#if item.messageType === 'SUBMIT'}
           {#if item.isCancel}
-            <item className="large-svg-icon" />
+            <CancelSubmitIcon className="large-svg-icon" />
           {:else}
             <SubmitIcon className="large-svg-icon" />
           {/if}

@@ -4,12 +4,21 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 	"time"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/status"
+	"suntech.com.vn/skygroup/client"
 	"suntech.com.vn/skygroup/config"
 	"suntech.com.vn/skygroup/pt"
+)
+
+var (
+	publicMethods = map[string]bool{
+		"/authentication.AuthService/LoginHandler":              true,
+		"/authentication.AuthService/RefreshTokenHandler":       true,
+		"/locale_resource.LocaleResourceService/InitialHandler": true,
+	}
 )
 
 func init() {
@@ -29,19 +38,31 @@ reconnect:
 	}
 
 	defer conn.Close()
-	authServiceClient := pt.NewAuthServiceClient(conn)
-	req := pt.LoginRequest{
-		Username: "root",
-		Password: "2019",
-	}
+	clientAuth := client.NewAuthClient(conn, "root", "2019")
+	accessToken, refreshToken, err := clientAuth.Login()
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.GlobalConfig.CallTimeout)*time.Second)
-	defer cancel()
-	res, err := authServiceClient.LoginHandler(ctx, &req)
 	if err != nil {
-		st, _ := status.FromError(err)
-		fmt.Println(st.Code(), st.Message(), st.Details(), err)
+		log.Fatal(err)
 	}
 
-	fmt.Println(res)
+	interceptor, err := client.NewAuthInterceptor(clientAuth, publicMethods, refreshToken, 30)
+
+	fmt.Println(accessToken, refreshToken, interceptor, err)
+reconnect2:
+	conn2, err := grpc.Dial(*serverAddress, grpc.WithInsecure(), grpc.WithUnaryInterceptor(interceptor.Unary()))
+	if err != nil {
+		fmt.Printf("Cannot connect to gRPC server: %v\n", err)
+		fmt.Printf("Try to reconnect in 2 seconds")
+		time.Sleep(2 * time.Second)
+		goto reconnect2
+	}
+
+	roleClient := pt.NewRoleServiceClient(conn2)
+	req := &pt.UpsertRoleRequest{
+		Code: "abc",
+		Name: "abcd",
+	}
+	res, err := roleClient.UpsertHandler(context.Background(), req)
+
+	fmt.Println(res, err)
 }

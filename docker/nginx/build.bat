@@ -1,0 +1,1 @@
+docker build -t suntech/nginx -f ./Dockerfile .

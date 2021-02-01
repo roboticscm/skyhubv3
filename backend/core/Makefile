@@ -93,4 +93,6 @@ wclient:
 
 client:
 	reflex -r '\.go' -s -- sh -c "go run cmd/client/main.go -server 127.0.0.1:9090"	
+
+.PHONY: client
 	

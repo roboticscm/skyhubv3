@@ -1,0 +1,1 @@
+docker run --restart unless-stopped -v /Users/khailv/Desktop/www:/usr/share/nginx/html -p 80:80 suntech/nginx
