@@ -161,7 +161,7 @@ func (store *Store) RefreshToken(refreshToken string) (string, error) {
 		Username: &username,
 	}
 
-	newToken, err := jwt.JwtManagerInstance.Generate(true, account)
+	newToken, err := jwt.JwtManagerInstance.Generate(false, account)
 	if err != nil {
 		return "", errors.Unauthenticated
 	}

@@ -2,9 +2,10 @@ import { RxHttp } from 'src/lib/rx-http';
 import { BaseUrl } from 'src/lib/constants';
 import { LoginInfo } from 'src/store/login-info';
 import { grpcAuthClient } from 'src/lib/grpc';
+const empty = require('google-protobuf/google/protobuf/empty_pb');
 
 import {
-  LoginRequest
+  LoginRequest, RefreshTokenRequest
 } from "src/pt/proto/auth/auth_service_pb";
 
 
@@ -77,20 +78,8 @@ export class Authentication {
   };
 
   static logoutAPI = () => {
-    return grpcAuthClient.logoutHandler(); 
-    // return new Promise((resolve, reject) => {
-    //   RxHttp.delete({
-    //     baseUrl: BaseUrl.SYSTEM,
-    //     url: `auth/logout?userId=${LoginInfo.getUserId()}`,
-    //   }).subscribe(
-    //     (res) => {
-    //       resolve(res.data);
-    //     },
-    //     (err) => {
-    //       reject(err);
-    //     },
-    //   );
-    // });
+    const req = new empty.Empty();
+    return grpcAuthClient.logoutHandler(req, defaultHeader); 
   };
 
   static setHeader = (token) => {
@@ -103,22 +92,42 @@ export class Authentication {
   };
 
   static refreshAPI = (refreshToken) => {
-    console.log('Refreshing token!');
+    console.log('Refreshing token!', refreshToken);
+    const req = new RefreshTokenRequest();
+    req.setRefreshToken(refreshToken);
     return new Promise((resolve, reject) => {
-      RxHttp.post({
-        baseUrl: BaseUrl.SYSTEM,
-        url: 'auth/refresh-token',
-        params: { token: refreshToken },
-      }).subscribe((res) => {
-        if (!res.data.success) {
-          console.error('Login again');
-          resolve(false);
+      grpcAuthClient.refreshTokenHandler(req, defaultHeader).then((res) => {
+        res = res.toObject();
+        console.log(res);
+        if(!res.success) {
+          console.log('login again!');
+          resolve(res.success)
         } else {
-          const { token } = res.data;
-          Authentication.setAccessToken(token);
-          resolve(token);
+          const { accessToken } = res
+          Authentication.setAccessToken(accessToken);
+          resolve(accessToken)
         }
+      }).catch((err) => {
+        reject(err);
       });
     });
+   
+
+    // return new Promise((resolve, reject) => {
+    //   RxHttp.post({
+    //     baseUrl: BaseUrl.SYSTEM,
+    //     url: 'auth/refresh-token',
+    //     params: { token: refreshToken },
+    //   }).subscribe((res) => {
+    //     if (!res.data.success) {
+    //       console.error('Login again');
+    //       resolve(false);
+    //     } else {
+    //       const { token } = res.data;
+    //       Authentication.setAccessToken(token);
+    //       resolve(token);
+    //     }
+    //   });
+    // });
   };
 }

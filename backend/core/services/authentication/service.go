@@ -2,6 +2,7 @@ package authentication
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/protobuf/types/known/emptypb"
 	"suntech.com.vn/skygroup/jwt"
@@ -35,7 +36,7 @@ func (service *Service) LoginHandler(ctx context.Context, req *pt.LoginRequest) 
 	if accessTokenErr != nil {
 		return nil, accessTokenErr
 	}
-	refreshToken, refreshTokenErr := service.jwtManager.Generate(false, account)
+	refreshToken, refreshTokenErr := service.jwtManager.Generate(true, account)
 	if refreshTokenErr != nil {
 		return nil, refreshTokenErr
 	}
@@ -72,6 +73,7 @@ func (service *Service) RefreshTokenHandler(ctx context.Context, req *pt.Refresh
 
 //LogoutHandler function
 func (service *Service) LogoutHandler(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+	fmt.Println("???")
 	userID, err := jwt.GetUserID(ctx)
 	if err != nil {
 		return nil, err
