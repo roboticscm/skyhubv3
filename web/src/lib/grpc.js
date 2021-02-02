@@ -3,6 +3,7 @@ import { LocaleResourceServicePromiseClient } from "src/pt/proto/locale_resource
 import { AuthServicePromiseClient } from "src/pt/proto/auth/auth_service_grpc_web_pb";
 import { RoleServicePromiseClient } from "src/pt/proto/role/role_service_grpc_web_pb";
 import _ from 'lodash';
+import { Authentication } from './authentication';
 
 export const grpcLocaleResourceClient = new LocaleResourceServicePromiseClient(BaseUrl.GRPC_CORE);
 export const grpcAuthClient = new AuthServicePromiseClient(BaseUrl.GRPC_CORE);
@@ -30,4 +31,22 @@ export const protoFromObject = (ProtoClass, plain_obj) => {
       }
     }
     return proto_obj;
+  }
+
+  export const callGRPC = (callBuilder) => {
+    return new Promise((resolve, reject) => {
+      callBuilder().then((res) => {
+        resolve(res);
+      }).catch( async (err) => {
+        console.log(err);
+        if (err.message === 'AUTH.MSG.VALIDATION_EXPIRED_ERROR') {
+          await Authentication.refreshAPI(Authentication.getRefreshToken());
+          resolve(callGRPC(callBuilder))
+        } else if (err.message === 'AUTH.MSG.NEED_LOGIN_ERROR') {
+          Authentication.forceLogout();
+        } else {
+          reject(err);
+        }
+      })
+    })
   }

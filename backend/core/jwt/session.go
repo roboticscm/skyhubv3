@@ -2,7 +2,6 @@ package jwt
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
@@ -34,8 +33,7 @@ func GetUserID(ctx context.Context) (int64, error) {
 	userClaims, err := GetUserClaims(ctx)
 
 	if err != nil {
-		fmt.Println(err)
-		return 0, errors.Unauthenticated
+		return 0, err
 	}
 
 	userID, _ := lib.ToInt64((*userClaims)["userId"])
@@ -46,7 +44,7 @@ func GetUserID(ctx context.Context) (int64, error) {
 func GetUserIDFromToken(token string) (int64, error) {
 	userClaims, err := GetUserClaimsFromToken(token)
 	if err != nil {
-		return 0, errors.Unauthenticated
+		return 0, err
 	}
 
 	return lib.ToInt64((*userClaims)["userId"])

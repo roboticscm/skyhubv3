@@ -11,32 +11,37 @@ import (
 	"suntech.com.vn/skygroup/errors"
 	"suntech.com.vn/skygroup/jwt"
 	"suntech.com.vn/skygroup/lib"
+	"suntech.com.vn/skygroup/logger"
 	"suntech.com.vn/skygroup/models"
 )
 
 //Store struct
 type Store struct {
 	mutex sync.RWMutex
+	query *db.Query
 }
 
 //NewStore return new store instance
 func NewStore() *Store {
-	return &Store{}
+	store := Store{}
+	store.query = db.DefaultQuery()
+	return &store
 }
 
 //Login return Account if username and password are correct
 func (store *Store) Login(username string, password string) (*models.Account, error) {
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
-	o := orm.NewOrm()
+	// o := orm.NewOrm()
 	accounts := []models.Account{}
 
 	sql := `
 		SELECT id, username, password FROM account
-		WHERE disabled = FALSE AND username = ?
+		WHERE disabled = FALSE AND username = $1
 	`
-	if _, err := o.Raw(sql, username).QueryRows(&accounts); err != nil {
-		return nil, err
+	if err := store.query.Select(sql, []interface{}{username}, &accounts); err != nil {
+		logger.Error(err)
+		return nil, errors.Error500(err)
 	}
 
 	if len(accounts) == 0 {
@@ -58,32 +63,58 @@ func (store *Store) Login(username string, password string) (*models.Account, er
 }
 
 //UpdateFreshToken function return refresh token record
-func (store *Store) UpdateFreshToken(userID int64, token string) (int64, error) {
-	o := orm.NewOrm()
+func (store *Store) UpdateFreshToken(userID int64, token string) error {
 	refreshTokens := []models.RefreshToken{}
 
 	sql := `
 		SELECT * FROM refresh_token
-		WHERE account_id = ?
+		WHERE account_id = $1
 	`
-	if _, err := o.Raw(sql, userID).QueryRows(&refreshTokens); err != nil {
-		return 0, status.Error(codes.Internal, "SYS.MSG.LOAD_TOKEN_ERROR")
+	if err := store.query.Select(sql, []interface{}{userID}, &refreshTokens); err != nil {
+		logger.Error(err)
+		return errors.Error500(err)
 	}
 
 	currentDateTime, _ := lib.GetCurrentMillis()
 	if len(refreshTokens) == 0 { // insert refresh token
-		refreshToken := models.RefreshToken{
-			Token:     &token,
-			AccountId: &userID,
-			CreatedAt: &currentDateTime,
+		// refreshToken := models.RefreshToken{
+		// 	Token:     &token,
+		// 	AccountId: &userID,
+		// 	CreatedAt: &currentDateTime,
+		// }
+		// _, err := store.query.Insert(refreshToken)
+
+		rt := []models.RefreshToken{
+			models.RefreshToken{
+				Token:     &token,
+				AccountId: &userID,
+				CreatedAt: &currentDateTime,
+			},
+			models.RefreshToken{
+				Token:     lib.AddrOfString("aaaa"),
+				AccountId: lib.AddrOfInt64(222),
+				CreatedAt: lib.AddrOfInt64(3333),
+			},
 		}
-		return o.Insert(&refreshToken)
+		_, err := store.query.Insert(rt)
+		if err != nil {
+			logger.Error(err)
+			return err
+		}
+		return nil
 	}
 	//Update refresh token
 	refreshToken := refreshTokens[0]
 	refreshToken.Token = &token
 	refreshToken.CreatedAt = &currentDateTime
-	return o.Update(&refreshToken)
+	_, err := store.query.Update(refreshToken)
+
+	if err != nil {
+		logger.Error(err)
+		return err
+	}
+
+	return nil
 }
 
 //ChangePassword function
@@ -100,6 +131,7 @@ func (store *Store) ChangePassword(userID int64, currentPassword string, newPass
 	`
 	encodedCurrentPassword := lib.EncodeSHA1Password(currentPassword)
 	if _, err := o.Raw(sql, userID, encodedCurrentPassword).QueryRows(&accounts); err != nil {
+		logger.Error(err)
 		return status.Error(codes.Internal, "SYS.MSG.LOAD_ACCOUNT_ERROR")
 	}
 
@@ -112,6 +144,7 @@ func (store *Store) ChangePassword(userID int64, currentPassword string, newPass
 	db.MakeUpdateWithID(userID, &account)
 	_, err := o.Update(&account)
 	if err != nil {
+		logger.Error(err)
 		return status.Error(codes.InvalidArgument, "SYS.MSG.UPDATE_NEW_PASSWORD_ERROR")
 	}
 
@@ -120,12 +153,12 @@ func (store *Store) ChangePassword(userID int64, currentPassword string, newPass
 
 //Logout function: Logout user with id from context
 func (store *Store) Logout(userID int64) error {
-	o := orm.NewOrm()
 	sql := `
 		DELETE FROM refresh_token
-		WHERE account_id = ?
+		WHERE account_id = $1
 	`
-	if _, err := o.Raw(sql, userID).Exec(); err != nil {
+	if err := store.query.Select(sql, []interface{}{userID}); err != nil {
+		logger.Error(err)
 		return err
 	}
 
@@ -135,22 +168,29 @@ func (store *Store) Logout(userID int64) error {
 //RefreshToken function return new token
 func (store *Store) RefreshToken(refreshToken string) (string, error) {
 	if refreshToken == "" {
-		return "", errors.Unauthenticated
+		logger.Error("Missing refresh token")
+		return "", errors.BadRequest
 	}
 
-	o := orm.NewOrm()
 	refreshTokens := []models.RefreshToken{}
 
 	sql := `
 		SELECT id FROM refresh_token
-		WHERE token = ?
+		WHERE token = $1
 	`
-	if _, err := o.Raw(sql, refreshToken).QueryRows(&refreshTokens); err != nil {
-		return "", err
+	if err := store.query.Select(sql, []interface{}{refreshToken}, &refreshTokens); err != nil {
+		logger.Error(err)
+		return "", errors.Error500(err)
+	}
+
+	if len(refreshTokens) == 0 {
+		logger.Error("Old refresh token not found")
+		return "", errors.NeedLogin
 	}
 
 	userClaims, err := jwt.GetUserClaimsFromToken(refreshToken)
 	if err != nil {
+		logger.Error(err)
 		return "", err
 	}
 
@@ -163,6 +203,7 @@ func (store *Store) RefreshToken(refreshToken string) (string, error) {
 
 	newToken, err := jwt.JwtManagerInstance.Generate(false, account)
 	if err != nil {
+		logger.Error(err)
 		return "", errors.Unauthenticated
 	}
 

@@ -29,9 +29,9 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZ
 
 PUT http://localhost:9091/auth/change-pw
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjkzNzc2MDc2MzAsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJyb290IiwiZnVsbE5hbWUiOiJUT0RPLi4uIn0.xKlSPYS3E98BuNkJsZxTtjvSaBviDflffMaMexxV_WCGbY8ARy1iSTuPbXIwngXQml6u7gh6OCjkpMyygm8i_X135wgAp08g541-_hh8CdgiZe5CJTx3u0Oqr6vvx1ibPiKHNeBmkVZ_OpjyCWGdiAco1QBzqGWTNDv7DIh83CM
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTIyMzAxODgsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJyb290IiwiZnVsbE5hbWUiOiJUT0RPLi4uIn0.Y_MBIfkwRw-h4jhuEfq9wD3HXT7_PDkRz8WgZuElmTZXQbxxZ0mHVakqjeqAJX5J0jFCGuf3_5c6YB_vvNTDdfB7NUBKWQarTz0XZ9_Vwo6SK0ZecgeRSBxtHeN4R0IAoraVgIqmdwv2TVrCXLYFnRDrJDb9T91sZdi-eiyyxG4
 
 {
-    "currentPassword": "2020",
+    "currentPassword": "2019",
     "newPassword": "2019"
 }

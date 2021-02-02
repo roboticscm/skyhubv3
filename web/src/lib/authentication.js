@@ -1,7 +1,7 @@
 import { RxHttp } from 'src/lib/rx-http';
 import { BaseUrl } from 'src/lib/constants';
 import { LoginInfo } from 'src/store/login-info';
-import { grpcAuthClient } from 'src/lib/grpc';
+import { grpcAuthClient, callGRPC } from 'src/lib/grpc';
 const empty = require('google-protobuf/google/protobuf/empty_pb');
 
 import {
@@ -12,6 +12,7 @@ import {
 const axios = require('axios');
 export let defaultHeader = {};
 
+
 export class Authentication {
   static logout = () => {
     Authentication.logoutAPI().then((res) => {
@@ -19,6 +20,13 @@ export class Authentication {
       localStorage.clear();
       window.location.replace('/');
     });
+  };
+
+  static forceLogout = () => {
+    console.log('????')
+    sessionStorage.clear();
+    localStorage.clear();
+    window.location.replace('/');
   };
 
   static getRefreshToken = () => {
@@ -77,9 +85,13 @@ export class Authentication {
     return grpcAuthClient.loginHandler(req);
   };
 
+
+
   static logoutAPI = () => {
     const req = new empty.Empty();
-    return grpcAuthClient.logoutHandler(req, defaultHeader); 
+    return callGRPC(() => {
+      return grpcAuthClient.logoutHandler(req, defaultHeader);
+    })
   };
 
   static setHeader = (token) => {
@@ -92,42 +104,25 @@ export class Authentication {
   };
 
   static refreshAPI = (refreshToken) => {
-    console.log('Refreshing token!', refreshToken);
+    console.log('Refreshing token!');
     const req = new RefreshTokenRequest();
     req.setRefreshToken(refreshToken);
-    return new Promise((resolve, reject) => {
-      grpcAuthClient.refreshTokenHandler(req, defaultHeader).then((res) => {
-        res = res.toObject();
-        console.log(res);
-        if(!res.success) {
-          console.log('login again!');
-          resolve(res.success)
-        } else {
-          const { accessToken } = res
-          Authentication.setAccessToken(accessToken);
-          resolve(accessToken)
-        }
-      }).catch((err) => {
-        reject(err);
-      });
+    return callGRPC(() => {
+      return new Promise((resolve, reject) => {
+        return grpcAuthClient.refreshTokenHandler(req, defaultHeader).then((res) => {
+          res = res.toObject();
+          if (!res.success) {
+            console.log('login again!');
+            resolve(res.success)
+          } else {
+            const { accessToken } = res
+            Authentication.setAccessToken(accessToken);
+            resolve(accessToken)
+          }
+        }).catch((err) => {
+          reject(err);
+        })
+      })
     });
-   
-
-    // return new Promise((resolve, reject) => {
-    //   RxHttp.post({
-    //     baseUrl: BaseUrl.SYSTEM,
-    //     url: 'auth/refresh-token',
-    //     params: { token: refreshToken },
-    //   }).subscribe((res) => {
-    //     if (!res.data.success) {
-    //       console.error('Login again');
-    //       resolve(false);
-    //     } else {
-    //       const { token } = res.data;
-    //       Authentication.setAccessToken(token);
-    //       resolve(token);
-    //     }
-    //   });
-    // });
-  };
+  }
 }

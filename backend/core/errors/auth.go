@@ -12,4 +12,6 @@ var (
 	BadRequest = status.Error(codes.InvalidArgument, "AUTH.MSG.INVALID_ARGUMENT_ERROR")
 	//Internal error
 	Internal = status.Error(codes.Internal, "AUTH.MSG.INTERNAL_ERROR")
+	//NeedLogin error
+	NeedLogin = status.Error(codes.Unauthenticated, "AUTH.MSG.NEED_LOGIN_ERROR")
 )

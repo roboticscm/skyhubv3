@@ -1,11 +1,10 @@
 package jwt
 
 import (
+	"errors"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"suntech.com.vn/skygroup/config"
 	"suntech.com.vn/skygroup/keys"
 	"suntech.com.vn/skygroup/models"
@@ -66,7 +65,14 @@ func (manager *JwtManager) Verify(token string) (*jwt.MapClaims, error) {
 	})
 
 	if err != nil {
-		return nil, status.Error(codes.Unauthenticated, "JWT.MSG.INVALID_TOKEN")
+		errorValue, _ := err.(*jwt.ValidationError)
+		switch errorValue.Errors {
+		case jwt.ValidationErrorExpired:
+			return nil, errors.New("AUTH.MSG.VALIDATION_EXPIRED_ERROR")
+		case jwt.ValidationErrorMalformed:
+			return nil, errors.New("AUTH.MSG.VALIDATION_MALFORMED_ERROR")
+		}
+		return nil, err
 	}
 	claims := j.Claims.(jwt.MapClaims)
 	return &claims, nil

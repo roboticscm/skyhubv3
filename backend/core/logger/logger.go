@@ -16,6 +16,22 @@ func Info(obj ...interface{}) {
 	}
 }
 
+//Error function
+func Error(obj ...interface{}) {
+	if len(obj) == 2 {
+		log.Printf("%v: %v\n", obj[0], obj[1])
+	} else if len(obj) == 1 {
+		log.Printf("%v\n", obj[0])
+	} else {
+		log.Printf("%v\n", obj)
+	}
+}
+
+//Errorf function
+func Errorf(format string, obj ...interface{}) {
+	log.Printf(format, obj...)
+}
+
 //Infof function
 func Infof(format string, obj ...interface{}) {
 	log.Printf(format, obj...)

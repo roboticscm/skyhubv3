@@ -2,10 +2,10 @@ package authentication
 
 import (
 	"context"
-	"fmt"
 
 	"google.golang.org/protobuf/types/known/emptypb"
 	"suntech.com.vn/skygroup/jwt"
+	"suntech.com.vn/skygroup/logger"
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skygroup/store"
 )
@@ -73,9 +73,9 @@ func (service *Service) RefreshTokenHandler(ctx context.Context, req *pt.Refresh
 
 //LogoutHandler function
 func (service *Service) LogoutHandler(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
-	fmt.Println("???")
 	userID, err := jwt.GetUserID(ctx)
 	if err != nil {
+		logger.Error(err)
 		return nil, err
 	}
 	return &emptypb.Empty{}, service.Store.Logout(userID)
