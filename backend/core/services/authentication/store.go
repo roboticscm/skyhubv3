@@ -77,26 +77,26 @@ func (store *Store) UpdateFreshToken(userID int64, token string) error {
 
 	currentDateTime, _ := lib.GetCurrentMillis()
 	if len(refreshTokens) == 0 { // insert refresh token
-		// refreshToken := models.RefreshToken{
-		// 	Token:     &token,
-		// 	AccountId: &userID,
-		// 	CreatedAt: &currentDateTime,
-		// }
-		// _, err := store.query.Insert(refreshToken)
-
-		rt := []models.RefreshToken{
-			models.RefreshToken{
-				Token:     &token,
-				AccountId: &userID,
-				CreatedAt: &currentDateTime,
-			},
-			models.RefreshToken{
-				Token:     lib.AddrOfString("aaaa"),
-				AccountId: lib.AddrOfInt64(222),
-				CreatedAt: lib.AddrOfInt64(3333),
-			},
+		refreshToken := models.RefreshToken{
+			Token:     &token,
+			AccountId: &userID,
+			CreatedAt: &currentDateTime,
 		}
-		_, err := store.query.Insert(rt)
+		_, err := store.query.Insert(refreshToken)
+
+		// rt := []models.RefreshToken{
+		// 	models.RefreshToken{
+		// 		Token:     &token,
+		// 		AccountId: &userID,
+		// 		CreatedAt: &currentDateTime,
+		// 	},
+		// 	models.RefreshToken{
+		// 		Token:     lib.AddrOfString("aaaa"),
+		// 		AccountId: lib.AddrOfInt64(222),
+		// 		CreatedAt: lib.AddrOfInt64(3333),
+		// 	},
+		// }
+		// _, err := store.query.Insert(rt)
 		if err != nil {
 			logger.Error(err)
 			return err

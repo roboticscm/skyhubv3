@@ -228,10 +228,6 @@ func getTableName(input interface{}) (string, error) {
 		inputValue = inputValue.Elem()
 	}
 
-	if inputValue.Kind() != reflect.Struct {
-		return "", fmt.Errorf("Not support %v", inputValue.Kind())
-	}
-
 	var sliceType reflect.Type
 	if inputValue.Kind() == reflect.Slice {
 		sliceType = inputValue.Type()
@@ -252,10 +248,6 @@ func getFieldListOfStruct(input interface{}) ([]string, error) {
 
 	if inputValue.Kind() == reflect.Ptr {
 		inputValue = inputValue.Elem()
-	}
-
-	if inputValue.Kind() != reflect.Struct {
-		return nil, fmt.Errorf("Not support %v", inputValue.Kind())
 	}
 
 	var sliceType reflect.Type
@@ -286,10 +278,6 @@ func getDataRows(input interface{}) ([]string, []interface{}, error) {
 		inputValue = inputValue.Elem()
 	}
 
-	if inputValue.Kind() != reflect.Struct {
-		return nil, nil, fmt.Errorf("Not support %v", inputValue.Kind())
-	}
-
 	var sliceType reflect.Type
 	if inputValue.Kind() == reflect.Slice {
 		sliceType = inputValue.Type()
@@ -299,17 +287,33 @@ func getDataRows(input interface{}) ([]string, []interface{}, error) {
 	if sliceType != nil {
 		structType = sliceType.Elem()
 	}
-
 	values := []interface{}{}
 	cols := []string{}
 	count := 1
-	for i := 0; i < structType.NumField(); i++ {
-		if structType.Field(i).Name != "Id" {
-			cols = append(cols, fmt.Sprintf("$%v", (count)))
-			count++
-			values = append(values, inputValue.Field(i).Interface())
-		}
 
+	if inputValue.Kind() == reflect.Slice {
+		for i := 0; i < inputValue.Len(); i++ {
+			param := "("
+			for j := 0; j < structType.NumField(); j++ {
+				if structType.Field(j).Name != "Id" {
+					param += fmt.Sprintf("$%v, ", (count))
+					count++
+					values = append(values, reflect.Indirect(inputValue.Index(i).Field(j)).Interface())
+				}
+			}
+			param = strings.TrimSuffix(param, ", ")
+			param += ")"
+			cols = append(cols, param)
+		}
+		return []string{strings.Join(cols, ", ")}, values, nil
+	} else {
+		for j := 0; j < structType.NumField(); j++ {
+			if structType.Field(j).Name != "Id" {
+				cols = append(cols, fmt.Sprintf("$%v", (count)))
+				count++
+				values = append(values, inputValue.Field(j).Interface())
+			}
+		}
+		return []string{"(" + strings.Join(cols, ", ") + ")"}, values, nil
 	}
-	return []string{"(" + strings.Join(cols, ", ") + ")"}, values, nil
 }
