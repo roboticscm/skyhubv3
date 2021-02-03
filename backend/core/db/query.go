@@ -291,6 +291,7 @@ func getDataRows(input interface{}) ([]string, []interface{}, error) {
 	cols := []string{}
 	count := 1
 
+	//TODO check if field is pointer or value
 	if inputValue.Kind() == reflect.Slice {
 		for i := 0; i < inputValue.Len(); i++ {
 			param := "("
