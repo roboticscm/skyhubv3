@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 
 	"github.com/dgrijalva/jwt-go"
-	"suntech.com.vn/skygroup/logger"
+	"suntech.com.vn/skylib/skylog.git/skylog"
 )
 
 const (
@@ -23,14 +23,14 @@ var (
 //LoadKeys function
 func LoadKeys(parentPath string) {
 	signBytes, err := ioutil.ReadFile(parentPath + "keys/" + privKeyPath)
-	logger.Fatal(err)
+	skylog.Fatal(err)
 
 	SignKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
-	logger.Fatal(err)
+	skylog.Fatal(err)
 
 	verifyBytes, err := ioutil.ReadFile(parentPath + "keys/" + pubKeyPath)
-	logger.Fatal(err)
+	skylog.Fatal(err)
 
 	VerifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
-	logger.Fatal(err)
+	skylog.Fatal(err)
 }

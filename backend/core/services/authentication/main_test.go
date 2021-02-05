@@ -6,9 +6,9 @@ import (
 
 	_ "github.com/lib/pq"
 	"suntech.com.vn/skygroup/cmd/server/test_helper"
-	"suntech.com.vn/skygroup/jwt"
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skygroup/services/authentication"
+	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 var (
@@ -16,8 +16,8 @@ var (
 )
 
 func init() {
-	jwt.JwtManagerInstance = jwt.NewJwtManager()
-	serviceInstance := authentication.NewService(jwt.JwtManagerInstance, store)
+	skyutl.JwtManagerInstance = skyutl.NewJwtManager()
+	serviceInstance := authentication.NewService(skyutl.JwtManagerInstance, store)
 	test_helper.InitServer("../../", pt.RegisterAuthServiceServer, pt.RegisterAuthServiceHandlerFromEndpoint, serviceInstance)
 }
 

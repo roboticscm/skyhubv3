@@ -3,11 +3,9 @@ package role
 import (
 	"sync"
 
-	"github.com/astaxie/beego/orm"
-	"suntech.com.vn/skygroup/db"
-	"suntech.com.vn/skygroup/errors"
-	"suntech.com.vn/skygroup/lib"
 	"suntech.com.vn/skygroup/models"
+	"suntech.com.vn/skylib/skydba.git/skydba"
+	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 //Store struct
@@ -25,64 +23,62 @@ func (store *Store) Upsert(userID int64, input models.Role) (*models.Role, error
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
 
-	o := orm.NewOrm()
+	query := skydba.DefaultQuery()
 	if input.Id != 0 {
 		if input.Code != nil {
-			isDuplicated, _ := db.IsTextValueDuplicated("role", "code", *input.Code, input.Id)
+			isDuplicated, _ := skydba.IsTextValueDuplicated("role", "code", *input.Code, input.Id)
 			if isDuplicated {
-				return nil, errors.DuplicatedError("code")
+				return nil, skyutl.DuplicatedError("code")
 			}
 		}
 
-		isDuplicated, _ := db.IsTextValueDuplicated("role", "name", *input.Name, input.Id)
+		isDuplicated, _ := skydba.IsTextValueDuplicated("role", "name", *input.Name, input.Id)
 		if isDuplicated {
-			return nil, errors.DuplicatedError("name")
+			return nil, skyutl.DuplicatedError("name")
 		}
 
 		role := models.Role{Id: input.Id}
-		err := o.Read(&role)
-		if err != nil {
-			return nil, errors.Error500(err)
-		}
-		role.Code = input.Code
-		role.Name = input.Name
-		role.Sort = input.Sort
-		*role.OrgId, _ = lib.ToInt64(input.OrgId)
-		db.MakeUpdateWithID(userID, &role)
-		if _, err := o.Update(&role); err != nil {
-			return nil, err
-		}
+		// TODO change new lib
+		// err := o.Read(&role)
+		// if err != nil {
+		// 	return nil, errors.Error500(err)
+		// }
+		// role.Code = input.Code
+		// role.Name = input.Name
+		// role.Sort = input.Sort
+		// *role.OrgId, _ = lib.ToInt64(input.OrgId)
+		// db.MakeUpdateWithID(userID, &role)
+		// if _, err := o.Update(&role); err != nil {
+		// 	return nil, err
+		// }
 
-		if err := o.QueryTable("role").Filter("id", input.Id).One(&role); err != nil {
-			return nil, err
-		}
+		// if err := o.QueryTable("role").Filter("id", input.Id).One(&role); err != nil {
+		// 	return nil, err
+		// }
 
 		return &role, nil
 	}
 
 	if input.Code != nil {
-		isExisted, _ := db.IsTextValueExisted("role", "code", *input.Code)
+		isExisted, _ := skydba.IsTextValueExisted("role", "code", *input.Code)
 		if isExisted {
-			return nil, errors.ExistedError("code")
+			return nil, skyutl.ExistedError("code")
 		}
 	}
 
-	isExisted, _ := db.IsTextValueExisted("role", "name", *input.Name)
+	isExisted, _ := skydba.IsTextValueExisted("role", "name", *input.Name)
 	if isExisted {
-		return nil, errors.ExistedError("name")
+		return nil, skyutl.ExistedError("name")
 	}
 	role := models.Role{Code: input.Code, Name: input.Name, Sort: input.Sort, OrgId: input.OrgId}
-	db.MakeInsertWithID(userID, &role)
+	skydba.MakeInsertWithID(userID, &role)
 
-	inserted, err := o.Insert(&role)
+	inserted, err := query.Insert(&role)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := o.QueryTable("role").Filter("id", inserted).One(&role); err != nil {
-		return nil, err
-	}
-
-	return &role, nil
+	ret := inserted.(models.Role)
+	return &ret, nil
 
 }

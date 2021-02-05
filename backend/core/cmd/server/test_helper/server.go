@@ -7,10 +7,9 @@ import (
 
 	"suntech.com.vn/skygroup/cmd/server/server_helper"
 	"suntech.com.vn/skygroup/config"
-	"suntech.com.vn/skygroup/db"
-	"suntech.com.vn/skygroup/jwt"
 	"suntech.com.vn/skygroup/keys"
-	"suntech.com.vn/skygroup/logger"
+	"suntech.com.vn/skylib/skylog.git/skylog"
+	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 var (
@@ -20,18 +19,13 @@ var (
 //InitServer function
 func InitServer(parentPath string, grpcService interface{}, restService interface{}, serviceInstance interface{}) {
 	keys.LoadKeys(parentPath)
-	conf, err := config.LoadConfig(parentPath)
+	_, err := config.LoadConfig(parentPath)
 	if err != nil {
-		logger.Fatal("Common Config Error", err)
+		skylog.Fatal("Common Config Error", err)
 	}
-	// init dbBegooDB
-	beeGoDB := db.BeegoDB{}
-	beeGoDB.Init(conf)
-	// sync db -> Dangerous -> May lost your database
-	// beeGoDB.Sync()
 
 	//Set JwtManager global instance
-	jwt.JwtManagerInstance = jwt.NewJwtManager()
+	skyutl.JwtManagerInstance = skyutl.NewJwtManager()
 
 	//Add more service handle function
 	mapFunc["role.Service"] = map[string]interface{}{"grpc": grpcService, "rest": restService, "instance": serviceInstance}
@@ -52,11 +46,11 @@ func StartServer() {
 
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
-		logger.Fatal(err)
+		skylog.Fatal(err)
 	}
 
 	log.Printf("GRPC Server is running on port: %v", port)
-	go server_helper.StartGRPCServer(listener, jwt.JwtManagerInstance, mapFunc, services...)
+	go server_helper.StartGRPCServer(listener, skyutl.JwtManagerInstance, mapFunc, services...)
 
 	log.Printf("REST Server is running on port: %v", port+1)
 	address = fmt.Sprintf("0.0.0.0:%v", port+1)

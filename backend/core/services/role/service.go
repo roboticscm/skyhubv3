@@ -4,11 +4,10 @@ import (
 	"context"
 	"strings"
 
-	"suntech.com.vn/skygroup/jwt"
-	"suntech.com.vn/skygroup/lib"
 	"suntech.com.vn/skygroup/models"
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skygroup/store"
+	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 //Service struct
@@ -26,7 +25,7 @@ func NewService(store store.RoleStore) *Service {
 //UpsertHandler function
 func (service *Service) UpsertHandler(ctx context.Context, req *pt.UpsertRoleRequest) (*pt.UpsertRoleResponse, error) {
 	input := models.Role{}
-	if err := lib.ProtoToStruct(req, &input); err != nil {
+	if err := skyutl.ProtoToStruct(req, &input); err != nil {
 		return nil, err
 	}
 
@@ -38,14 +37,14 @@ func (service *Service) UpsertHandler(ctx context.Context, req *pt.UpsertRoleReq
 		*input.Name = strings.TrimSpace(*input.Name)
 	}
 
-	userID, _ := jwt.GetUserID(ctx)
+	userID, _ := skyutl.GetUserID(ctx)
 	res, err := service.Store.Upsert(userID, input)
 	if err != nil {
 		return nil, err
 	}
 
 	savedRole := pt.Role{}
-	if err := lib.StructToProto(res, &savedRole); err != nil {
+	if err := skyutl.StructToProto(res, &savedRole); err != nil {
 		return nil, err
 	}
 

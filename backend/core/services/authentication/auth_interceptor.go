@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"google.golang.org/grpc"
-	"suntech.com.vn/skygroup/jwt"
+	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 var (
@@ -18,11 +18,11 @@ var (
 
 //AuthInterceptor struct
 type AuthInterceptor struct {
-	jwtManager *jwt.JwtManager
+	jwtManager *skyutl.JwtManager
 }
 
 //NewAuthInterceptor function: create new AuthInterceptor
-func NewAuthInterceptor(jwtManager *jwt.JwtManager) *AuthInterceptor {
+func NewAuthInterceptor(jwtManager *skyutl.JwtManager) *AuthInterceptor {
 	return &AuthInterceptor{
 		jwtManager: jwtManager,
 	}
@@ -54,6 +54,6 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 		return nil
 	}
 
-	_, err := jwt.GetUserID(ctx)
+	_, err := skyutl.GetUserID(ctx)
 	return err
 }

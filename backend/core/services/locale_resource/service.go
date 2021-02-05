@@ -3,9 +3,9 @@ package locale_resource
 import (
 	"context"
 
-	"suntech.com.vn/skygroup/lib"
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skygroup/store"
+	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 //Service struct
@@ -28,7 +28,7 @@ func (service *Service) FindHandler(ctx context.Context, req *pt.FindLocaleResou
 	}
 
 	localeResources := []*pt.LocaleResourceResponseItem{}
-	if err := lib.StructToProto(langs, &localeResources); err != nil {
+	if err := skyutl.StructToProto(langs, &localeResources); err != nil {
 		return nil, err
 	}
 

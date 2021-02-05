@@ -6,9 +6,9 @@ import (
 
 	_ "github.com/lib/pq"
 	"suntech.com.vn/skygroup/cmd/server/test_helper"
-	"suntech.com.vn/skygroup/jwt"
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skygroup/services/role"
+	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 var (
@@ -16,7 +16,7 @@ var (
 )
 
 func init() {
-	jwt.JwtManagerInstance = jwt.NewJwtManager()
+	skyutl.JwtManagerInstance = skyutl.NewJwtManager()
 	serviceInstance := role.NewService(store)
 	test_helper.InitServer("../../", pt.RegisterRoleServiceServer, pt.RegisterRoleServiceHandlerFromEndpoint, serviceInstance)
 }

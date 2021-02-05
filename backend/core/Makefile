@@ -59,6 +59,7 @@ wgen-web:
 		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:${JS_OUT_DIR}
 
 both-server:
+	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
 	reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode both -endpoint 0.0.0.0:9090"
 
 wboth-server:

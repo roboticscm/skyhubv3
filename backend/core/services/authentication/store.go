@@ -4,27 +4,25 @@ import (
 	"crypto/subtle"
 	"sync"
 
-	"github.com/astaxie/beego/orm"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"suntech.com.vn/skygroup/db"
-	"suntech.com.vn/skygroup/errors"
-	"suntech.com.vn/skygroup/jwt"
-	"suntech.com.vn/skygroup/lib"
-	"suntech.com.vn/skygroup/logger"
+	"suntech.com.vn/skygroup/config"
 	"suntech.com.vn/skygroup/models"
+	"suntech.com.vn/skylib/skydba.git/skydba"
+	"suntech.com.vn/skylib/skylog.git/skylog"
+	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 //Store struct
 type Store struct {
 	mutex sync.RWMutex
-	query *db.Query
+	query *skydba.Query
 }
 
 //NewStore return new store instance
 func NewStore() *Store {
 	store := Store{}
-	store.query = db.DefaultQuery()
+	store.query = skydba.DefaultQuery()
 	return &store
 }
 
@@ -40,8 +38,8 @@ func (store *Store) Login(username string, password string) (*models.Account, er
 		WHERE disabled = FALSE AND username = $1
 	`
 	if err := store.query.Select(sql, []interface{}{username}, &accounts); err != nil {
-		logger.Error(err)
-		return nil, errors.Error500(err)
+		skylog.Error(err)
+		return nil, skyutl.Error500(err)
 	}
 
 	if len(accounts) == 0 {
@@ -54,7 +52,7 @@ func (store *Store) Login(username string, password string) (*models.Account, er
 
 	foundEncodedPassword := *accounts[0].Password
 
-	enterEncodedPassword := lib.EncodeSHA1Password(password)
+	enterEncodedPassword := skyutl.EncodeSHA1Password(password, config.GlobalConfig.PrivateKey)
 
 	if subtle.ConstantTimeCompare([]byte(foundEncodedPassword), []byte(enterEncodedPassword)) == 1 {
 		return &accounts[0], nil
@@ -71,11 +69,12 @@ func (store *Store) UpdateFreshToken(userID int64, token string) error {
 		WHERE account_id = $1
 	`
 	if err := store.query.Select(sql, []interface{}{userID}, &refreshTokens); err != nil {
-		logger.Error(err)
-		return errors.Error500(err)
+		skylog.Error(err)
+		return skyutl.Error500(err)
 	}
 
-	currentDateTime, _ := lib.GetCurrentMillis()
+	currentDateTime, _ := skydba.GetCurrentMillis()
+
 	if len(refreshTokens) == 0 { // insert refresh token
 		refreshToken := models.RefreshToken{
 			Token:     &token,
@@ -84,21 +83,8 @@ func (store *Store) UpdateFreshToken(userID int64, token string) error {
 		}
 		_, err := store.query.Insert(refreshToken)
 
-		// rt := []models.RefreshToken{
-		// 	models.RefreshToken{
-		// 		Token:     &token,
-		// 		AccountId: &userID,
-		// 		CreatedAt: &currentDateTime,
-		// 	},
-		// 	models.RefreshToken{
-		// 		Token:     lib.AddrOfString("aaaa"),
-		// 		AccountId: lib.AddrOfInt64(222),
-		// 		CreatedAt: lib.AddrOfInt64(3333),
-		// 	},
-		// }
-		// _, err := store.query.Insert(rt)
 		if err != nil {
-			logger.Error(err)
+			skylog.Error(err)
 			return err
 		}
 		return nil
@@ -110,7 +96,7 @@ func (store *Store) UpdateFreshToken(userID int64, token string) error {
 	_, err := store.query.Update(refreshToken)
 
 	if err != nil {
-		logger.Error(err)
+		skylog.Error(err)
 		return err
 	}
 
@@ -121,17 +107,16 @@ func (store *Store) UpdateFreshToken(userID int64, token string) error {
 func (store *Store) ChangePassword(userID int64, currentPassword string, newPassword string) error {
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
-	o := orm.NewOrm()
 	accounts := []models.Account{}
-
+	query := skydba.DefaultQuery()
 	sql := `
 		SELECT * FROM account
-		WHERE id = ?
-			AND password = ?
+		WHERE id = $1
+			AND password = $2
 	`
-	encodedCurrentPassword := lib.EncodeSHA1Password(currentPassword)
-	if _, err := o.Raw(sql, userID, encodedCurrentPassword).QueryRows(&accounts); err != nil {
-		logger.Error(err)
+	encodedCurrentPassword := skyutl.EncodeSHA1Password(currentPassword, config.GlobalConfig.PrivateKey)
+	if err := query.Select(sql, []interface{}{userID, encodedCurrentPassword}, &accounts); err != nil {
+		skylog.Error(err)
 		return status.Error(codes.Internal, "SYS.MSG.LOAD_ACCOUNT_ERROR")
 	}
 
@@ -140,11 +125,11 @@ func (store *Store) ChangePassword(userID int64, currentPassword string, newPass
 	}
 
 	account := accounts[0]
-	*account.Password = lib.EncodeSHA1Password(newPassword)
-	db.MakeUpdateWithID(userID, &account)
-	_, err := o.Update(&account)
-	if err != nil {
-		logger.Error(err)
+	*account.Password = skyutl.EncodeSHA1Password(newPassword, config.GlobalConfig.PrivateKey)
+	skydba.MakeUpdateWithID(userID, &account)
+
+	if _, err := query.Update(&account); err != nil {
+		skylog.Error(err)
 		return status.Error(codes.InvalidArgument, "SYS.MSG.UPDATE_NEW_PASSWORD_ERROR")
 	}
 
@@ -158,7 +143,7 @@ func (store *Store) Logout(userID int64) error {
 		WHERE account_id = $1
 	`
 	if err := store.query.Select(sql, []interface{}{userID}); err != nil {
-		logger.Error(err)
+		skylog.Error(err)
 		return err
 	}
 
@@ -168,8 +153,8 @@ func (store *Store) Logout(userID int64) error {
 //RefreshToken function return new token
 func (store *Store) RefreshToken(refreshToken string) (string, error) {
 	if refreshToken == "" {
-		logger.Error("Missing refresh token")
-		return "", errors.BadRequest
+		skylog.Error("Missing refresh token")
+		return "", skyutl.BadRequest
 	}
 
 	refreshTokens := []models.RefreshToken{}
@@ -179,32 +164,32 @@ func (store *Store) RefreshToken(refreshToken string) (string, error) {
 		WHERE token = $1
 	`
 	if err := store.query.Select(sql, []interface{}{refreshToken}, &refreshTokens); err != nil {
-		logger.Error(err)
-		return "", errors.Error500(err)
+		skylog.Error(err)
+		return "", skyutl.Error500(err)
 	}
 
 	if len(refreshTokens) == 0 {
-		logger.Error("Old refresh token not found")
-		return "", errors.NeedLogin
+		skylog.Error("Old refresh token not found")
+		return "", skyutl.NeedLogin
 	}
 
-	userClaims, err := jwt.GetUserClaimsFromToken(refreshToken)
+	userClaims, err := skyutl.GetUserClaimsFromToken(refreshToken)
 	if err != nil {
-		logger.Error(err)
+		skylog.Error(err)
 		return "", err
 	}
 
-	userID, _ := lib.ToInt64((*userClaims)["userId"])
+	userID, _ := skyutl.ToInt64((*userClaims)["userId"])
 	username := (*userClaims)["username"].(string)
-	account := &models.Account{
+	acc := skyutl.Account{
 		Id:       userID,
 		Username: &username,
 	}
 
-	newToken, err := jwt.JwtManagerInstance.Generate(false, account)
+	newToken, err := skyutl.JwtManagerInstance.Generate(false, acc, config.GlobalConfig.JwtExpDuration)
 	if err != nil {
-		logger.Error(err)
-		return "", errors.Unauthenticated
+		skylog.Error(err)
+		return "", skyutl.Unauthenticated
 	}
 
 	return newToken, nil

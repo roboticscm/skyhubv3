@@ -3,21 +3,23 @@ package authentication
 import (
 	"context"
 
+	"suntech.com.vn/skygroup/config"
+
 	"google.golang.org/protobuf/types/known/emptypb"
-	"suntech.com.vn/skygroup/jwt"
-	"suntech.com.vn/skygroup/logger"
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skygroup/store"
+	"suntech.com.vn/skylib/skylog.git/skylog"
+	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 //Service struct
 type Service struct {
 	Store      store.AuthStore
-	jwtManager *jwt.JwtManager
+	jwtManager *skyutl.JwtManager
 }
 
 //NewService function return new Service struct instance
-func NewService(jwtManager *jwt.JwtManager, store store.AuthStore) *Service {
+func NewService(jwtManager *skyutl.JwtManager, store store.AuthStore) *Service {
 	return &Service{
 		Store:      store,
 		jwtManager: jwtManager,
@@ -31,12 +33,15 @@ func (service *Service) LoginHandler(ctx context.Context, req *pt.LoginRequest) 
 	if err != nil {
 		return nil, err
 	}
-	// account := &models.Account{}
-	accessToken, accessTokenErr := service.jwtManager.Generate(false, account)
+	acc := skyutl.Account{
+		Id:       account.Id,
+		Username: account.Username,
+	}
+	accessToken, accessTokenErr := service.jwtManager.Generate(false, acc, config.GlobalConfig.JwtExpDuration)
 	if accessTokenErr != nil {
 		return nil, accessTokenErr
 	}
-	refreshToken, refreshTokenErr := service.jwtManager.Generate(true, account)
+	refreshToken, refreshTokenErr := service.jwtManager.Generate(true, acc, config.GlobalConfig.JwtExpDuration)
 	if refreshTokenErr != nil {
 		return nil, refreshTokenErr
 	}
@@ -73,9 +78,9 @@ func (service *Service) RefreshTokenHandler(ctx context.Context, req *pt.Refresh
 
 //LogoutHandler function
 func (service *Service) LogoutHandler(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
-	userID, err := jwt.GetUserID(ctx)
+	userID, err := skyutl.GetUserID(ctx)
 	if err != nil {
-		logger.Error(err)
+		skylog.Error(err)
 		return nil, err
 	}
 	return &emptypb.Empty{}, service.Store.Logout(userID)
@@ -83,7 +88,7 @@ func (service *Service) LogoutHandler(ctx context.Context, _ *emptypb.Empty) (*e
 
 //ChangePasswordHandler function
 func (service *Service) ChangePasswordHandler(ctx context.Context, req *pt.ChangePasswordRequest) (*emptypb.Empty, error) {
-	userID, err := jwt.GetUserID(ctx)
+	userID, err := skyutl.GetUserID(ctx)
 	if err != nil {
 		return nil, err
 	}

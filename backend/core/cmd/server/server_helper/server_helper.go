@@ -13,13 +13,13 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"suntech.com.vn/skygroup/config"
-	"suntech.com.vn/skygroup/jwt"
-	"suntech.com.vn/skygroup/logger"
 	"suntech.com.vn/skygroup/services/authentication"
+	"suntech.com.vn/skylib/skylog.git/skylog"
+	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 //StartGRPCServer function
-func StartGRPCServer(listener net.Listener, jwtManager *jwt.JwtManager, mapFunc map[string]map[string]interface{}, services ...interface{}) {
+func StartGRPCServer(listener net.Listener, jwtManager *skyutl.JwtManager, mapFunc map[string]map[string]interface{}, services ...interface{}) {
 	interceptor := authentication.NewAuthInterceptor(jwtManager)
 	var grpcServer *grpc.Server
 	if config.GlobalConfig.Authenticate {
@@ -29,7 +29,7 @@ func StartGRPCServer(listener net.Listener, jwtManager *jwt.JwtManager, mapFunc 
 		)
 	} else {
 		grpcServer = grpc.NewServer()
-		logger.Info("===> Becareful Server is running on Unauthentication mode")
+		skylog.Info("===> Becareful Server is running on Unauthentication mode")
 	}
 
 	for _, service := range services {
@@ -44,12 +44,12 @@ func StartGRPCServer(listener net.Listener, jwtManager *jwt.JwtManager, mapFunc 
 	}
 
 	if config.GlobalConfig.Debug {
-		logger.Info("===> Becareful Server is running on Refelection mode")
+		skylog.Info("===> Becareful Server is running on Refelection mode")
 		reflection.Register(grpcServer)
 	}
 
 	if err := grpcServer.Serve(listener); err != nil {
-		log.Fatal("Cannot serve grpc server: ", err)
+		skylog.Fatal("Cannot serve grpc server: ", err)
 	}
 }
 
