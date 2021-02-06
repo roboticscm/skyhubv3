@@ -1,7 +1,7 @@
 JS_OUT_DIR=../../web/src/pt
 WJS_OUT_DIR=..\..\web\src\pt
-DART_OUT_DIR=../../mobile/src/pt
-WDART_OUT_DIR=..\..\mobile\src\pt
+DART_OUT_DIR=../../mobile/lib/pt
+WDART_OUT_DIR=..\..\mobile\lib\pt
 
 OUT_DIR=pt
 ROOT_DOC_DIR=doc
@@ -65,7 +65,7 @@ gen-dart:
 	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_message.proto) \
 		-I. \
 		--dart_out=grpc:${DART_OUT_DIR} 
-	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_service.proto) google/api/annotations.proto google/api/http.proto \
+	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_service.proto) google/api/annotations.proto google/api/http.proto google/protobuf/empty.proto \
 		-I. \
 		--proto_path=${SOURCE_PROTO_DIR} \
 		--dart_out=grpc:${DART_OUT_DIR} 
@@ -76,7 +76,7 @@ wgen-dart:
 	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_message.proto) \
 		-I. \
 		--dart_out=grpc:${WDART_OUT_DIR} 
-	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_service.proto) google/api/annotations.proto google/api/http.proto \
+	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_service.proto) google/api/annotations.proto google/api/http.proto google/protobuf/empty.proto \
 		-I. \
 		--proto_path=${SOURCE_PROTO_DIR} \
 		--dart_out=grpc:${WDART_OUT_DIR} 

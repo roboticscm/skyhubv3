@@ -4,8 +4,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:grpc/grpc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skyone_mobile/modules/home/language.dart';
+import 'package:skyone_mobile/pt/proto/locale_resource/locale_resource_service.pbgrpc.dart';
 import 'package:skyone_mobile/the_app.dart';
 import 'package:skyone_mobile/theme/theme_controller.dart';
 import 'package:skyone_mobile/util/app.dart';
@@ -13,16 +15,28 @@ import 'package:skyone_mobile/util/global_functions.dart';
 import 'package:skyone_mobile/util/global_param.dart';
 import 'package:skyone_mobile/util/global_var.dart';
 import 'package:skyone_mobile/util/l10n.dart';
+import 'package:fixnum/fixnum.dart' as $fixnum;
 
 void main() async {
-  setupLocator();
-  WidgetsFlutterBinding.ensureInitialized();
-  App.storage = await SharedPreferences.getInstance();
-  GlobalParam.load();
-  final savedLocale = await getSavedLocale();
-  App.appInstance = Application(savedLocale);
-  await App.appInstance.firebaseMessaging.requestNotificationPermissions();
-  runApp(App.appInstance);
+  final channel = ClientChannel('172.16.30.17', port: 9090, options: const ChannelOptions(credentials: ChannelCredentials.insecure()));
+  final localeResourceClient = LocaleResourceServiceClient(channel);
+
+  final request = FindLocaleResourceRequest()..companyId=$fixnum.Int64(1) ..locale='vi-VN';
+  final res = await localeResourceClient.findHandler(request);
+  res.data.forEach((e) {
+    print("${e.category}, ${e.typeGroup}, ${e.key}, ${e.value}");
+  });
+
+
+
+//  setupLocator();
+//  WidgetsFlutterBinding.ensureInitialized();
+//  App.storage = await SharedPreferences.getInstance();
+//  GlobalParam.load();
+//  final savedLocale = await getSavedLocale();
+//  App.appInstance = Application(savedLocale);
+//  await App.appInstance.firebaseMessaging.requestNotificationPermissions();
+//  runApp(App.appInstance);
 }
 
 class Application extends StatelessWidget {

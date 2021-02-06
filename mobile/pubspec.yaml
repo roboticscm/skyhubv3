@@ -55,6 +55,8 @@ dependencies:
   flutter_libphonenumber: ^0.3.8
   email_validator: ^1.0.5
   intl: ^0.16.1
+  grpc: ^2.9.0
+  protobuf: ^1.1.1
 
 dev_dependencies:
   flutter_test:

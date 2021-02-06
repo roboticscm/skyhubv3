@@ -67,3 +67,4 @@ mobile/!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 mobile/pubspec.lock
 mobile/.metadata
 mobile/.packages
+mobile/lib/pt
