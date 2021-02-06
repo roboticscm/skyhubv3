@@ -8,6 +8,7 @@ yarn-error.log
 backend/core/yarn.locke
 backend/core/main
 backend/core/go.sum
+backend/core/go.mod
 database/~*.xlsx
 web/node_modules
 web/yarn.lock
@@ -16,3 +17,4 @@ backend/core/pt
 backend/core/doc
 web/src/pt
 www
+mobile

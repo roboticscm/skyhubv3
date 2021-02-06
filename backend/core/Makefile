@@ -1,5 +1,6 @@
 JS_OUT_DIR=../../web/src/pt
 WJS_OUT_DIR=..\..\web\src\pt
+WDART_OUT_DIR=..\..\mobile\src\pt
 
 OUT_DIR=pt
 ROOT_DOC_DIR=doc
@@ -57,18 +58,35 @@ wgen-web:
 		--proto_path=${SOURCE_PROTO_DIR} \
 		--js_out=import_style=commonjs,binary:${JS_OUT_DIR} \
 		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:${JS_OUT_DIR}
+wgen-dart:
+	if exist ${WDART_OUT_DIR} rd /q /s ${WDART_OUT_DIR}
+	mkdir ${WDART_OUT_DIR}
+	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_message.proto) \
+		-I. \
+		--dart_out=grpc:${WDART_OUT_DIR} 
+	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_service.proto) google/api/annotations.proto google/api/http.proto \
+		-I. \
+		--proto_path=${SOURCE_PROTO_DIR} \
+		--dart_out=grpc:${WDART_OUT_DIR} 
 
 both-server:
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
+	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
 	reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode both -endpoint 0.0.0.0:9090"
 
 wboth-server:
+	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
+	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
 	go run cmd/server/main.go -port 9090 -mode both -endpoint 0.0.0.0:9090
 
 grpc-server:
+	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
+	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
 	reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode grpc"
 
 rest-server:
+	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
+	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
 	reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9091 -mode rest -endpoint 0.0.0.0:9090"
 
 test-auth:
