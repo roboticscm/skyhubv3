@@ -1,5 +1,6 @@
 JS_OUT_DIR=../../web/src/pt
 WJS_OUT_DIR=..\..\web\src\pt
+DART_OUT_DIR=../../mobile/src/pt
 WDART_OUT_DIR=..\..\mobile\src\pt
 
 OUT_DIR=pt
@@ -58,6 +59,17 @@ wgen-web:
 		--proto_path=${SOURCE_PROTO_DIR} \
 		--js_out=import_style=commonjs,binary:${JS_OUT_DIR} \
 		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:${JS_OUT_DIR}
+gen-dart:
+	rm -Rf  ${DART_OUT_DIR}
+	mkdir -p ${DART_OUT_DIR}
+	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_message.proto) \
+		-I. \
+		--dart_out=grpc:${DART_OUT_DIR} 
+	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_service.proto) google/api/annotations.proto google/api/http.proto \
+		-I. \
+		--proto_path=${SOURCE_PROTO_DIR} \
+		--dart_out=grpc:${DART_OUT_DIR} 
+
 wgen-dart:
 	if exist ${WDART_OUT_DIR} rd /q /s ${WDART_OUT_DIR}
 	mkdir ${WDART_OUT_DIR}
@@ -113,5 +125,4 @@ wclient:
 client:
 	reflex -r '\.go' -s -- sh -c "go run cmd/client/main.go -server 127.0.0.1:9090"	
 
-.PHONY: client
-	
+.PHONY: client gen-dart
