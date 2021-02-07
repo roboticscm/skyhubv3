@@ -13,6 +13,7 @@ import (
 	"suntech.com.vn/skygroup/services/authentication"
 	"suntech.com.vn/skygroup/services/locale_resource"
 	"suntech.com.vn/skygroup/services/role"
+	"suntech.com.vn/skygroup/services/user_settings"
 	"suntech.com.vn/skylib/skydba.git/skydba"
 	"suntech.com.vn/skylib/skylog.git/skylog"
 	"suntech.com.vn/skylib/skyutl.git/skyutl"
@@ -37,6 +38,7 @@ func init() {
 	mapFunc["authentication.Service"] = map[string]interface{}{"grpc": pt.RegisterAuthServiceServer, "rest": pt.RegisterAuthServiceHandlerFromEndpoint, "instance": authentication.NewService(skyutl.JwtManagerInstance, authentication.NewStore())}
 	mapFunc["locale_resource.Service"] = map[string]interface{}{"grpc": pt.RegisterLocaleResourceServiceServer, "rest": pt.RegisterLocaleResourceServiceHandlerFromEndpoint, "instance": locale_resource.NewService(locale_resource.NewStore())}
 	mapFunc["role.Service"] = map[string]interface{}{"grpc": pt.RegisterRoleServiceServer, "rest": pt.RegisterRoleServiceHandlerFromEndpoint, "instance": role.NewService(role.NewStore())}
+	mapFunc["user_settings.Service"] = map[string]interface{}{"grpc": pt.RegisterUserSettingsServiceServer, "rest": pt.RegisterUserSettingsServiceHandlerFromEndpoint, "instance": user_settings.NewService(user_settings.NewStore())}
 }
 func main() {
 

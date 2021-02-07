@@ -22,3 +22,8 @@ type LocaleResourceStore interface {
 type RoleStore interface {
 	Upsert(userID int64, input models.Role) (*models.Role, error)
 }
+
+//UserSettingsStore interface
+type UserSettingsStore interface {
+	FindInitial(userID int64) (*models.InitialUserSetting, error)
+}

@@ -9,6 +9,6 @@
 	"dbUser": "skyhubv3",
     "dbPassword": "skyhubv3",
     "privateKey": "Skyhub@010116",
-    "jwtExpDuration": 15,
+    "jwtExpDuration": 60,
     "callTimeout": 5
 }

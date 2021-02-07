@@ -1,0 +1,23 @@
+GET http://localhost:9091/user-settings/initial
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTg2NjkwOTMsImZ1bGxOYW1lIjoiLy9UT0RPIiwidXNlcklkIjoiMSIsInVzZXJuYW1lIjoicm9vdCJ9.gK3MGdqS1o2MoPg7EES4JS-wlUD-qDq4A3JjT5G6LRf_pBs6LtqwmEcAgUa1DT4mYuiBGZbr098tphkbazI5mNpifRi7WAolqwwOBJUfyDzNdv81BOrlHwdduAX2MUQrM6LQUUMmfTbU86LjceSvCWo5E-j_pxg7HKQ46TVOjvE
+
+###
+
+POST http://localhost:9091/user-settings
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJGdWxsTmFtZSI6Ii8vVE9ETyIsIlVzZXJJZCI6IjEiLCJVc2VyTmFtZSI6InJvb3QiLCJleHAiOjE2MTY2NzE1NDl9.fztQxgrU81oBUIfOoajSiFLinnnEZMc7yaMG4gz83W9a2ycyBHXuhTamuteIRD2aYtJ58kblyhcjfvsIm0TzjLq8ArSWJ6Ug8q0IhcgM2zba5pjrqCBbdpDJc49mA0EX6pvijB8fLawjpp9Nvu3satMJza3_Mp-IgCPajEB2qR8
+
+{
+    "branchId": 3,
+    "menuPath": "system/role",
+    "elementId": "configModalRole",
+    "keys": ["left", "top"],
+    "values": ["200px", "200px"]
+}
+ 
+### 
+GET http://localhost:9091/user-settings?elementId=userProfilesModalId&keys=left,top
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJGdWxsTmFtZSI6Ii8vVE9ETyIsIlVzZXJJZCI6IjEiLCJVc2VyTmFtZSI6InJvb3QiLCJleHAiOjE2MTY2NzE1NDl9.fztQxgrU81oBUIfOoajSiFLinnnEZMc7yaMG4gz83W9a2ycyBHXuhTamuteIRD2aYtJ58kblyhcjfvsIm0TzjLq8ArSWJ6Ug8q0IhcgM2zba5pjrqCBbdpDJc49mA0EX6pvijB8fLawjpp9Nvu3satMJza3_Mp-IgCPajEB2qR8
+

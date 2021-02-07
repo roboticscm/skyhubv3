@@ -215,7 +215,7 @@ class _LoginPageState extends State<LoginPage> {
                         autocorrect: false,
                         decoration: InputDecoration(
                           errorText: snapshot.data,
-                          labelText: LR.l10n('PORTAL.LABEL.USERNAME'),
+                          labelText: LR.l10n('SYS.LABEL.USERNAME'),
                         ),
                         controller: _usernameController,
                       );
@@ -227,7 +227,7 @@ class _LoginPageState extends State<LoginPage> {
                         autocorrect: false,
                         decoration: InputDecoration(
                             errorText: snapshot.data,
-                            labelText: LR.l10n('PORTAL.LABEL.PASSWORD'),
+                            labelText: LR.l10n('SYS.LABEL.PASSWORD'),
                             suffixIcon: InkWell(
                               onTap: () {
                                 setState(() {
@@ -245,7 +245,7 @@ class _LoginPageState extends State<LoginPage> {
                       _rememberLogin = value;
                     },
                     checked: _rememberLogin,
-                    text: LR.l10n('PORTAL.LABEL.REMEMBER_ME')),
+                    text: LR.l10n('SYS.LABEL.REMEMBER')),
                 StreamBuilder<Object>(
                     stream: _loginValidation.loginStream,
                     builder: (context, snapshot) {
@@ -263,15 +263,15 @@ class _LoginPageState extends State<LoginPage> {
                               const SizedBox(
                                 width: 10,
                               ),
-                            if (isLoggingIn) Text(LR.l10n('PORTAL.BUTTON.CANCEL_LOGIN'), style: TextStyle(color: textColor),),
-                            if (!isLoggingIn) Text(LR.l10n('PORTAL.BUTTON.LOGIN'), style: TextStyle(color: textColor),),
+                            if (isLoggingIn) Text(LR.l10n('SYS.BUTTON.CANCEL_LOGIN'), style: TextStyle(color: textColor),),
+                            if (!isLoggingIn) Text(LR.l10n('SYS.BUTTON.LOGIN'), style: TextStyle(color: textColor),),
                           ],
                         ),
                       );
                     }),
                 FlatButton(
                   onPressed: () {},
-                  child: Text(LR.l10n('PORTAL.BUTTON.FORGOT_PASSWORD?')),
+                  child: Text(LR.l10n('SYS.BUTTON.FORGOT_PASSWORD') + '?'),
                 ),
                 SizedBox(
                   width: double.infinity,
@@ -282,7 +282,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Center(child: Text("PORTAL.BUTTON.OTHER_LOGIN_METHOD".t(), style: TextStyle(color: textColor),)),
+                        Center(child: Text("SYS.BUTTON.OTHER_LOGIN_METHOD".t(), style: TextStyle(color: textColor),)),
                         Icon(
                           Icons.arrow_forward_ios,
                           size: 12,
@@ -327,7 +327,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SFlatButton(
-                    text: 'PORTAL.BUTTON.GOOGLE'.t(),
+                    text: 'SYS.BUTTON.GOOGLE'.t(),
                     icon: const Icon(
                       FontAwesomeIcons.google,
                       color: Colors.red,
@@ -349,7 +349,7 @@ class _LoginPageState extends State<LoginPage> {
                     },
                   ),
                   SFlatButton(
-                    text: 'PORTAL.BUTTON.FACEBOOK'.t(),
+                    text: 'SYS.BUTTON.FACEBOOK'.t(),
                     icon: const Icon(
                       FontAwesomeIcons.facebook,
                       color: Colors.blue,
@@ -371,7 +371,7 @@ class _LoginPageState extends State<LoginPage> {
                     },
                   ),
                   SFlatButton(
-                    text: 'PORTAL.BUTTON.ZALO'.t(),
+                    text: 'SYS.BUTTON.ZALO'.t(),
                     icon: Image.asset('assets/zalo.jpeg', width: 26, height: 26),
                     onPressed: () async {
                       Navigator.pop(context);
@@ -380,7 +380,7 @@ class _LoginPageState extends State<LoginPage> {
                     },
                   ),
                   SFlatButton(
-                    text: 'PORTAL.BUTTON.APPLE'.t(),
+                    text: 'SYS.BUTTON.APPLE'.t(),
                     icon: const Icon(
                       FontAwesomeIcons.apple,
                     ),

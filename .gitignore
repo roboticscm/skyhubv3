@@ -7,8 +7,10 @@ yarn-error.log
 .vscode
 backend/core/yarn.locke
 backend/core/main
+backend/core/main.exe
 backend/core/go.sum
 backend/core/go.mod
+backend/core/mockdb
 database/~*.xlsx
 web/node_modules
 web/yarn.lock

@@ -23,7 +23,6 @@ export class Authentication {
   };
 
   static forceLogout = () => {
-    console.log('????')
     sessionStorage.clear();
     localStorage.clear();
     window.location.replace('/');

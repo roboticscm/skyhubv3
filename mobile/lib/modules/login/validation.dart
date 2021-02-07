@@ -13,7 +13,7 @@ class LoginValidation {
   Stream<String> get usernameStream =>
       _usernameSubject.stream.transform(StreamTransformer<String, String>.fromHandlers(handleData: (username, sink) {
         if ((username?.length ?? 0) < 1) {
-          sink.add(LR.l10n('PORTAL.MSG.USERNAME_MUST_NOT_EMPTY'));
+          sink.add(LR.l10n('SYS.MSG.USERNAME_MUST_NOT_EMPTY'));
         } else {
           sink.add(null);
         }
@@ -23,7 +23,7 @@ class LoginValidation {
   Stream<String> get passwordStream =>
       _passwordSubject.stream.transform(StreamTransformer<String, String>.fromHandlers(handleData: (password, sink) {
         if ((password?.length ?? 0) < 1) {
-          sink.add(LR.l10n('PORTAL.MSG.PASSWORD_MUST_NOT_EMPTY'));
+          sink.add(LR.l10n('SYS.MSG.PASSWORD_MUST_NOT_EMPTY'));
         } else {
           sink.add(null);
         }

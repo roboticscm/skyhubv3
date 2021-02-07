@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package user_settings;
+
+option go_package = ".;pt";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+// import "proto/user_settings/user_settings_message.proto";
+
+message FindInitialUserSettingsResponse {
+    int64 company_id = 1 [ jstype = JS_STRING];
+    string company_name = 2;
+    int64 branch_id = 3 [jstype = JS_STRING];
+    string branch_name = 4;
+    string locale = 5;
+    string theme = 6;
+    int64 department_id =7 [jstype = JS_STRING];
+    string menu_path = 8;
+}
+
+service UserSettingsService {
+  rpc findInitialHandler(google.protobuf.Empty) returns (FindInitialUserSettingsResponse) {
+    option (google.api.http) = {
+      get : "/user-settings/initial"
+    };
+  };
+}

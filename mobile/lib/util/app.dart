@@ -9,5 +9,6 @@ class App {
   static SharedPreferences storage;
   static int languageIndex = 0;
   static Application appInstance;
+  static BuildContext homeContext;
   static String fcmToken;
 }

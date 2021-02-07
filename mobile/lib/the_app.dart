@@ -20,6 +20,10 @@ import 'package:skyone_mobile/util/locale_resource.dart';
 import 'package:skyone_mobile/extension/string.dart';
 import 'package:skyone_mobile/widgets/stab_bar.dart';
 import 'package:skyone_mobile/widgets/tab_bar_item.dart';
+import 'package:skyone_mobile/pt/proto/auth/auth_service.pbgrpc.dart';
+import 'package:skyone_mobile/grpc//helper.dart';
+import 'package:skyone_mobile/grpc//service_url.dart';
+import 'package:skyone_mobile/pt/google/protobuf/empty.pb.dart' as protobuf;
 
 class TheApp extends StatelessWidget {
 //  final TheAppController _theAppController = Get.put(TheAppController());
@@ -128,11 +132,11 @@ class TheApp extends StatelessWidget {
     } else if (appStatus is EntryStatus) {
       return EntryPage();
     } else if (appStatus is LoginStatus) {
-      return LoginPage();
+      return const LoginPage();
     } else if (appStatus is LoginWithCustomerStatus) {
       return LoginPage(
-        companyId: (appStatus as LoginWithCustomerStatus).companyId,
-        nodeId: (appStatus as LoginWithCustomerStatus).nodeId,
+        companyId: appStatus.companyId,
+        nodeId: appStatus.nodeId,
       );
     } else {
       if (_selectedIndex$.value == 0) {
@@ -183,7 +187,7 @@ class TheApp extends StatelessWidget {
             leading: const Icon(Icons.exit_to_app),
             title: Text(LR.l10n('PORTAL.BUTTON.LOGOUT')),
             onTap: () {
-              _logout(context);
+              logout(context);
             },
           ),
         ],
@@ -191,7 +195,16 @@ class TheApp extends StatelessWidget {
     );
   }
 
-  void _logout(BuildContext context) async {
+  static void logout(BuildContext context) async {
+    final channel = createChannel(ServiceURL.core);
+    final client = AuthServiceClient(channel);
+    final request = protobuf.Empty();
+    await authCall(client.logoutHandler, request);
+    channel.shutdown();
+    forceLogout(context);
+  }
+
+  static void forceLogout(BuildContext context) async {
     App.storage.remove("REMEMBER_LOGIN");
     App.storage.remove("TOKEN");
     Navigator.pop(context);

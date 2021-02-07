@@ -13,6 +13,7 @@ import 'package:skyone_mobile/util/global_var.dart';
 import 'package:skyone_mobile/util/http.dart';
 import 'package:skyone_mobile/util/string_util.dart';
 import 'package:skyone_mobile/widgets/full_rounded_button.dart';
+import 'package:skyone_mobile/util/app.dart';
 
 class HomePage extends StatelessWidget {
   final ThemeController _themeController = Get.put(ThemeController());
@@ -20,6 +21,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    App.homeContext = context;
     return Padding(
       padding: defaultPadding,
       child: SingleChildScrollView(

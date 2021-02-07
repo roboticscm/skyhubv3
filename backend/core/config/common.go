@@ -28,6 +28,7 @@ var GlobalConfig Configuration
 //LoadConfig load config from config.json file
 func LoadConfig(parentPath string) (conf Configuration, err error) {
 	err = gonfig.GetConf(parentPath+"config/config.json", &conf)
+	conf.JwtExpDuration = conf.JwtExpDuration * time.Second
 	GlobalConfig = conf
 	return conf, err
 }

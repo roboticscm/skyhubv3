@@ -8,6 +8,7 @@ import 'package:skyone_mobile/util/global_param.dart';
 import 'package:skyone_mobile/util/locale_resource.dart';
 import 'package:skyone_mobile/widgets/close_button.dart';
 import 'package:skyone_mobile/widgets/save_button.dart';
+import 'package:fixnum/fixnum.dart' as $fixnum;
 
 class Server {
   static const defaultServerUrlReleaseMode = 'https://skyhub.suntech.com.vn:8443';
@@ -75,7 +76,7 @@ class ServerConfigPage extends StatelessWidget {
             await App.storage.setString("SERVER_URL", GlobalParam.serverUrl);
             await App.storage.setInt("CONNECTION_TIMEOUT", GlobalParam.connectionTimeout);
             final l = await getSavedLocale();
-            await LocaleResourceRepo.sysGetLocaleResourceListByCompanyIdAndLocale('${l.languageCode}-${l.countryCode}');
+            await LocaleResourceRepo.findLocaleResource($fixnum.Int64(), '${l.languageCode}-${l.countryCode}');
             App.appInstance.setLocale(LanguageList.values[App.storage.getInt('LANGUAGE') ?? 0]);
             Navigator.of(context).pop();
           },
