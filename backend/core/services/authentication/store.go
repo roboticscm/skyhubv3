@@ -81,7 +81,7 @@ func (store *Store) UpdateFreshToken(userID int64, token string) error {
 			AccountId: &userID,
 			CreatedAt: &currentDateTime,
 		}
-		_, err := store.query.Insert(refreshToken)
+		_, err := store.query.Insert(&refreshToken)
 
 		if err != nil {
 			skylog.Error(err)
@@ -93,7 +93,7 @@ func (store *Store) UpdateFreshToken(userID int64, token string) error {
 	refreshToken := refreshTokens[0]
 	refreshToken.Token = &token
 	refreshToken.CreatedAt = &currentDateTime
-	_, err := store.query.Update(refreshToken)
+	_, err := store.query.UpdateWithID(&refreshToken)
 
 	if err != nil {
 		skylog.Error(err)
@@ -128,7 +128,7 @@ func (store *Store) ChangePassword(userID int64, currentPassword string, newPass
 	*account.Password = skyutl.EncodeSHA1Password(newPassword, config.GlobalConfig.PrivateKey)
 	skydba.MakeUpdateWithID(userID, &account)
 
-	if _, err := query.Update(&account); err != nil {
+	if _, err := query.UpdateWithID(&account); err != nil {
 		skylog.Error(err)
 		return status.Error(codes.InvalidArgument, "SYS.MSG.UPDATE_NEW_PASSWORD_ERROR")
 	}

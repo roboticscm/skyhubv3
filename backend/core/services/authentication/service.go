@@ -46,12 +46,12 @@ func (service *Service) LoginHandler(ctx context.Context, req *pt.LoginRequest) 
 		return nil, refreshTokenErr
 	}
 
-	service.Store.UpdateFreshToken(account.Id, refreshToken)
-
 	//TODO add transaction
 	if err := ctx.Err(); err == context.DeadlineExceeded || err == context.Canceled {
 		return nil, err
 	}
+
+	service.Store.UpdateFreshToken(account.Id, refreshToken)
 
 	return &pt.LoginResponse{
 		AccessToken:  accessToken,

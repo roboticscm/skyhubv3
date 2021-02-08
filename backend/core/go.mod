@@ -14,7 +14,6 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tkanos/gonfig v0.0.0-20210106201359-53e13348de2f
 	golang.org/x/net v0.0.0-20201209123823-ac852fbbde11 // indirect
-	golang.org/x/sys v0.0.0-20210123111255-9b0068b26619 // indirect
 	golang.org/x/text v0.3.4 // indirect
 	google.golang.org/genproto v0.0.0-20210204154452-deb828366460
 	google.golang.org/grpc v1.35.0
@@ -22,7 +21,7 @@ require (
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
-	suntech.com.vn/skylib/skydba.git v1.0.0
+	suntech.com.vn/skylib/skydba.git v1.0.2
 	suntech.com.vn/skylib/skylog.git v1.0.0
-	suntech.com.vn/skylib/skyutl.git v1.0.0
+	suntech.com.vn/skylib/skyutl.git v1.0.6
 )
