@@ -6,7 +6,7 @@ option go_package = ".;pt";
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
-// import "proto/user_settings/user_settings_message.proto";
+import "proto/user_settings/user_settings_message.proto";
 
 message FindInitialUserSettingsResponse {
     int64 company_id = 1 [ jstype = JS_STRING];
@@ -19,10 +19,43 @@ message FindInitialUserSettingsResponse {
     string menu_path = 8;
 }
 
+message UpsertUserSettingsRequest {
+  int64 branch_id = 1 [ jstype = JS_STRING];
+  string menu_path = 2;
+  string element_id = 3;
+  repeated string keys = 4;
+  repeated string values = 5;
+}
+
+message FindUserSettingsRequest {
+  int64 branch_id = 1 [ jstype = JS_STRING];
+	string menu_path = 2;
+	string element_id  = 3;
+  string key = 4;
+  string keys = 5;
+}
+
+message FindUserSettingsResponse {
+  repeated UserSetting data = 1;
+}
+
 service UserSettingsService {
   rpc findInitialHandler(google.protobuf.Empty) returns (FindInitialUserSettingsResponse) {
     option (google.api.http) = {
       get : "/user-settings/initial"
+    };
+  };
+
+  rpc upsertHandler(UpsertUserSettingsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post : "/user-settings"
+      body : "*"
+    };
+  };
+
+  rpc findHandler(FindUserSettingsRequest) returns (FindUserSettingsResponse) {
+    option (google.api.http) = {
+      get : "/user-settings"
     };
   };
 }

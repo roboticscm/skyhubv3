@@ -11,11 +11,19 @@ import (
 //Store struct
 type Store struct {
 	mutex sync.RWMutex
+	q     *skydba.Q
 }
 
 //NewStore return new store instance
-func NewStore() *Store {
-	return &Store{}
+func NewStore(query *skydba.Q) *Store {
+	store := Store{}
+	store.q = query
+	return &store
+}
+
+//DefaultStore return new store instance
+func DefaultStore() *Store {
+	return NewStore(skydba.DefaultQuery())
 }
 
 //Upsert function: save or update data into table and return saved/updated record
@@ -23,7 +31,6 @@ func (store *Store) Upsert(userID int64, input models.Role) (*models.Role, error
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
 
-	query := skydba.DefaultQuery()
 	if input.Id != 0 {
 		if input.Code != nil {
 			isDuplicated, _ := skydba.IsTextValueDuplicated("role", "code", *input.Code, input.Id)
@@ -38,25 +45,20 @@ func (store *Store) Upsert(userID int64, input models.Role) (*models.Role, error
 		}
 
 		role := models.Role{Id: input.Id}
-		// TODO change new lib
-		// err := o.Read(&role)
-		// if err != nil {
-		// 	return nil, errors.Error500(err)
-		// }
-		// role.Code = input.Code
-		// role.Name = input.Name
-		// role.Sort = input.Sort
-		// *role.OrgId, _ = lib.ToInt64(input.OrgId)
-		// db.MakeUpdateWithID(userID, &role)
-		// if _, err := o.Update(&role); err != nil {
-		// 	return nil, err
-		// }
-
-		// if err := o.QueryTable("role").Filter("id", input.Id).One(&role); err != nil {
-		// 	return nil, err
-		// }
-
-		return &role, nil
+		err := store.q.Read(&role)
+		if err != nil {
+			return nil, err
+		}
+		role.Code = input.Code
+		role.Name = input.Name
+		role.Sort = input.Sort
+		role.OrgId = input.OrgId
+		skydba.MakeUpdateWithID(userID, &role)
+		updatedRole, err := store.q.UpdateWithID(&role)
+		if err != nil {
+			return nil, err
+		}
+		return updatedRole.(*models.Role), nil
 	}
 
 	if input.Code != nil {
@@ -73,7 +75,7 @@ func (store *Store) Upsert(userID int64, input models.Role) (*models.Role, error
 	role := models.Role{Code: input.Code, Name: input.Name, Sort: input.Sort, OrgId: input.OrgId}
 	skydba.MakeInsertWithID(userID, &role)
 
-	inserted, err := query.Insert(&role)
+	inserted, err := store.q.Insert(&role)
 	if err != nil {
 		return nil, err
 	}

@@ -16,14 +16,19 @@ import (
 //Store struct
 type Store struct {
 	mutex sync.RWMutex
-	query *skydba.Query
+	q     *skydba.Q
 }
 
 //NewStore return new store instance
-func NewStore() *Store {
+func NewStore(query *skydba.Q) *Store {
 	store := Store{}
-	store.query = skydba.DefaultQuery()
+	store.q = query
 	return &store
+}
+
+//DefaultStore return new store instance
+func DefaultStore() *Store {
+	return NewStore(skydba.DefaultQuery())
 }
 
 //Login return Account if username and password are correct
@@ -37,7 +42,7 @@ func (store *Store) Login(username string, password string) (*models.Account, er
 		SELECT id, username, password FROM account
 		WHERE disabled = FALSE AND username = $1
 	`
-	if err := store.query.Select(sql, []interface{}{username}, &accounts); err != nil {
+	if err := store.q.Query(sql, []interface{}{username}, &accounts); err != nil {
 		skylog.Error(err)
 		return nil, skyutl.Error500(err)
 	}
@@ -68,7 +73,7 @@ func (store *Store) UpdateFreshToken(userID int64, token string) error {
 		SELECT * FROM refresh_token
 		WHERE account_id = $1
 	`
-	if err := store.query.Select(sql, []interface{}{userID}, &refreshTokens); err != nil {
+	if err := store.q.Query(sql, []interface{}{userID}, &refreshTokens); err != nil {
 		skylog.Error(err)
 		return skyutl.Error500(err)
 	}
@@ -81,7 +86,7 @@ func (store *Store) UpdateFreshToken(userID int64, token string) error {
 			AccountId: &userID,
 			CreatedAt: &currentDateTime,
 		}
-		_, err := store.query.Insert(&refreshToken)
+		_, err := store.q.Insert(&refreshToken)
 
 		if err != nil {
 			skylog.Error(err)
@@ -93,7 +98,7 @@ func (store *Store) UpdateFreshToken(userID int64, token string) error {
 	refreshToken := refreshTokens[0]
 	refreshToken.Token = &token
 	refreshToken.CreatedAt = &currentDateTime
-	_, err := store.query.UpdateWithID(&refreshToken)
+	_, err := store.q.UpdateWithID(&refreshToken)
 
 	if err != nil {
 		skylog.Error(err)
@@ -108,14 +113,14 @@ func (store *Store) ChangePassword(userID int64, currentPassword string, newPass
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
 	accounts := []models.Account{}
-	query := skydba.DefaultQuery()
+	q := skydba.DefaultQuery()
 	sql := `
 		SELECT * FROM account
 		WHERE id = $1
 			AND password = $2
 	`
 	encodedCurrentPassword := skyutl.EncodeSHA1Password(currentPassword, config.GlobalConfig.PrivateKey)
-	if err := query.Select(sql, []interface{}{userID, encodedCurrentPassword}, &accounts); err != nil {
+	if err := q.Query(sql, []interface{}{userID, encodedCurrentPassword}, &accounts); err != nil {
 		skylog.Error(err)
 		return status.Error(codes.Internal, "SYS.MSG.LOAD_ACCOUNT_ERROR")
 	}
@@ -128,7 +133,7 @@ func (store *Store) ChangePassword(userID int64, currentPassword string, newPass
 	*account.Password = skyutl.EncodeSHA1Password(newPassword, config.GlobalConfig.PrivateKey)
 	skydba.MakeUpdateWithID(userID, &account)
 
-	if _, err := query.UpdateWithID(&account); err != nil {
+	if _, err := q.UpdateWithID(&account); err != nil {
 		skylog.Error(err)
 		return status.Error(codes.InvalidArgument, "SYS.MSG.UPDATE_NEW_PASSWORD_ERROR")
 	}
@@ -142,7 +147,7 @@ func (store *Store) Logout(userID int64) error {
 		DELETE FROM refresh_token
 		WHERE account_id = $1
 	`
-	if err := store.query.Select(sql, []interface{}{userID}); err != nil {
+	if _, err := store.q.Exec(sql, userID); err != nil {
 		skylog.Error(err)
 		return err
 	}
@@ -163,7 +168,7 @@ func (store *Store) RefreshToken(refreshToken string) (string, error) {
 		SELECT id FROM refresh_token
 		WHERE token = $1
 	`
-	if err := store.query.Select(sql, []interface{}{refreshToken}, &refreshTokens); err != nil {
+	if err := store.q.Query(sql, []interface{}{refreshToken}, &refreshTokens); err != nil {
 		skylog.Error(err)
 		return "", skyutl.Error500(err)
 	}

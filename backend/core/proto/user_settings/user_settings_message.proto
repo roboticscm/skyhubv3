@@ -8,7 +8,7 @@ option go_package = ".;pt";
 message UserSetting {
 
     int64 id = 1 [jstype=JS_STRING];
-    int64 company_id = 2 [jstype=JS_STRING];
+    int64 branch_id = 2 [jstype=JS_STRING];
     int64 account_id = 3 [jstype=JS_STRING];
     string menu_path = 4 ;
     string element_id = 5 ;

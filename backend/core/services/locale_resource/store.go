@@ -11,11 +11,19 @@ import (
 //Store struct
 type Store struct {
 	mutex sync.RWMutex
+	q     *skydba.Q
 }
 
 //NewStore return new store instance
-func NewStore() *Store {
-	return &Store{}
+func NewStore(query *skydba.Q) *Store {
+	store := Store{}
+	store.q = query
+	return &store
+}
+
+//DefaultStore return new store instance
+func DefaultStore() *Store {
+	return NewStore(skydba.DefaultQuery())
 }
 
 //Find function
@@ -30,8 +38,7 @@ func (store *Store) Find(companyID int64, locale string) ([]models.LocaleResourc
 		companyIDRef = nil
 	}
 
-	query := skydba.DefaultQuery()
-	if err := query.Select("SELECT * FROM find_language($1, $2)", []interface{}{&companyIDRef, locale}, &langs); err != nil {
+	if err := store.q.Query("SELECT * FROM find_language($1, $2)", []interface{}{&companyIDRef, locale}, &langs); err != nil {
 		return nil, skyutl.Error500(err)
 	}
 

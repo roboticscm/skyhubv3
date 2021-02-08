@@ -37,3 +37,31 @@ func (service *Service) FindInitialHandler(ctx context.Context, req *emptypb.Emp
 
 	return &res, nil
 }
+
+//UpsertHandler function
+func (service *Service) UpsertHandler(ctx context.Context, req *pt.UpsertUserSettingsRequest) (*emptypb.Empty, error) {
+	userID, _ := skyutl.GetUserID(ctx)
+	if _, err := service.Store.Upsert(userID, req.BranchId, req.MenuPath, req.Keys, req.Values); err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+
+//FindHandler function
+func (service *Service) FindHandler(ctx context.Context, req *pt.FindUserSettingsRequest) (*pt.FindUserSettingsResponse, error) {
+	userID, _ := skyutl.GetUserID(ctx)
+	userSettings, err := service.Store.Find(userID, req.BranchId, req.MenuPath, req.ElementId, req.Key, req.Keys)
+
+	if err != nil {
+		return nil, err
+	}
+
+	userSettingOut := []*pt.UserSetting{}
+	if err := skyutl.StructToProto(userSettings, &userSettingOut); err != nil {
+		return nil, err
+	}
+
+	return &pt.FindUserSettingsResponse{
+		Data: userSettingOut,
+	}, nil
+}
