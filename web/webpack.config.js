@@ -64,7 +64,7 @@ module.exports = smp.wrap({
             loader: 'cache-loader'
           },
           {
-          loader: 'svelte-loader-hot',
+          loader: 'svelte-loader',
           options: {
             dev,
             onwarn,
@@ -77,25 +77,15 @@ module.exports = smp.wrap({
                 transpileOnly: prod ? true : false,
               },
             }),
-            hotReload: true,
-            hotOptions: {
-              // whether to preserve local state (i.e. any `let` variable) or
-              // only public props (i.e. `export let ...`)
-              noPreserveState: false,
-              // optimistic will try to recover from runtime errors happening
-              // during component init. This goes funky when your components are
-              // not pure enough.
-              optimistic: true,
-              noReload: true,
-              // noPreserveStateKey: '__'
-              // See docs of svelte-loader-hot for all available options:
-              //
-              // https://github.com/rixo/svelte-loader-hot#usage
+            compilerOptions: {
+              dev: !prod
             },
+            emitCss: prod,
+            hotReload: !prod
           },
         }] : [
           {
-            loader: 'svelte-loader-hot',
+            loader: 'svelte-loader',
             options: {
               dev,
               onwarn: onwarn,
@@ -108,21 +98,11 @@ module.exports = smp.wrap({
                   transpileOnly: prod ? true : false,
                 },
               }),
-              hotReload: true,
-              hotOptions: {
-                // whether to preserve local state (i.e. any `let` variable) or
-                // only public props (i.e. `export let ...`)
-                noPreserveState: false,
-                // optimistic will try to recover from runtime errors happening
-                // during component init. This goes funky when your components are
-                // not pure enough.
-                optimistic: true,
-                noReload: true,
-                // noPreserveStateKey: '__'
-                // See docs of svelte-loader-hot for all available options:
-                //
-                // https://github.com/rixo/svelte-loader-hot#usage
+              compilerOptions: {
+                dev: !prod
               },
+              emitCss: prod,
+              hotReload: !prod
             },
           }
         ],
