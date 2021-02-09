@@ -19,6 +19,7 @@ backend/core/pt
 backend/core/doc
 backend/core/build
 backend/core/saved_log
+backend/core/*.log
 web/src/pt
 www
 
