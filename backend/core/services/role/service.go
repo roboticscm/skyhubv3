@@ -25,7 +25,7 @@ func NewService(store store.RoleStore) *Service {
 //UpsertHandler function
 func (service *Service) UpsertHandler(ctx context.Context, req *pt.UpsertRoleRequest) (*pt.UpsertRoleResponse, error) {
 	input := models.Role{}
-	if err := skyutl.ProtoToStruct(req, &input); err != nil {
+	if err := skyutl.ProtoStructConvert(req, &input); err != nil {
 		return nil, err
 	}
 
@@ -44,7 +44,7 @@ func (service *Service) UpsertHandler(ctx context.Context, req *pt.UpsertRoleReq
 	}
 
 	savedRole := pt.Role{}
-	if err := skyutl.StructToProto(res, &savedRole); err != nil {
+	if err := skyutl.ProtoStructConvert(res, &savedRole); err != nil {
 		return nil, err
 	}
 

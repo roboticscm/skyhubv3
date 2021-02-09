@@ -80,7 +80,7 @@ func (store *Store) Upsert(userID int64, input models.Role) (*models.Role, error
 		return nil, err
 	}
 
-	ret := inserted.(models.Role)
-	return &ret, nil
+	ret := inserted.(*models.Role)
+	return ret, nil
 
 }

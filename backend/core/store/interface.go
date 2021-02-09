@@ -27,5 +27,5 @@ type RoleStore interface {
 type UserSettingsStore interface {
 	FindInitial(userID int64) (*models.InitialUserSetting, error)
 	Find(userID int64, branchID int64, menuPath, elementID, key, keys string) ([]models.UserSetting, error)
-	Upsert(userID int64, branchID int64, menuPath string, keys []string, values []string) ([]models.UserSetting, error) 
+	Upsert(userID int64, branchID int64, menuPath string, keys []string, values []string) error
 }

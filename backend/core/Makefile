@@ -8,6 +8,9 @@ ROOT_DOC_DIR=doc
 SERVICES_DOC_DIR=services
 MESSAGES_DOC_DIR=messages
 SOURCE_PROTO_DIR=proto
+BUILD_DIR=build
+CONFIG_DIR=config
+KEYS_DIR=keys
 gen-go:
 	rm -Rf  ${OUT_DIR}
 	rm -Rf ${ROOT_DOC_DIR}
@@ -117,7 +120,15 @@ mock-all:
 	mockgen -package mockdb -destination mock/store.go suntech.com.vn/skygroup/store AuthStore
 
 build:
-	go build cmd/server/main.go 
+	rm -Rf  ${BUILD_DIR}
+	mkdir -p ${BUILD_DIR}/${CONFIG_DIR}
+	mkdir -p ${BUILD_DIR}/${KEYS_DIR}
+	cp config/config_prod.json ${BUILD_DIR}/${CONFIG_DIR}/config.json
+	cp keys/app.* ${BUILD_DIR}/${KEYS_DIR}
+	go build -o ${BUILD_DIR} cmd/server/main.go 
+start-prod:
+	cd ${BUILD_DIR} && \
+	./main -port 9090 -mode both -endpoint 0.0.0.0:9090 
 
 wclient:
 	go run cmd/client/main.go -server 0.0.0.0:9090
@@ -125,4 +136,4 @@ wclient:
 client:
 	reflex -r '\.go' -s -- sh -c "go run cmd/client/main.go -server 127.0.0.1:9090"	
 
-.PHONY: client gen-dart
+.PHONY: client gen-dart build start-prod

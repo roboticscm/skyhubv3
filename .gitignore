@@ -17,6 +17,8 @@ web/yarn.lock
 web/yarn-error.log
 backend/core/pt
 backend/core/doc
+backend/core/build
+backend/core/saved_log
 web/src/pt
 www
 

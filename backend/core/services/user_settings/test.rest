@@ -9,7 +9,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTg3NTk2NzQsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJyb290IiwiZnVsbE5hbWUiOiJUT0RPLi4uIn0.Xdgaf_ssErCO0LHgyYYzz4wLjGekhtq4fIRxNKWG6_tPm5v28INP4_jhtaIB4qLge-OfseZiwa70EOrsoiaMmt1NIWmbOD3KZwhHSa8ql9z0WU7JT4Fdtyk6jOuF6ETt5pvYFCAK2jcrp5dTeob9jRpEuWzAqUQkkJF-KOa3z98
 
 {
-    "branchId": 2,
+    "branchId": 223,
     "menuPath": "system/role",
     "elementId": "configModalRole",
     "keys": ["left", "top"],
@@ -17,6 +17,6 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTg3NTk2N
 }
  
 ### 
-GET http://localhost:9091/user-settings?keys=menuPath
+GET http://localhost:9091/user-settings
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTg3NTk2NzQsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJyb290IiwiZnVsbE5hbWUiOiJUT0RPLi4uIn0.Xdgaf_ssErCO0LHgyYYzz4wLjGekhtq4fIRxNKWG6_tPm5v28INP4_jhtaIB4qLge-OfseZiwa70EOrsoiaMmt1NIWmbOD3KZwhHSa8ql9z0WU7JT4Fdtyk6jOuF6ETt5pvYFCAK2jcrp5dTeob9jRpEuWzAqUQkkJF-KOa3z98

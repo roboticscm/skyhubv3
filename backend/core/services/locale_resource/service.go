@@ -28,7 +28,7 @@ func (service *Service) FindHandler(ctx context.Context, req *pt.FindLocaleResou
 	}
 
 	localeResources := []*pt.LocaleResourceResponseItem{}
-	if err := skyutl.StructToProto(langs, &localeResources); err != nil {
+	if err := skyutl.ProtoStructConvert(langs, &localeResources); err != nil {
 		return nil, err
 	}
 

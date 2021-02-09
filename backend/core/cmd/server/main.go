@@ -3,7 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"net"
+	"os"
+	"strings"
 
 	_ "github.com/lib/pq"
 	"suntech.com.vn/skygroup/cmd/server/server_helper"
@@ -23,12 +26,39 @@ var (
 	mapFunc = map[string]map[string]interface{}{}
 )
 
+func moveLogFiles(folder string) error {
+	os.MkdirAll(folder, os.ModePerm)
+
+	files, err := ioutil.ReadDir("./")
+	if err != nil {
+		return err
+	}
+
+	for _, f := range files {
+		fileName := f.Name()
+		if strings.HasSuffix(fileName, ".log") {
+			if err := os.Rename(fileName, folder+"/"+fileName); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 func init() {
+	if err := moveLogFiles("saved_log"); err != nil {
+		skylog.Error(err)
+	}
 	keys.LoadKeys("")
 	conf, err := config.LoadConfig("")
 	if err != nil {
 		skylog.Fatal("Common Config Error", err)
 	}
+	if !conf.Debug {
+		skylog.SetLogFile("app")
+	}
+
 	skydba.Init("Main Data Source", "postgres", conf.DBServer, conf.DBName, conf.DBUser, conf.DBPassword, conf.DBPort, conf.DBTimeOut, conf.DBReconnect)
 
 	//Set JwtManager global instance

@@ -93,7 +93,7 @@ func (store *Store) Find(userID int64, branchID int64, menuPath, elementID, key,
 }
 
 //Upsert function
-func (store *Store) Upsert(userID, branchID int64, menuPath string, keys []string, values []string) ([]models.UserSetting, error) {
+func (store *Store) Upsert(userID, branchID int64, menuPath string, keys []string, values []string) error {
 	for index, key := range keys {
 		userSetting := models.UserSetting{
 			AccountId: &userID,
@@ -102,14 +102,16 @@ func (store *Store) Upsert(userID, branchID int64, menuPath string, keys []strin
 			Key:       &key,
 			Value:     &values[index],
 		}
-		a, err := store.q.Upsert(&userSetting, map[string]interface{}{
+		_, err := store.q.Upsert(&userSetting, map[string]interface{}{
 			"account_id": userID,
 			"branch_id":  branchID,
 			"menu_path":  menuPath,
 			"key":        key,
 		})
 
-		fmt.Println(a, err)
+		if err != nil {
+			return err
+		}
 	}
-	return nil, nil
+	return nil
 }
