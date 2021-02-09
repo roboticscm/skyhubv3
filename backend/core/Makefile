@@ -126,9 +126,22 @@ build:
 	cp config/config_prod.json ${BUILD_DIR}/${CONFIG_DIR}/config.json
 	cp keys/app.* ${BUILD_DIR}/${KEYS_DIR}
 	go build -o ${BUILD_DIR} cmd/server/main.go 
+
+wbuild: wgen-go
+	if exist ${BUILD_DIR} rd /q /s ${BUILD_DIR}
+	mkdir ${BUILD_DIR}\${CONFIG_DIR}
+	mkdir ${BUILD_DIR}\${KEYS_DIR}
+	copy config\config_prod.json ${BUILD_DIR}\${CONFIG_DIR}\config.json
+	copy keys\app.* ${BUILD_DIR}\${KEYS_DIR}
+	go build -o ${BUILD_DIR} cmd\server\main.go 
+
 start-prod:
 	cd ${BUILD_DIR} && \
 	./main -port 9090 -mode both -endpoint 0.0.0.0:9090 
+
+wstart-prod:
+	cd ${BUILD_DIR} && \
+	main -port 9090 -mode both -endpoint 0.0.0.0:9090 
 
 wclient:
 	go run cmd/client/main.go -server 0.0.0.0:9090
