@@ -35,7 +35,6 @@ module.exports = smp.wrap({
     mainFields: ['svelte', 'browser', 'module', 'main'],
   },
   output: {
-    publicPath: '',
     path: path.resolve(__dirname, '../www'),
     filename: '[name][hash].js',
     chunkFilename: '[name].[id][hash].js'
@@ -65,7 +64,7 @@ module.exports = smp.wrap({
             loader: 'cache-loader'
           },
           {
-          loader: 'svelte-loader',
+          loader: 'svelte-loader-hot',
           options: {
             dev,
             onwarn,
@@ -78,15 +77,25 @@ module.exports = smp.wrap({
                 transpileOnly: prod ? true : false,
               },
             }),
-            compilerOptions: {
-              dev: !prod
+            hotReload: true,
+            hotOptions: {
+              // whether to preserve local state (i.e. any `let` variable) or
+              // only public props (i.e. `export let ...`)
+              noPreserveState: false,
+              // optimistic will try to recover from runtime errors happening
+              // during component init. This goes funky when your components are
+              // not pure enough.
+              optimistic: true,
+              noReload: true,
+              // noPreserveStateKey: '__'
+              // See docs of svelte-loader-hot for all available options:
+              //
+              // https://github.com/rixo/svelte-loader-hot#usage
             },
-            emitCss: prod,
-            hotReload: !prod
           },
         }] : [
           {
-            loader: 'svelte-loader',
+            loader: 'svelte-loader-hot',
             options: {
               dev,
               onwarn: onwarn,
@@ -99,11 +108,21 @@ module.exports = smp.wrap({
                   transpileOnly: prod ? true : false,
                 },
               }),
-              compilerOptions: {
-                dev: !prod
+              hotReload: true,
+              hotOptions: {
+                // whether to preserve local state (i.e. any `let` variable) or
+                // only public props (i.e. `export let ...`)
+                noPreserveState: false,
+                // optimistic will try to recover from runtime errors happening
+                // during component init. This goes funky when your components are
+                // not pure enough.
+                optimistic: true,
+                noReload: true,
+                // noPreserveStateKey: '__'
+                // See docs of svelte-loader-hot for all available options:
+                //
+                // https://github.com/rixo/svelte-loader-hot#usage
               },
-              emitCss: prod,
-              hotReload: !prod
             },
           }
         ],
@@ -195,4 +214,3 @@ module.exports = smp.wrap({
     },
   },
 });
-
