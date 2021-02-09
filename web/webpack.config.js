@@ -6,7 +6,7 @@ const path = require('path');
 const mode = process.env.NODE_ENV || 'development';
 const prod = mode === 'production';
 const dev = !prod;
-const useCache = process.env.USE_CACHE || 'false';
+const useCache = process.env.CACHE || 'true';
 
 const magicImporter = require('node-sass-magic-importer');
 const sveltePreprocess = require('svelte-preprocess');
@@ -35,7 +35,8 @@ module.exports = smp.wrap({
     mainFields: ['svelte', 'browser', 'module', 'main'],
   },
   output: {
-    path: path.resolve(__dirname, '/usr/local/var/www'),
+    publicPath: '',
+    path: path.resolve(__dirname, '../www'),
     filename: '[name][hash].js',
     chunkFilename: '[name].[id][hash].js'
   },
