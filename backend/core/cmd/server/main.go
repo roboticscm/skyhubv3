@@ -14,7 +14,10 @@ import (
 	"suntech.com.vn/skygroup/keys"
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skygroup/services/authentication"
+	"suntech.com.vn/skygroup/services/language"
 	"suntech.com.vn/skygroup/services/locale_resource"
+	"suntech.com.vn/skygroup/services/menu"
+	"suntech.com.vn/skygroup/services/org"
 	"suntech.com.vn/skygroup/services/role"
 	"suntech.com.vn/skygroup/services/user_settings"
 	"suntech.com.vn/skylib/skydba.git/skydba"
@@ -64,11 +67,16 @@ func init() {
 	//Set JwtManager global instance
 	skyutl.JwtManagerInstance = skyutl.NewJwtManager(keys.SignKey, keys.VerifyKey)
 
-	//Add more service handle function
+	//Begin add more service to register
 	mapFunc["authentication.Service"] = map[string]interface{}{"grpc": pt.RegisterAuthServiceServer, "rest": pt.RegisterAuthServiceHandlerFromEndpoint, "instance": authentication.NewService(skyutl.JwtManagerInstance, authentication.DefaultStore())}
 	mapFunc["locale_resource.Service"] = map[string]interface{}{"grpc": pt.RegisterLocaleResourceServiceServer, "rest": pt.RegisterLocaleResourceServiceHandlerFromEndpoint, "instance": locale_resource.NewService(locale_resource.DefaultStore())}
 	mapFunc["role.Service"] = map[string]interface{}{"grpc": pt.RegisterRoleServiceServer, "rest": pt.RegisterRoleServiceHandlerFromEndpoint, "instance": role.NewService(role.DefaultStore())}
 	mapFunc["user_settings.Service"] = map[string]interface{}{"grpc": pt.RegisterUserSettingsServiceServer, "rest": pt.RegisterUserSettingsServiceHandlerFromEndpoint, "instance": user_settings.NewService(user_settings.DefaultStore())}
+	mapFunc["org.Service"] = map[string]interface{}{"grpc": pt.RegisterOrgServiceServer, "rest": pt.RegisterOrgServiceHandlerFromEndpoint, "instance": org.NewService(org.DefaultStore())}
+	mapFunc["language.Service"] = map[string]interface{}{"grpc": pt.RegisterLanguageServiceServer, "rest": pt.RegisterLanguageServiceHandlerFromEndpoint, "instance": language.NewService(language.DefaultStore())}
+	mapFunc["menu.Service"] = map[string]interface{}{"grpc": pt.RegisterMenuServiceServer, "rest": pt.RegisterMenuServiceHandlerFromEndpoint, "instance": menu.NewService(menu.DefaultStore())}
+	//...
+	//End add more service
 }
 func main() {
 

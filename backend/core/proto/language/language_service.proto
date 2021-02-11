@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package language;
+option go_package = ".;pt";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "proto/language/language_message.proto";
+
+message FindLanguageResponse {
+    repeated Language data = 1;
+}
+
+service LanguageService {
+    rpc FindHandler(google.protobuf.Empty) returns (FindLanguageResponse) {
+        option (google.api.http) = {
+            get : "/language"
+        };
+    };
+}

@@ -69,7 +69,7 @@
     },
   ];
 
-  LanguageStore.findLanguages().subscribe();
+  LanguageStore.findLanguages();
 
   const resetForm = () => {
     return new Form({

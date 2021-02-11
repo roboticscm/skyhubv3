@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package org;
+option go_package = ".;pt";
+
+import "google/api/annotations.proto";
+
+message FindBranchRequest {
+    int32 from_org_type = 1;
+    int32 to_org_type = 2;
+    bool include_disabled = 3;
+    bool include_deleted = 4;
+
+}
+
+message FindBranchResponseItem {
+    int64 id = 1 [ jstype = JS_STRING];
+    string name = 2;
+    int64 p_id = 3 [ jstype = JS_STRING];
+    int32 type = 4;
+    bool open = 5;
+}
+
+message FindBranchResponse {
+    repeated FindBranchResponseItem data = 1;
+}
+
+message FindDepartmentRequest {
+    int64 branch_id = 1 [ jstype = JS_STRING];
+}
+
+message FindDepartmentResponseItem {
+    int64 id = 1 [ jstype = JS_STRING];
+    string name = 2;
+}
+
+message FindDepartmentResponse {
+    repeated FindDepartmentResponseItem data = 1;
+}
+
+message FindLastDepartmentRequest {
+    int64 branch_id = 1 [ jstype = JS_STRING];
+}
+
+message FindLastDepartmentResponse {
+    int64 dep_id = 1 [ jstype = JS_STRING];
+}
+
+service OrgService {
+    rpc FindBranchHandler(FindBranchRequest) returns (FindBranchResponse) {
+        option (google.api.http) = {
+            get : "/branch"
+        };
+    };
+
+    rpc FindDepartmentHandler(FindDepartmentRequest) returns (FindDepartmentResponse) {
+        option (google.api.http) = {
+            get : "/department"
+        };
+    };
+
+    rpc FindLastDepartmentHandler(FindLastDepartmentRequest) returns (FindLastDepartmentResponse) {
+        option (google.api.http) = {
+            get : "/department/last"
+        };
+    };
+}

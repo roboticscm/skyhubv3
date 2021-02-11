@@ -229,15 +229,14 @@
     return new Observable((observer) => {
       SettingsStore.getUserSettings({ elementId: id, menuPath })
         .then((res) => {
-          const data = res.data;
-          const idFilter = data.filter((it) => it.key === 'autoId');
+          const idFilter = res.filter((it) => it.key === 'autoId');
 
           let id = null;
           if (idFilter.length > 0) {
             id = idFilter[0].value;
           }
 
-          const nameFilter = data.filter((it) => it.key === 'autoName');
+          const nameFilter = res.filter((it) => it.key === 'autoName');
           let name = null;
           if (nameFilter.length > 0) {
             name = nameFilter[0].value;

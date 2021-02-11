@@ -58,7 +58,7 @@
         if ($.isFunction(callback)) {
           callback.call(this, { rows: $row_nums });
         } else {
-          console.log('Require callback function.');
+          log.error('Require callback function.');
         }
       });
     });
@@ -82,7 +82,7 @@
     if ($.isFunction(callback)) {
       callback.call(this, { rows: $row_nums });
     } else {
-      console.log('Require callback function.');
+      log.error('Require callback function.');
     }
   };
 
@@ -106,7 +106,7 @@
     if ($.isFunction(callback)) {
       callback.call(this, { rows: $row_nums });
     } else {
-      console.log('Require callback function.');
+      log.error('Require callback function.');
     }
   };
 
@@ -127,7 +127,7 @@
     if ($.isFunction(callback)) {
       callback.call(this, { rows: $row_nums });
     } else {
-      console.log('Require callback function.');
+      log.error('Require callback function.');
     }
   };
 })(jQuery);

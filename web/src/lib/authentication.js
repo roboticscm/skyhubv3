@@ -103,7 +103,7 @@ export class Authentication {
   };
 
   static refreshAPI = (refreshToken) => {
-    console.log('Refreshing token!');
+    log.info('Refreshing token!');
     const req = new RefreshTokenRequest();
     req.setRefreshToken(refreshToken);
     return callGRPC(() => {
@@ -111,7 +111,7 @@ export class Authentication {
         return grpcAuthClient.refreshTokenHandler(req, defaultHeader).then((res) => {
           res = res.toObject();
           if (!res.success) {
-            console.log('login again!');
+            log.info('login again!');
             resolve(res.success)
           } else {
             const { accessToken } = res

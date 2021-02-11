@@ -1,19 +1,18 @@
-import { RxHttp } from 'src/lib/rx-http';
-import { BaseUrl } from 'src/lib/constants';
+import { callGRPC, protoFromObject, grpcMenuClient } from 'src/lib/grpc';
+import { defaultHeader } from 'src/lib/authentication';
+import { FindMenuControlRequest, SaveOrDeleteMenuControlRequest, MenuControl } from 'src/pt/proto/menu/menu_service_pb';
 
 export class MenuControlStore {
   static findMenuControl(menuPath) {
-    return RxHttp.get({
-      baseUrl: BaseUrl.SYSTEM,
-      url: 'menu-control',
-      params: { menuPath },
+    return callGRPC(() => {
+      const req = protoFromObject(new FindMenuControlRequest(), {menuPath});
+      return grpcMenuClient.findMenuControlHandler(req, defaultHeader);
     });
   }
   static saveOrDelete(obj) {
-    return RxHttp.post({
-      baseUrl: BaseUrl.SYSTEM,
-      url: 'menu-control',
-      jsonData: obj,
+    return callGRPC(() => {
+      const req = protoFromObject(new SaveOrDeleteMenuControlRequest(), obj, "menu/menu_service_pb");
+      return grpcMenuClient.saveOrDeleteMenuControlHandler(req, defaultHeader);
     });
   }
 }

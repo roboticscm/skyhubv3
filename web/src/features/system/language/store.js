@@ -1,14 +1,20 @@
 import { BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { RxHttp } from 'src/lib/rx-http';
-import { BaseUrl } from 'src/lib/constants';
+import { callGRPC, grpcLanguageClient } from 'src/lib/grpc';
+import { defaultHeader } from 'src/lib/authentication';
+const protobuf = require('google-protobuf/google/protobuf/empty_pb');
 
 export class LanguageStore {
   static languages$ = new BehaviorSubject();
   static findLanguages() {
-    return RxHttp.get({
-      baseUrl: BaseUrl.SYSTEM,
-      url: 'language',
-    }).pipe(tap((res) => LanguageStore.languages$.next(res.data)));
+    return callGRPC(() => {
+      return new Promise((resolve, reject) => {
+        const req = new protobuf.Empty();
+        grpcLanguageClient.findHandler(req, defaultHeader).then((res) => {
+          res = res.toObject().dataList;
+          LanguageStore.languages$.next(res);
+          resolve(res)
+        }).catch((err) => reject(err));
+      })
+    });
   }
 }

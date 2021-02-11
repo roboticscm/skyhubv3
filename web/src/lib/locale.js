@@ -1,7 +1,4 @@
-import { isDebugMode } from './debug';
 import { StringUtil } from './string-util';
-import { RxHttp } from './rx-http';
-import { BaseUrl } from './constants';
 import { grpcLocaleResourceClient } from './grpc';
 
 import {
@@ -127,7 +124,7 @@ export const T = (fullKey) => {
     const split = fullKey.split('.');
     if (split.length === 3) {
       const [cate, type, key] = split;
-      return CATEGORIES_MAP.get(cate)[type][key] || (isDebugMode() ? fullKey : `#${defaultValue(key)}`);
+      return CATEGORIES_MAP.get(cate)[type][key] || (log.isDebugMode() ? fullKey : `#${defaultValue(key)}`);
     } else {
       return 'Invalid Key Format';
     }

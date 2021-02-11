@@ -1,7 +1,30 @@
-// const log4js = require("log4js");
-// log4js.configure({
-//   appenders: { app: { type: "file", filename: "app.log" } },
-//   categories: { default: { appenders: ["app"], level: "error" } }
-// });
-
-// export const log = log4js.getLogger("app");
+export const isDebugMode = () => {
+    return process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'dev';
+  };
+  
+  export const info = (...message) => {
+    if (isDebugMode()) {
+      console.log(message);
+    }
+  };
+  
+  export const infoSection = (section, ...message) => {
+    if (isDebugMode()) {
+      console.log(`---------${section}--------`);
+      console.log(message);
+    }
+  };
+  
+  export const error = (...message) => {
+    if (isDebugMode()) {
+      console.error(message);
+    }
+  };
+  
+  export const errorSection = (section, ...message) => {
+    if (isDebugMode()) {
+      console.error(`---------${section}--------`);
+      console.error(message);
+    }
+  };
+  

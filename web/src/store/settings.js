@@ -1,66 +1,73 @@
-import { RxHttp } from 'src/lib/rx-http';
-import { BaseUrl } from 'src/lib/constants';
+
 import { LoginInfo } from './login-info';
 import { findLanguage } from 'src/lib/locale';
 import { OrgStore } from 'src/features/system/org/store';
-import { SObject } from 'src/lib/sobject';
+
+import { callGRPC, protoFromObject, grpcUserSettingsClient } from 'src/lib/grpc';
+import { defaultHeader } from 'src/lib/authentication';
+import { UpsertUserSettingsRequest, FindUserSettingsRequest } from 'src/pt/proto/user_settings/user_settings_service_pb';
+import { App } from 'src/lib/constants';
+const protobuf = require('google-protobuf/google/protobuf/empty_pb');
 
 export class SettingsStore {
   static saveUserSettings(obj, useBranch = true) {
-    return new Promise((resolve, reject) => {
-      RxHttp.post({
-        baseUrl: BaseUrl.SYSTEM,
-        url: `user-settings`,
-        jsonData: useBranch ? { ...obj, branchId: LoginInfo.branchId$.value } : obj,
-      }).subscribe((res) => {
-        resolve();
-      });
+    if (!App.SAVE_USER_SETTINGS) {
+      return new Promise((resolve, reject) => {
+        resolve([])
+      })
+    }
+    return callGRPC(() => {
+      const req = protoFromObject(new UpsertUserSettingsRequest(), useBranch ? { ...obj, branchId: LoginInfo.branchId$.value } : obj);
+      return grpcUserSettingsClient.upsertHandler(req, defaultHeader)
     });
   }
 
   static getUserSettings(params, useBranch = true) {
-    return new Promise((resolve, reject) => {
-      RxHttp.get({
-        baseUrl: BaseUrl.SYSTEM,
-        url: 'user-settings',
-        params: useBranch ? { ...params, branchId: LoginInfo.branchId$.value } : params,
-      }).subscribe((res) => {
-        resolve(res);
-      });
+    if (!App.SAVE_USER_SETTINGS) {
+      return new Promise((resolve, reject) => {
+        resolve([])
+      })
+    }
+    return callGRPC(() => {
+      const req = protoFromObject(new FindUserSettingsRequest(), useBranch ? { ...params, branchId: LoginInfo.branchId$.value } : params);
+      return new Promise((resolve, reject) => {
+        grpcUserSettingsClient.findHandler(req, defaultHeader).then((res) => {
+          res = res.toObject().dataList;
+          resolve(res)
+        }).catch((err) => reject(err));
+      })
     });
   }
 
   static getLastUserSettings() {
-    return new Promise((resolve, reject) => {
-      RxHttp.get({
-        baseUrl: BaseUrl.SYSTEM,
-        url: 'user-settings/initial',
-      }).subscribe((res) => {
-        if (res.data && res.data.length > 0) {
-          const dt = SObject.convertFieldsToCamelCase(res.data[0]);
-          LoginInfo.companyId$.next(dt.companyId);
-          LoginInfo.companyName$.next(dt.companyName);
-          LoginInfo.branchId$.next(`${dt.branchId}`);
-          LoginInfo.branchName$.next(dt.branchName);
-          LoginInfo.departmentId$.next(`${dt.departmentId}`);
-        }
+    return callGRPC(() => {
+      return new Promise((resolve, reject) => {
+        const req = new protobuf.Empty();
+        return grpcUserSettingsClient.findInitialHandler(req, defaultHeader).then((res) => {
+          res = res.toObject()
+          LoginInfo.companyId$.next(res.companyId);
+          LoginInfo.companyName$.next(res.companyName);
+          LoginInfo.branchId$.next(`${res.branchId}`);
+          LoginInfo.branchName$.next(res.branchName);
+          LoginInfo.departmentId$.next(`${res.departmentId}`);
+          // load branch
+          OrgStore.findBranches();
 
-        SettingsStore.getUserSettings({
-          key: 'lastSelected',
-          menuPath: 'sys/user-profiles-modal',
-          elementId: 'localeResourceUsedLanguageSelectId',
-        }).then((r) => {
-          let locale = 'vi-VN';
-          if (r.data && r.data.length > 0) {
-            locale = r.data[0].value;
-          }
-          LoginInfo.locale$.next(locale);
-          findLanguage(LoginInfo.companyId$.value, locale).then(() => resolve());
+          SettingsStore.getUserSettings({
+            key: 'lastSelected',
+            menuPath: 'sys/user-profiles-modal',
+            elementId: 'localeResourceUsedLanguageSelectId',
+          }).then((r) => {
+            const data = r;
+            let locale = 'vi-VN';
+            if (data.length > 0) {
+              locale = data[0].value;
+            }
+            LoginInfo.locale$.next(locale);
+            findLanguage(LoginInfo.companyId$.value, locale).then(() => resolve());
+          }).catch((err) => reject(err));
         });
-
-        // load branch
-        OrgStore.findBranches().subscribe(() => {});
-      });
+      })
     });
   }
 }

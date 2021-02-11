@@ -14,17 +14,16 @@
   const { branchId$ } = LoginInfo;
 
   $: if ($branchId$) {
-    OrgStore.findRoledDepartments($branchId$).subscribe(() => {
-      OrgStore.getLastRoledDepartmentId($branchId$).subscribe((res) => {
-        if (res.data && res.data.length > 0) {
-          departmentId$.next(`${res.data[0].depId}`);
-        }
+    OrgStore.findRoledDepartments($branchId$).then(() => {
+      OrgStore.getLastRoledDepartmentId($branchId$).then((res) => {
+        res = res.toObject();
+        res && departmentId$.next(`${res.depId}`);
       });
     });
   }
 
   $: if ($departmentId$) {
-    MenuStore.findRoledMenu($departmentId$).subscribe(() => {
+    MenuStore.findRoledMenu($departmentId$).then(() => {
       saveUserSettings();
     });
   }

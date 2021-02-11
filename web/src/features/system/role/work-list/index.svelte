@@ -12,8 +12,9 @@
   export let view;
   export let menuPath;
   export let store;
-  // export let callFrom;
+  export let callFrom;
 
+  callFrom;
   // Other vars
   let selectedId = undefined;
   const dispatch = createEventDispatcher();

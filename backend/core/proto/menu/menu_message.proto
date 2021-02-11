@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package menu;
+option go_package = ".;pt";
+
+message Menu {
+    int64 id = 1 [ jstype = JS_STRING];
+    string code = 2;
+    string name = 3;
+    string path = 4;
+}

@@ -55,7 +55,7 @@
     return new Promise((resolve, reject) => {
       SettingsStore.getUserSettings({ elementId: 'pageSizeSelectId', menuPath })
         .then((res) => {
-          const filter = res.data.filter((it) => it.key === 'lastPageSize');
+          const filter = res.filter((it) => it.key === 'lastPageSize');
           if (filter.length > 0) {
             pageSize = +filter[0].value;
             dispatch('init', pageSize);

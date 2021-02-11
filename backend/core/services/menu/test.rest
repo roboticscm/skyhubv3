@@ -1,0 +1,38 @@
+GET http://localhost:9091/menu?departmentId=3
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTg5MDE4NTUsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJyb290IiwiZnVsbE5hbWUiOiJUT0RPLi4uIn0.ewgDwncfyBlZrHafBoJWFr0zvErkcVFmmtGwwDidQO_cK2BA-y5BRLABuGa6BUZn17ZUs4qHJT4hq9GMfXqmt144dT9lZud3h5gR5EM96pv013eeMxDVAugapGfkTuvrY8tMINdmeakZmvduHipTXNk5JFMx9EmMPFnepwqo4qU
+
+###
+
+POST http://localhost:9091/menu/history
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTg5MDE4NTUsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJyb290IiwiZnVsbE5hbWUiOiJUT0RPLi4uIn0.ewgDwncfyBlZrHafBoJWFr0zvErkcVFmmtGwwDidQO_cK2BA-y5BRLABuGa6BUZn17ZUs4qHJT4hq9GMfXqmt144dT9lZud3h5gR5EM96pv013eeMxDVAugapGfkTuvrY8tMINdmeakZmvduHipTXNk5JFMx9EmMPFnepwqo4qU
+
+{
+    "menuId": 24,
+    "depId": 4
+}
+
+
+###
+
+GET http://localhost:9091/menu/control?menuPath=system/role
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTg5MDE4NTUsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJyb290IiwiZnVsbE5hbWUiOiJUT0RPLi4uIn0.ewgDwncfyBlZrHafBoJWFr0zvErkcVFmmtGwwDidQO_cK2BA-y5BRLABuGa6BUZn17ZUs4qHJT4hq9GMfXqmt144dT9lZud3h5gR5EM96pv013eeMxDVAugapGfkTuvrY8tMINdmeakZmvduHipTXNk5JFMx9EmMPFnepwqo4qU
+
+###
+
+POST http://localhost:9091/menu/control
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTg5MDE4NTUsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJyb290IiwiZnVsbE5hbWUiOiJUT0RPLi4uIn0.ewgDwncfyBlZrHafBoJWFr0zvErkcVFmmtGwwDidQO_cK2BA-y5BRLABuGa6BUZn17ZUs4qHJT4hq9GMfXqmt144dT9lZud3h5gR5EM96pv013eeMxDVAugapGfkTuvrY8tMINdmeakZmvduHipTXNk5JFMx9EmMPFnepwqo4qU
+
+{
+    "menuPath": "system/role",
+    "menuControls": [{
+        "controlId": 200,
+        "checked": true
+    }, {
+        "controlId": 201,
+        "checked": true
+    }]
+}

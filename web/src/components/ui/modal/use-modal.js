@@ -172,7 +172,7 @@ export const createModal = (menuPath, widthInPixel = null, heightInPixel = null)
         state.left = modalRef.style.left;
       })
       .catch((error) => {
-        console.error(error);
+        log.error(error);
       });
   };
 

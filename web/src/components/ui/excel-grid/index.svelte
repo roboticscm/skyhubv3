@@ -1,7 +1,6 @@
 <script>
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import jexcel from 'jexcel';
-  import { errorSection } from 'src/lib/debug';
   import { SettingsStore } from 'src/store/settings';
   import { T } from 'src/lib/locale';
   const dispatch = createEventDispatcher();
@@ -88,7 +87,7 @@
   const createGrid = (data) => {
     if (!jExcelObj) {
       if (!id) {
-        errorSection('Excel Grid', "Maybe you didn't set Id for this Grid");
+        log.errorSection('Excel Grid', "Maybe you didn't set Id for this Grid");
         return;
       }
       if (!columns || columns.length === 0) {
@@ -155,9 +154,8 @@
     fireResizeEvent = false;
     SettingsStore.getUserSettings({ elementId: id, menuPath })
       .then((res) => {
-        const data = res.data;
-        if (data) {
-          data.map((item) => {
+        if (res) {
+          res.map((item) => {
             let column = Number(item.key);
             let value = Number(item.value);
             if (jExcelObj) {
@@ -182,7 +180,7 @@
       })
       .catch((error) => {
         fireResizeEvent = true;
-        console.error(error);
+        log.error(error);
       });
   };
 

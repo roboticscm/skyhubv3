@@ -41,7 +41,7 @@ func (service *Service) FindInitialHandler(ctx context.Context, req *emptypb.Emp
 //UpsertHandler function
 func (service *Service) UpsertHandler(ctx context.Context, req *pt.UpsertUserSettingsRequest) (*emptypb.Empty, error) {
 	userID, _ := skyutl.GetUserID(ctx)
-	if err := service.Store.Upsert(userID, req.BranchId, req.MenuPath, req.Keys, req.Values); err != nil {
+	if err := service.Store.Upsert(userID, req, req.Keys, req.Values); err != nil {
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil

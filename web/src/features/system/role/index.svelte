@@ -16,6 +16,11 @@
   export let roleControls;
   export let callFrom = 'Self';
   export let showWorkList = true;
+  export let selectedId;
+  export let searchFields;
+
+  selectedId;
+  searchFields;
 
   // Init view
   const view = new ViewStore(menuPath);
@@ -63,14 +68,14 @@
 
 <ProgressBar loading$={view.loading$} />
 
-<TwoColumnView minLeftPane={!showWorkList} id={'mainLayout' + view.getViewName()} {showTitle} {menuPath}>
+<TwoColumnView minLeftPane={!showWorkList} {showTitle} {menuPath}>
   <section style="height: 100%" slot="leftView">
     <WorkList {view} {menuPath} {callFrom} {store} on:callback />
   </section>
 
   <section style="height: 100%" slot="default">
     {#if !window.isSmartPhone}
-      <MainContent {view} {menuPath} {store} on:callback />
+      <MainContent {view} {menuPath} {store} backCallback on:callback />
     {/if}
   </section>
 </TwoColumnView>

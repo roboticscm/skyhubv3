@@ -21,7 +21,7 @@ require (
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
-	suntech.com.vn/skylib/skydba.git v1.1.1
+	suntech.com.vn/skylib/skydba.git v1.1.3
 	suntech.com.vn/skylib/skylog.git v1.0.5
-	suntech.com.vn/skylib/skyutl.git v1.1.3
+	suntech.com.vn/skylib/skyutl.git v1.1.5-0.20210211011805-129c898f851c
 )

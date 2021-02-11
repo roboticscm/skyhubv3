@@ -2,35 +2,58 @@ import { BaseUrl } from './constants';
 import { LocaleResourceServicePromiseClient } from "src/pt/proto/locale_resource/locale_resource_service_grpc_web_pb";
 import { AuthServicePromiseClient } from "src/pt/proto/auth/auth_service_grpc_web_pb";
 import { RoleServicePromiseClient } from "src/pt/proto/role/role_service_grpc_web_pb";
-import _ from 'lodash';
+import { OrgServicePromiseClient } from "src/pt/proto/org/org_service_grpc_web_pb";
+import { LanguageServicePromiseClient } from "src/pt/proto/language/language_service_grpc_web_pb";
+import { UserSettingsServicePromiseClient } from "src/pt/proto/user_settings/user_settings_service_grpc_web_pb";
+import { MenuServicePromiseClient } from "src/pt/proto/menu/menu_service_grpc_web_pb";
+import _, { lowerFirst } from 'lodash';
 import { Authentication } from './authentication';
 
 export const grpcLocaleResourceClient = new LocaleResourceServicePromiseClient(BaseUrl.GRPC_CORE);
 export const grpcAuthClient = new AuthServicePromiseClient(BaseUrl.GRPC_CORE);
 export const grpcRoleClient = new RoleServicePromiseClient(BaseUrl.GRPC_CORE);
+export const grpcOrgClient = new OrgServicePromiseClient(BaseUrl.GRPC_CORE);
+export const grpcLanguageClient = new LanguageServicePromiseClient(BaseUrl.GRPC_CORE);
+export const grpcUserSettingsClient = new UserSettingsServicePromiseClient(BaseUrl.GRPC_CORE);
+export const grpcMenuClient = new MenuServicePromiseClient(BaseUrl.GRPC_CORE);
 
-export const protoFromObject = (ProtoClass, plain_obj) => {
-    let proto_obj = new ProtoClass();
-    for (const field_name in plain_obj) {
-      let field_value = plain_obj[field_name];
-      let set_method_name = `set${_.upperFirst(_.camelCase(field_name))}`;
-    //   let get_method_name = `get${_.upperFirst(_.camelCase(field_name))}`;
-      // let old_field_value = proto_obj[get_method_name]();
-      //TODO: could use this to detect field type?
-      // console.log(field_name, set_method_name, old_field_value, field_value);
-      if (!_.isArray(field_value) && !_.isObject(field_value)) {
-        if (proto_obj[set_method_name]) {
-          proto_obj[set_method_name](field_value);
-        } else {
-          console.error(proto_obj);
-          throw `The field ${field_name} does not exist`;
-        }
-      } else {
-        throw `Array or Object field value unsupported`; 
-        //TODO: recursively call protoFromObject
+export const protoFromObject = (protoObj, plainObj, path) => {
+    for (const fieldName in plainObj) {
+      let fieldValue = plainObj[fieldName];
+      if (!_.isArray(fieldValue) && !_.isObject(fieldValue)) {
+        let setMethodName = `set${_.upperFirst(_.camelCase(fieldName))}`;
+        if (protoObj[setMethodName]) {
+          protoObj[setMethodName](fieldValue);
+        } 
+      } else if (_.isArray(fieldValue)) {
+        let setMethodName = `set${_.upperFirst(_.camelCase(fieldName+'List'))}`;
+        if (protoObj[setMethodName]) {
+          if (fieldValue.length > 0 && _.isObject(fieldValue[0])) {
+            const service = require(`src/pt/proto/${path}`);
+            const arrayList = [];
+            let subClassName = setMethodName.substr(0, setMethodName.length-4).substr(3);
+            if (subClassName.endsWith("s")) {
+              subClassName = subClassName.substr(0, subClassName.length-1);
+            }
+
+            for (const row of fieldValue) {
+              const newValue = new service[subClassName]();
+              const subProtoObj = protoFromObject(newValue, row, path);
+              arrayList.push(subProtoObj)
+            }
+            protoObj[setMethodName](arrayList); 
+          } else {
+            protoObj[setMethodName](fieldValue);
+          }
+        } 
+      } else if (_.isObject(fieldValue)) {
+        const service = require(`src/pt/proto/${path}`);
+        const newValue = new service.MenuControl();
+        const subProtoObj = protoFromObject(newValue, fieldValue, path);
+        protoObj[setMethodName](subProtoObj); 
       }
     }
-    return proto_obj;
+    return protoObj;
   }
 
   export const callGRPC = (callBuilder) => {
@@ -38,7 +61,7 @@ export const protoFromObject = (ProtoClass, plain_obj) => {
       callBuilder().then((res) => {
         resolve(res);
       }).catch( async (err) => {
-        console.log(err);
+        log.error(err);
         if (err.message === 'AUTH.MSG.VALIDATION_EXPIRED_ERROR') {
           await Authentication.refreshAPI(Authentication.getRefreshToken());
           resolve(callGRPC(callBuilder))

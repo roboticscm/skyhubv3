@@ -53,7 +53,7 @@
         }
       })
       .catch((err) => {
-        console.log(err)
+        log.error(err)
         searching$.next(false);
         snackbarRef && snackbarRef.show(T(`SYS.MSG.AUTHENTICATION_ERROR`));
       });

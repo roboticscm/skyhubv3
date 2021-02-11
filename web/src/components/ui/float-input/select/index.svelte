@@ -83,10 +83,10 @@
     return new Observable((observer) => {
       SettingsStore.getUserSettings({ elementId: id, menuPath, key: 'lastSelected' })
         .then((res) => {
-          if (res.data.length > 0) {
-            if (res.data[0].key === 'lastSelected') {
-              _selectedId = res.data[0].value;
-              value = res.data[0].value;
+          if (res.length > 0) {
+            if (res[0].key === 'lastSelected') {
+              _selectedId = res[0].value;
+              value = res[0].value;
             }
           }
 

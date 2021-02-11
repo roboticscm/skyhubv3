@@ -171,4 +171,4 @@
     </div>
   </svelte:component>
 </Modal>
-<ViewLogDetailsModal id={id + 'Details'} bind:this={viewLogDetailsModalRef} {menuPath} />
+<ViewLogDetailsModal containerWidth="500px" id={id + 'Details'} bind:this={viewLogDetailsModalRef} {menuPath} />

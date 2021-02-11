@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package menu;
+option go_package = ".;pt";
+
+import "google/api/annotations.proto";
+import "proto/menu/menu_message.proto";
+import "google/protobuf/empty.proto";
+
+message FindMenuRequest {
+    int64 department_id = 1 [ jstype = JS_STRING];
+}
+
+message FindMenuResponse {
+    repeated Menu data = 1;
+}
+
+message UpsertMenuHistoryRequest {
+    int64 menu_id = 1 [ jstype = JS_STRING];
+    int64 dep_id = 2 [ jstype = JS_STRING];
+}
+
+message FindMenuControlRequest {
+    string menu_path = 1;
+}
+
+message FindMenuControlResponseItem {
+    int64 control_id = 1 [ jstype = JS_STRING];
+    string code = 2;
+    string name = 3;
+    bool checked = 4;
+}
+
+message FindMenuControlResponse {
+    repeated FindMenuControlResponseItem data = 1;
+}
+
+message MenuControl {
+    int64 control_id = 1 [ jstype = JS_STRING];
+    bool checked = 2;
+}
+
+message SaveOrDeleteMenuControlRequest {
+    string menu_path = 1;
+    repeated MenuControl menu_controls = 2;
+}
+
+service MenuService {
+    rpc FindHandler(FindMenuRequest) returns (FindMenuResponse) {
+        option (google.api.http) = {
+            get : "/menu"
+        };
+    };
+
+    rpc FindMenuControlHandler(FindMenuControlRequest) returns (FindMenuControlResponse) {
+        option (google.api.http) = {
+            get : "/menu/control"
+        };
+    };
+
+    rpc SaveOrDeleteMenuControlHandler(SaveOrDeleteMenuControlRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post : "/menu/control"
+            body: "*"
+        };
+    };
+
+    rpc UpsertMenuHistoryHandler(UpsertMenuHistoryRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post : "/menu/history"
+            body: "*"
+        };
+    };
+}

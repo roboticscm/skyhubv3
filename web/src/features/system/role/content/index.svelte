@@ -16,15 +16,12 @@
   import FloatTextInput from 'src/components/ui/float-input/text-input';
   import Error from 'src/components/ui/error';
   import SC from 'src/components/set-common';
-  import { errorSection } from 'src/lib/debug';
   import BackIcon from 'src/icons/back24x16.svelte';
   import { Role } from '../types';
   import { LoginInfo } from 'src/store/login-info';
   import { NotifyListener } from 'src/store/notify-listener';
   import { SkyLogStore } from 'src/store/skylog';
-  import { grpcRoleClient } from 'src/lib/grpc';
   import { UpsertRoleRequest } from 'src/pt/proto/role/role_service_pb';
-  import { protoFromObject } from 'src/lib/grpc';
 
   // Props
   export let view;
@@ -209,7 +206,7 @@
         switchMap((_) => {
           /*Call grpc on server*/
           saveRunning$.next(true);
-          return fromPromise(grpcUpsert()).pipe(
+          return fromPromise(store.grpcUpsert(UpsertRoleRequest, form.data())).pipe(
             catchError((error) => {
               return of({ hasError: true, error });
             }),
@@ -220,7 +217,7 @@
         /* do something after form submit*/
         next: (res) => {
           if (res.hasError) {
-            console.log(res.error);
+            log.error(res.error);
             //error occured
             form.errors.errors = form.recordErrors(res.error);
           } else {
@@ -242,23 +239,18 @@
           saveRunning$.next(false);
         },
         error: (error) => {
-          errorSection(error);
+          log.errorSection("Role form", error);
           saveRunning$.next(false);
         },
       });
   };
 
-  const grpcUpsert = () => {
-    return new Promise((resolve, reject) => {
-      const req = protoFromObject(UpsertRoleRequest, form.data());
-      grpcRoleClient
-        .upsertHandler(req)
-        .then((res) => {
-          resolve(res);
-        })
-        .catch((err) => reject(err));
-    });
-  };
+  // const grpcUpsert = () => {
+  //   return callGRPC(() => {
+  //     const req = protoFromObject(UpsertRoleRequest, form.data());
+  //     return grpcRoleClient.upsertHandler(req, defaultHeader);
+  //   });
+  // };
 
   const doSelect = (data) => {
     selectedData = data;
@@ -367,7 +359,7 @@
   // ============================== //HOOK ==========================
 
   const onClickTest = () => {
-    console.log('aaaa');
+    log.info('aaaa');
   };
 </script>
 
@@ -491,7 +483,6 @@
           on:check={onCheckOrgTree}
           bind:this={orgTreeRef}
           id={'orgTree' + view.getViewName() + 'Id'}
-          name="orgId"
           data={$dataList$}
           disabled={$isReadOnlyMode$}
           radioType="all">

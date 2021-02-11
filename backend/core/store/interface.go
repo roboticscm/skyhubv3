@@ -2,6 +2,7 @@ package store
 
 import (
 	"suntech.com.vn/skygroup/models"
+	"suntech.com.vn/skygroup/pt"
 )
 
 //AuthStore interface
@@ -27,5 +28,25 @@ type RoleStore interface {
 type UserSettingsStore interface {
 	FindInitial(userID int64) (*models.InitialUserSetting, error)
 	Find(userID int64, branchID int64, menuPath, elementID, key, keys string) ([]models.UserSetting, error)
-	Upsert(userID int64, branchID int64, menuPath string, keys []string, values []string) error
+	Upsert(userID int64, req *pt.UpsertUserSettingsRequest, keys []string, values []string) error
+}
+
+//OrgStore interface
+type OrgStore interface {
+	FindBranch(userID int64, fromOrgType, toOrgType int32, includeDisabled, includeDeleted bool) ([]*pt.FindBranchResponseItem, error)
+	FindDepartment(branchID, userID int64) ([]*pt.FindDepartmentResponseItem, error)
+	FindLastDepartment(branchID, userID int64) (*pt.FindLastDepartmentResponse, error)
+}
+
+//LanguageStore interface
+type LanguageStore interface {
+	Find() ([]*models.Language, error)
+}
+
+//MenuStore interface
+type MenuStore interface {
+	Find(userID, departmentID int64) ([]*pt.Menu, error)
+	UpsertMenuHistory(userID, menuID, depID int64) error
+	FindMenuControl(menuPath string) ([]*pt.FindMenuControlResponseItem, error)
+	SaveOrDeleteMenuControl(userID int64, menuPath string, menuControls []*pt.MenuControl) error
 }

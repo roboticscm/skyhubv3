@@ -23,7 +23,7 @@
       menuPath,
       elementId: 'leftForm',
     }).then((res) => {
-      const found = res.data.find((it) => it.key === 'lastLeftWidth');
+      const found = res.find((it) => it.key === 'lastLeftWidth');
 
       let leftWidth = defaultLeftWidth;
       if (found) {

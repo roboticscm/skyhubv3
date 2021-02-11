@@ -1,5 +1,4 @@
 import { T } from 'src/lib//locale';
-import { error } from '../debug';
 
 export class Errors {
   constructor() {
@@ -30,7 +29,7 @@ export class Errors {
       if (el) {
         el && el.focus();
       } else {
-        error(`Can not find element with id: ${firstError}`);
+        log.error(`Can not find element with id: ${firstError}`);
       }
     }
   }

@@ -47,7 +47,7 @@
   };
 
   const saveHistorySettings = (depId, menuId) => {
-    MenuStore.saveOrUpdateMenuHistory(depId, menuId).subscribe();
+    MenuStore.upsertMenuHistory(depId, menuId);
   };
 
   const onMouseoverMore = () => {

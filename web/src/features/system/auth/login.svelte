@@ -19,13 +19,13 @@
 
     QRCode.toCanvas(qrcodeRef, App.NAME, { margin: 0, version: 1 }, function(error) {
       if (error) {
-        console.error(error);
+        log.error(error);
       }
     });
   });
 
   const onRegister = () => {
-    console.log('register');
+    log.info('register');
   };
 </script>
 

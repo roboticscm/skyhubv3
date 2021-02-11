@@ -64,14 +64,14 @@
   {menuPath}
   id={'conflictData' + view.getViewName() + 'Modal'}
   bind:this={_confirmConflictDataModalRef} />
-<ConfirmModal modalType={ModalType.Confirm} {menuPath} bind:this={_confirmModalRef} />
+<ConfirmModal id={'confirm' + view.getViewName() + 'Modal'} modalType={ModalType.Confirm} {menuPath} bind:this={_confirmModalRef} />
 <ConfirmDeleteModal
   id="mdConfirmDeleteModal"
   title={T('SYS.LABEL.DELETE')}
   modalType={ModalType.Confirm}
   {menuPath}
   bind:this={_confirmDeleteModalRef} />
-<ConfirmPasswordModal modalType={ModalType.ConfirmPassword} {menuPath} bind:this={_confirmPasswordModalRef} />
+<ConfirmPasswordModal id={'confirmPassword' + view.getViewName() + 'Modal'} modalType={ModalType.ConfirmPassword} {menuPath} bind:this={_confirmPasswordModalRef} />
 <ConfigModal
   {menuPath}
   subTitle={view.getViewTitle()}

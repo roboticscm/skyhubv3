@@ -1,6 +1,8 @@
 import { OrgStore } from '../org/store';
 import { catchError, first, skip } from 'rxjs/operators';
 import { BehaviorSubject, forkJoin, of } from 'rxjs';
+import { protoFromObject, callGRPC, grpcRoleClient } from 'src/lib/grpc';
+import { defaultHeader } from 'src/lib/authentication';
 
 export class Store {
   constructor(viewStore) {
@@ -16,8 +18,15 @@ export class Store {
     ]);
   }
   findOrgTree() {
-    OrgStore.findBranches(false, 1, 100).subscribe((res) => {
-      this.dataList$.next(res.data);
+    OrgStore.findBranches(false, 1, 100).then((res) => {
+      this.dataList$.next(res);
     });
   }
+
+  grpcUpsert (UpsertRoleRequestClass, data) {
+    return callGRPC(() => {
+      const req = protoFromObject(new UpsertRoleRequestClass(), data);
+      return grpcRoleClient.upsertHandler(req, defaultHeader);
+    });
+  };
 }

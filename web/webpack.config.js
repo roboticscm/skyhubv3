@@ -20,7 +20,7 @@ const smp = new SpeedMeasurePlugin();
 const alias = {
       svelte: path.resolve('node_modules', 'svelte'),
       'src': path.resolve(__dirname, 'src'),
-      'd': path.resolve(__dirname, 'src/lib/debug'),
+      'log': path.resolve(__dirname, 'src/lib/log'),
       // 'bignumber.js$': 'bignumber.js/bignumber.js',
     };
 const  HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -171,7 +171,7 @@ module.exports = smp.wrap({
     new webpack.ProvidePlugin({
       j: 'jquery',
       jQuery: 'jquery',
-      'd': 'd'
+      'log': 'log'
     }),
 
     new HtmlWebpackPlugin({
@@ -191,7 +191,7 @@ module.exports = smp.wrap({
     new webpack.ProvidePlugin({
       j: 'jquery',
       jQuery: 'jquery',
-      'd': 'd'
+      'log': 'log'
     }),
 
     new HtmlWebpackPlugin({

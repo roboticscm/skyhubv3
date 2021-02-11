@@ -5,7 +5,6 @@ import { skip, catchError, first } from 'rxjs/operators';
 import { App } from 'src/lib/constants';
 import { TableUtilStore } from 'src/store/table-util';
 import { T } from 'src/lib/locale';
-import { errorSection } from 'src/lib/debug';
 import { ButtonPressed } from 'src/components/ui/button/types';
 import { getDiffFieldsObject, SObject } from 'src/lib/sobject';
 import { MenuControlStore } from 'src/store/menu-control';
@@ -164,7 +163,7 @@ export class ViewStore {
     let eleId = null;
     if (typeof event === 'object') {
       if (StringUtil.isEmpty(event.currentTarget.id)) {
-        errorSection('hasPermission', `ID of ${event.currentTarget} was not set`);
+        log.errorSection('hasPermission', `ID of ${event.currentTarget} was not set`);
         return false;
       }
       eleId = event.currentTarget.id;
@@ -178,7 +177,7 @@ export class ViewStore {
     let eleId = null;
     if (typeof event === 'object') {
       if (StringUtil.isEmpty(event.currentTarget.id)) {
-        errorSection(property, `ID of ${event.currentTarget} was not set`);
+        log.errorSection(property, `ID of ${event.currentTarget} was not set`);
         return false;
       }
       eleId = event.currentTarget.id;
@@ -214,7 +213,7 @@ export class ViewStore {
 
     return new Promise((resolve, reject) => {
       if (StringUtil.isEmpty(id)) {
-        errorSection('Verify Action', 'ID not defined');
+        log.errorSection('Verify Action', 'ID not defined');
         reject('fail');
       }
       // check permission
@@ -461,8 +460,8 @@ export class ViewStore {
     };
 
     this.verifyAction(buttonId, confirmCallback, scRef.confirmPasswordModalRef()).then((_) => {
-      MenuControlStore.findMenuControl(this.menuPath).subscribe((res) => {
-        const data = SObject.convertArrayFieldsToCamelCase(res.data);
+      MenuControlStore.findMenuControl(this.menuPath).then((res) => {
+        const data = res.toObject().dataList;
         scRef
           .configModalRef()
           .show(data)
@@ -479,8 +478,6 @@ export class ViewStore {
                   MenuControlStore.saveOrDelete({
                     menuPath: this.menuPath,
                     menuControls: dataChanged,
-                  }).subscribe((_) => {
-                    // location.reload();
                   });
                 }
               }

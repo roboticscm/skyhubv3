@@ -270,9 +270,9 @@
     const headerEle = window['$'](`#${id} thead tr th`);
 
     SettingsStore.getUserSettings({ element: id, menuPath }).then((res) => {
-      if (res.data && res.data.length > 0) {
+      if (res && res.length > 0) {
         headerEle.each(function(col) {
-          const filter = res.data.filter((it) => it.key === `col${col}`);
+          const filter = res.filter((it) => it.key === `col${col}`);
           if (filter && filter.length > 0) {
             window['$'](this).width(+filter[0].value);
           }

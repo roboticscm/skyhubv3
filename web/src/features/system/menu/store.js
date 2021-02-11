@@ -1,27 +1,25 @@
 import { BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { RxHttp } from 'src/lib/rx-http';
-import { BaseUrl } from 'src/lib/constants';
+
+import { callGRPC, protoFromObject, grpcMenuClient } from 'src/lib/grpc';
+import { defaultHeader } from 'src/lib/authentication';
+import { FindMenuRequest, UpsertMenuHistoryRequest } from 'src/pt/proto/menu/menu_service_pb';
 
 export class MenuStore {
   static menu$ = new BehaviorSubject();
 
-  static findRoledMenu(depId) {
-    return RxHttp.get({
-      baseUrl: BaseUrl.SYSTEM,
-      url: `menu?depId=${depId}`,
-    }).pipe(
-      tap((res) => {
-        MenuStore.menu$.next(res.data);
-      }),
-    );
+  static findRoledMenu(departmentId) {
+    return callGRPC(() => {
+      const req = protoFromObject(new FindMenuRequest(), { departmentId })
+        return grpcMenuClient.findHandler(req, defaultHeader).then((res) => {
+          MenuStore.menu$.next(res.toObject().dataList);
+        });
+    });
   }
 
-  static saveOrUpdateMenuHistory(depId, menuId) {
-    return RxHttp.post({
-      baseUrl: BaseUrl.SYSTEM,
-      url: `menu-history`,
-      jsonData: { depId, menuId },
+  static upsertMenuHistory(depId, menuId) {
+    return callGRPC(() => {
+      const req = protoFromObject(new UpsertMenuHistoryRequest(), { depId, menuId });
+      return grpcMenuClient.upsertMenuHistoryHandler(req, defaultHeader);
     });
   }
 }

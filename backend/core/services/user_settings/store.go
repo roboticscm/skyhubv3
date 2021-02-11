@@ -7,7 +7,9 @@ import (
 
 	"github.com/lib/pq"
 	"suntech.com.vn/skygroup/models"
+	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skylib/skydba.git/skydba"
+	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 //Store struct
@@ -93,19 +95,33 @@ func (store *Store) Find(userID int64, branchID int64, menuPath, elementID, key,
 }
 
 //Upsert function
-func (store *Store) Upsert(userID, branchID int64, menuPath string, keys []string, values []string) error {
+func (store *Store) Upsert(userID int64, req *pt.UpsertUserSettingsRequest, keys []string, values []string) error {
 	for index, key := range keys {
-		userSetting := models.UserSetting{
-			AccountId: &userID,
-			BranchId:  &branchID,
-			MenuPath:  &menuPath,
-			Key:       &key,
-			Value:     &values[index],
+		var userSetting models.UserSetting
+
+		skyutl.ProtoStructConvert(req, &userSetting)
+		userSetting.AccountId = &userID
+		userSetting.Key = &key
+		userSetting.Value = &values[index]
+
+		var filterBranchID, filterMenuPath, filterElementID interface{}
+
+		if userSetting.BranchId != nil {
+			filterBranchID = *userSetting.BranchId
+		}
+
+		if userSetting.MenuPath != nil {
+			filterMenuPath = *userSetting.MenuPath
+		}
+
+		if userSetting.ElementId != nil {
+			filterElementID = *userSetting.ElementId
 		}
 		_, err := store.q.Upsert(&userSetting, map[string]interface{}{
 			"account_id": userID,
-			"branch_id":  branchID,
-			"menu_path":  menuPath,
+			"branch_id":  filterBranchID,
+			"menu_path":  filterMenuPath,
+			"element_id": filterElementID,
 			"key":        key,
 		})
 

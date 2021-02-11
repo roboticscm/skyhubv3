@@ -21,7 +21,7 @@
   };
 
   const onClickTree = (e) => {
-    console.log(e.detail);
+    log.info(e.detail);
   };
 
   const checkSelectedBranch = () => {
