@@ -1,0 +1,15 @@
+syntax= "proto3";
+
+package notify;
+
+option go_package = ".;pt";
+
+import "google/protobuf/empty.proto";
+
+message DatabaseListenerResponse {
+    string json = 1;
+}
+
+service NotifyService {
+    rpc DatabaseListenerHandler(google.protobuf.Empty) returns (stream DatabaseListenerResponse){}
+}

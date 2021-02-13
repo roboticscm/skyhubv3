@@ -9,6 +9,7 @@ import { MenuServicePromiseClient } from "src/pt/proto/menu/menu_service_grpc_we
 import { SearchUtilServicePromiseClient } from "src/pt/proto/search_util/search_util_service_grpc_web_pb";
 import { SkylogServicePromiseClient } from "src/pt/proto/skylog/skylog_service_grpc_web_pb";
 import { TableUtilServicePromiseClient } from "src/pt/proto/table_util/table_util_service_grpc_web_pb";
+import { NotifyServicePromiseClient } from "src/pt/proto/notify/notify_service_grpc_web_pb";
 import _, { lowerFirst } from 'lodash';
 import { Authentication } from './authentication';
 
@@ -22,6 +23,7 @@ export const grpcMenuClient = new MenuServicePromiseClient(BaseUrl.GRPC_CORE);
 export const grpcSearchUtilClient = new SearchUtilServicePromiseClient(BaseUrl.GRPC_CORE);
 export const grpcSkylogClient = new SkylogServicePromiseClient(BaseUrl.GRPC_CORE);
 export const grpcTableUtilClient = new TableUtilServicePromiseClient(BaseUrl.GRPC_CORE);
+export const grpcNotifyClient = new NotifyServicePromiseClient(BaseUrl.GRPC_CORE);
 
 export const protoFromObject = (protoObj, plainObj, path) => {
     for (const fieldName in plainObj) {

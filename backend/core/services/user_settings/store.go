@@ -84,7 +84,6 @@ func (store *Store) Find(userID int64, branchID int64, menuPath, elementID, key,
 	}
 
 	sqlStr := strings.Join(_sql, " ")
-
 	var userSettings []models.UserSetting
 	q := skydba.DefaultQuery()
 	if err := q.Query(sqlStr, values, &userSettings); err != nil {

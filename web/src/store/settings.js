@@ -44,12 +44,13 @@ export class SettingsStore {
       return new Promise((resolve, reject) => {
         const req = new protobuf.Empty();
         return grpcUserSettingsClient.findInitialHandler(req, defaultHeader).then((res) => {
-          res = res.toObject()
+          res = res.toObject();
           LoginInfo.companyId$.next(res.companyId);
           LoginInfo.companyName$.next(res.companyName);
           LoginInfo.branchId$.next(`${res.branchId}`);
           LoginInfo.branchName$.next(res.branchName);
           LoginInfo.departmentId$.next(`${res.departmentId}`);
+          // LoginInfo.theme$.next(res.theme);
           // load branch
           OrgStore.findBranches();
 

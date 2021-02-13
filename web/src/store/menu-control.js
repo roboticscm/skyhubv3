@@ -1,6 +1,6 @@
 import { callGRPC, protoFromObject, grpcMenuClient } from 'src/lib/grpc';
 import { defaultHeader } from 'src/lib/authentication';
-import { FindMenuControlRequest, SaveOrDeleteMenuControlRequest, MenuControl } from 'src/pt/proto/menu/menu_service_pb';
+import { FindMenuControlRequest, SaveOrDeleteMenuControlRequest } from 'src/pt/proto/menu/menu_service_pb';
 
 export class MenuControlStore {
   static findMenuControl(menuPath) {

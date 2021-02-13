@@ -66,12 +66,14 @@ func StartRESTServer(listener net.Listener, endpoint string, mapFunc map[string]
 		fnKey := strings.Replace(reflect.TypeOf(service).String(), "*", "", 1)
 		fnValues := mapFunc[fnKey]
 		if len(fnValues) > 1 {
-			fn := reflect.ValueOf(fnValues["rest"])
-			fn.Call(params)
-			res := fn.Call(params)
+			if fnValues["rest"] != nil {
+				fn := reflect.ValueOf(fnValues["rest"])
+				fn.Call(params)
+				res := fn.Call(params)
 
-			if err := res[0].Interface(); err != nil {
-				log.Fatal("Cannot register service: ", err)
+				if err := res[0].Interface(); err != nil {
+					log.Fatal("Cannot register service: ", err)
+				}
 			}
 		}
 	}

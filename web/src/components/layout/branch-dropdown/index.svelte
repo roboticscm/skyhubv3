@@ -15,10 +15,10 @@
 
   $: if ($branchId$) {
     SettingsStore.getUserSettings({
-      keys: ['theme'],
-    }).then((res) => {
-      if (res.data && res.data.length > 0) {
-        LoginInfo.theme$.next(res.data[0].value);
+      key: 'theme',
+    }, false).then((res) => {
+      if (res && res.length > 0) {
+        LoginInfo.theme$.next(res[0].value);
       } else {
         LoginInfo.theme$.next('ivory');
       }

@@ -101,7 +101,6 @@
         ExcelGridComponent = res.default;
         resolve(modalRef.show());
       });
-      // @ts-ignore
     }).then((buttonPressed) => {
       if (buttonPressed === ButtonPressed.ok) {
         theme$.next(currentTheme);
@@ -137,7 +136,7 @@
     SettingsStore.saveUserSettings({
       keys: ['theme'],
       values: [currentTheme],
-    });
+    }, false);
   };
 
   const saveAccountSettings = () => {

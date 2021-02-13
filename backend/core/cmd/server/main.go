@@ -7,7 +7,9 @@ import (
 	"net"
 	"os"
 	"strings"
+	"time"
 
+	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 	"suntech.com.vn/skygroup/cmd/server/server_helper"
 	"suntech.com.vn/skygroup/config"
@@ -17,6 +19,7 @@ import (
 	"suntech.com.vn/skygroup/services/language"
 	"suntech.com.vn/skygroup/services/locale_resource"
 	"suntech.com.vn/skygroup/services/menu"
+	"suntech.com.vn/skygroup/services/notify"
 	"suntech.com.vn/skygroup/services/org"
 	"suntech.com.vn/skygroup/services/role"
 	"suntech.com.vn/skygroup/services/search_util"
@@ -52,6 +55,26 @@ func moveLogFiles(folder string) error {
 	return nil
 }
 
+func notifyListener(conf *config.Configuration, service *notify.Service) {
+	reportProblem := func(ev pq.ListenerEventType, err error) {
+		if err != nil {
+			skylog.Error(err)
+		}
+	}
+
+	connectionStr := fmt.Sprintf("user=%v password=%v host=%v port=%v dbname=%v sslmode=disable", conf.DBUser, conf.DBPassword, conf.DBServer, conf.DBPort, conf.DBName)
+	listener := pq.NewListener(connectionStr, 10*time.Second, time.Minute, reportProblem)
+	err := listener.Listen("event_channel")
+	if err != nil {
+		skylog.Error(err)
+	}
+
+	skylog.Info("Start monitoring PostgreSQL...")
+	for {
+		notify.WaitForNotification(listener, service)
+	}
+}
+
 func init() {
 	if err := moveLogFiles("saved_log"); err != nil {
 		skylog.Error(err)
@@ -81,8 +104,13 @@ func init() {
 	mapFunc["search_util.Service"] = map[string]interface{}{"grpc": pt.RegisterSearchUtilServiceServer, "rest": pt.RegisterSearchUtilServiceHandlerFromEndpoint, "instance": search_util.NewService(search_util.DefaultStore())}
 	mapFunc["skylog.Service"] = map[string]interface{}{"grpc": pt.RegisterSkylogServiceServer, "rest": pt.RegisterSkylogServiceHandlerFromEndpoint, "instance": sky_log.NewService(sky_log.DefaultStore())}
 	mapFunc["table_util.Service"] = map[string]interface{}{"grpc": pt.RegisterTableUtilServiceServer, "rest": pt.RegisterTableUtilServiceHandlerFromEndpoint, "instance": table_util.NewService(table_util.DefaultStore())}
+	dbLisnterService := notify.NewService()
+	mapFunc["notify.Service"] = map[string]interface{}{"grpc": pt.RegisterNotifyServiceServer, "rest": nil, "instance": dbLisnterService}
 	//...
 	//End add more service
+	dbLisnterService.Start()
+	// notify listener postgres
+	go notifyListener(&conf, dbLisnterService)
 }
 func main() {
 
