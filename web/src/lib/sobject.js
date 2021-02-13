@@ -1,5 +1,5 @@
 import { StringUtil } from 'src/lib/string-util';
-
+import _, { lowerFirst } from 'lodash';
 import { SJSON } from 'src/lib/sjson';
 
 export class SObject {
@@ -156,23 +156,22 @@ export class SObject {
 
   static convertFieldsToCamelCase(obj) {
     for (let field in obj) {
-      if (field.includes('_')) {
-        const newField = StringUtil.snakeToCamelCase(field);
-        obj[newField] = obj[field];
-        delete obj[field];
+      let fieldValue = obj[field];
+      if (_.isObject(fieldValue)) {  
+        SObject.convertFieldsToCamelCase(fieldValue)
+      } else if (_.isArray(fieldValue)) {
+        for (const row of fieldValue) {
+          SObject.convertFieldsToCamelCase(row)
+        }
+      } else {
+        if (field.includes('_')) {
+          const newField = StringUtil.snakeToCamelCase(field);
+          obj[newField] = fieldValue;
+          delete obj[field];
+        }
       }
     }
-
     return obj;
-  }
-
-  static convertArrayFieldsToCamelCase(array) {
-    const result = [];
-    for (let row of array) {
-      result.push(SObject.convertFieldsToCamelCase(row));
-    }
-
-    return result;
   }
 
   static removeHtmlTagArrayObject(arrObj) {

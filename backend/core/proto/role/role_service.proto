@@ -18,6 +18,26 @@ message UpsertRoleResponse {
     Role data = 1;
 }
 
+
+message FindRoleControlRequest {
+  int64 dep_id = 1 [jstype=JS_STRING];
+  string menu_path = 2;
+}
+
+message FindRoleControlResponseItem {
+  bool full_control = 1;
+  int64 control_id = 2 [jstype=JS_STRING];
+  string control_code  = 3;
+  bool render_control = 4;
+  bool disable_control = 5;
+  bool confirm = 6;
+  bool require_password = 7;
+}
+
+message FindRoleControlResponse {
+  repeated FindRoleControlResponseItem data = 1;
+}
+
 service RoleService {
   rpc UpsertHandler(UpsertRoleRequest) returns (UpsertRoleResponse) {
     option (google.api.http) = {
@@ -25,4 +45,10 @@ service RoleService {
       body : "*"
     };
   };
+
+  rpc FindRoleControlHandler(FindRoleControlRequest) returns (FindRoleControlResponse) {
+    option (google.api.http) = {
+      get: "/role/control" 
+    };
+  }
 }

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package search_util;
+
+option go_package = ".;pt";
+
+import "google/api/annotations.proto";
+
+message FindSearchUtilRequest {
+    string menu_path = 1;
+}
+
+message FindSearchUtilResponse {
+    repeated string fields = 1;
+}
+
+service SearchUtilService {
+    rpc FindHandler(FindSearchUtilRequest) returns (FindSearchUtilResponse) {
+        option (google.api.http) = {
+            get : "/search-util"
+        };
+    }
+}

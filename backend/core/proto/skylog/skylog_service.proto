@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package skylog;
+
+option go_package = ".;pt";
+
+import "google/api/annotations.proto";
+import "proto/skylog/skylog_message.proto";
+import "google/protobuf/empty.proto";
+
+message FindSkylogRequest {
+    string menu_path = 1;
+    int64 start_date = 2;
+    int64 end_date = 3;
+}
+
+message FindSkylogResponseItem {
+    int64 id = 1 [jstype = JS_STRING];
+    int64 date = 2;
+    string user = 3;
+    string reason = 4;
+    string description = 5;
+    string short_description = 6;
+    string view = 7;
+}
+
+message FindSkylogResponse {
+    repeated FindSkylogResponseItem data = 1;
+}
+
+message SaveSkylogRequest {
+    Skylog skylog = 1;
+}
+
+service SkylogService {
+    rpc FindHandler(FindSkylogRequest) returns (FindSkylogResponse) {
+        option (google.api.http) = {
+            get : "/skylog"
+        };
+    }
+
+    rpc SaveHandler(SaveSkylogRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post : "/skylog"
+            body: "*"
+        };
+    }
+}

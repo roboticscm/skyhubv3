@@ -1,0 +1,22 @@
+POST http://localhost:9091/skylog?userId=1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTkwOTc0NDAsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJyb290IiwiZnVsbE5hbWUiOiJUT0RPLi4uIn0.cTMCzyQiS18QoIv4a0K0xUyEx-c5c9TGUYD3-wB0wB6OxbPft3KDJ65H1c3A0rmVn2eqpnQKno7ymyda_aQ23KYEc-iOUPgzH38cRDBE8Vf5Ul64rCLpZkUbhymH4_ORkVkiVr_MBpNbdAy4By2IJfa6E4kOZYPqkiqHI24q-Kc
+
+{
+    "skylog": {
+        "companyId": 1,
+        "branchId": 1,
+        "menuPath": "system/role",
+        "ipClient": "xxxx",
+        "device": "Desktop/laptop",
+        "os": "Mac",
+        "browser": "Chrome",
+        "description": "????",
+        "reason": "..."
+    }
+}
+
+####
+GET http://localhost:9091/skylog?menuPath=system/role&startDate=1&endDate=9999999999999999
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJGdWxsTmFtZSI6Ii8vVE9ETyIsIlVzZXJJZCI6IjEiLCJVc2VyTmFtZSI6InJvb3QiLCJleHAiOjE2MTY2NzE1NDl9.fztQxgrU81oBUIfOoajSiFLinnnEZMc7yaMG4gz83W9a2ycyBHXuhTamuteIRD2aYtJ58kblyhcjfvsIm0TzjLq8ArSWJ6Ug8q0IhcgM2zba5pjrqCBbdpDJc49mA0EX6pvijB8fLawjpp9Nvu3satMJza3_Mp-IgCPajEB2qR8

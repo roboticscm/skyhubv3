@@ -52,3 +52,25 @@ func (service *Service) UpsertHandler(ctx context.Context, req *pt.UpsertRoleReq
 		Data: &savedRole,
 	}, nil
 }
+
+//FindRoleControlHandler function
+func (service *Service) FindRoleControlHandler(ctx context.Context, req *pt.FindRoleControlRequest) (*pt.FindRoleControlResponse, error) {
+	userID, _ := skyutl.GetUserID(ctx)
+	depID := req.DepId
+	menuPath := req.MenuPath
+
+	if depID == 0 {
+		return nil, skyutl.Error400("SYS.MSG.MISSING_DEPARTMENT_ID", "", nil)
+	}
+
+	if menuPath == "" {
+		return nil, skyutl.Error400("SYS.MSG.MISSING_MENU_PATH", "", nil)
+	}
+
+	items, err := service.Store.FindRoleControl(depID, menuPath, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pt.FindRoleControlResponse{Data: items}, nil
+}

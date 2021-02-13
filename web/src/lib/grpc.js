@@ -6,6 +6,9 @@ import { OrgServicePromiseClient } from "src/pt/proto/org/org_service_grpc_web_p
 import { LanguageServicePromiseClient } from "src/pt/proto/language/language_service_grpc_web_pb";
 import { UserSettingsServicePromiseClient } from "src/pt/proto/user_settings/user_settings_service_grpc_web_pb";
 import { MenuServicePromiseClient } from "src/pt/proto/menu/menu_service_grpc_web_pb";
+import { SearchUtilServicePromiseClient } from "src/pt/proto/search_util/search_util_service_grpc_web_pb";
+import { SkylogServicePromiseClient } from "src/pt/proto/skylog/skylog_service_grpc_web_pb";
+import { TableUtilServicePromiseClient } from "src/pt/proto/table_util/table_util_service_grpc_web_pb";
 import _, { lowerFirst } from 'lodash';
 import { Authentication } from './authentication';
 
@@ -16,6 +19,9 @@ export const grpcOrgClient = new OrgServicePromiseClient(BaseUrl.GRPC_CORE);
 export const grpcLanguageClient = new LanguageServicePromiseClient(BaseUrl.GRPC_CORE);
 export const grpcUserSettingsClient = new UserSettingsServicePromiseClient(BaseUrl.GRPC_CORE);
 export const grpcMenuClient = new MenuServicePromiseClient(BaseUrl.GRPC_CORE);
+export const grpcSearchUtilClient = new SearchUtilServicePromiseClient(BaseUrl.GRPC_CORE);
+export const grpcSkylogClient = new SkylogServicePromiseClient(BaseUrl.GRPC_CORE);
+export const grpcTableUtilClient = new TableUtilServicePromiseClient(BaseUrl.GRPC_CORE);
 
 export const protoFromObject = (protoObj, plainObj, path) => {
     for (const fieldName in plainObj) {
@@ -47,8 +53,11 @@ export const protoFromObject = (protoObj, plainObj, path) => {
           }
         } 
       } else if (_.isObject(fieldValue)) {
+        let setMethodName = `set${_.upperFirst(_.camelCase(fieldName))}`;
         const service = require(`src/pt/proto/${path}`);
-        const newValue = new service.MenuControl();
+           
+        let subClassName = setMethodName.substr(3);
+        const newValue = new service[subClassName]();
         const subProtoObj = protoFromObject(newValue, fieldValue, path);
         protoObj[setMethodName](subProtoObj); 
       }

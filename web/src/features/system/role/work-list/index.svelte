@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher, onDestroy } from 'svelte';
-  import { forkJoin, Observable } from 'rxjs';
+  import { Observable } from 'rxjs';
+  import { fromPromise } from 'rxjs/internal-compatibility';
   import { switchMap, tap, filter } from 'rxjs/operators';
   import SimpleWorkList from 'src/components/work-list/simple-work-list';
   import { SObject } from 'src/lib/sobject';
@@ -28,21 +29,20 @@
       .pipe(
         filter((_) => selectedId !== undefined),
         tap((_) => view.loading$.next(true)),
-        switchMap((_) => forkJoin([view.getOneById(selectedId)])),
+        switchMap((_) => fromPromise(view.getOneById(selectedId))),
       )
       .subscribe((res) => {
         if (window.isSmartPhone) {
           isDetailPage$.next(true);
           setTimeout(() => {
-            const selectedData = SObject.convertFieldsToCamelCase(res[0].data[0]);
-            view.selectedData$.next(selectedData);
+            view.selectedData$.next(res);
 
-            detailTitle = getViewTitleFromMenuPath(menuPath) + ' - ' + selectedData.name;
+            detailTitle = getViewTitleFromMenuPath(menuPath) + ' - ' + res.name;
             view.loading$.next(false);
             selectedId = undefined;
           });
         } else {
-          view.selectedData$.next(SObject.convertFieldsToCamelCase(res[0].data[0]));
+          view.selectedData$.next(res);
           view.loading$.next(false);
           selectedId = undefined;
         }

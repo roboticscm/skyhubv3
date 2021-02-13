@@ -1,9 +1,11 @@
 package role
 
 import (
+	"encoding/json"
 	"sync"
 
 	"suntech.com.vn/skygroup/models"
+	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skylib/skydba.git/skydba"
 	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
@@ -83,4 +85,17 @@ func (store *Store) Upsert(userID int64, input models.Role) (*models.Role, error
 	ret := inserted.(*models.Role)
 	return ret, nil
 
+}
+
+//FindRoleControl function
+func (store *Store) FindRoleControl(depID int64, menuPath string, userID int64) ([]*pt.FindRoleControlResponseItem, error) {
+	var jsonOut string
+	const sql = `SELECT * FROM find_roled_control($1, $2, $3) as json`
+	if err := store.q.Query(sql, []interface{}{depID, menuPath, userID}, &jsonOut); err != nil {
+		return nil, err
+	}
+
+	var items []*pt.FindRoleControlResponseItem
+	json.Unmarshal([]byte(jsonOut), &items)
+	return items, nil
 }

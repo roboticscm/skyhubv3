@@ -16,7 +16,7 @@
   export let menuPath;
   export let viewablePage = 7;
 
-  const sizes = [2, 30, 50, 100, 200];
+  const sizes = [App.DEFAULT_PAGE_SIZE, 30, 50, 100, 200];
   let pageSize = sizes[0];
   let curPage = 1;
   let fromPage = 1;

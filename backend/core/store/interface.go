@@ -22,6 +22,7 @@ type LocaleResourceStore interface {
 //RoleStore interface
 type RoleStore interface {
 	Upsert(userID int64, input models.Role) (*models.Role, error)
+	FindRoleControl(depID int64, menuPath string, userID int64) ([]*pt.FindRoleControlResponseItem, error)
 }
 
 //UserSettingsStore interface
@@ -49,4 +50,25 @@ type MenuStore interface {
 	UpsertMenuHistory(userID, menuID, depID int64) error
 	FindMenuControl(menuPath string) ([]*pt.FindMenuControlResponseItem, error)
 	SaveOrDeleteMenuControl(userID int64, menuPath string, menuControls []*pt.MenuControl) error
+}
+
+//SearchUtilStore interface
+type SearchUtilStore interface {
+	Find(menuPath string) ([]string, error)
+}
+
+//SkyLogStore interface
+type SkyLogStore interface {
+	Find(menuPath string, startDate, endDate int64) ([]*pt.FindSkylogResponseItem, error)
+	Save(skylog models.SkyLog) error
+}
+
+//TableUtilStore interface
+type TableUtilStore interface {
+	FindSimpleList(tableName, columns, orderBy string, page, pageSize int32, onlyMe bool, userID int64, includeDisabled bool) (string, error)
+	GetOne(tableName string, id int64) (string, error)
+	HasAnyDeletedRecord(tableName string, onlyMe bool, userID int64) (string, error)
+	RestoreOrForeverDelete(tableName string, deleteIdsRef, restoreIdsRef interface{}, userID, companyID, branchID int64, menuPath, ipClient, device, os, browser string, reasonRef interface{}, fieldName string) error
+	FindDeletedRecords(tableName, columns string, onlyMe bool, userID int64) (string, error)
+	SoftDeleteMany(tableName, ids string, userID int64) (int64, error)
 }

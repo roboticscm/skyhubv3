@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package table_utl;
+
+option go_package = ".;pt";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+message FindSimpleListRequest {
+    string table_name = 1;
+	string columns = 2;
+	string order_by = 3;
+	int32 page = 4;
+	int32 page_size = 5;
+	bool only_me = 6;
+	bool include_disabled = 7;
+}
+
+message FindSimpleListResponse {
+    string json = 1;
+}
+
+message GetOneTableUtilRequest {
+    int64 id = 1 [ jstype = JS_STRING];
+    string table_name = 2;
+}
+
+message GetOneTableUtilResponse {
+    string json = 1;
+}
+
+message HasAnyDeletedRecordRequest {
+    string table_name = 1;
+    bool only_me = 2;
+}
+
+message HasAnyDeletedRecordResponse {
+    string json = 1;
+}
+
+message RestoreOrForeverDeleteRequest {
+    string table_name = 1;
+	int64 company_id = 2 [ jstype = JS_STRING];
+	int64 branch_id = 3 [ jstype = JS_STRING];
+	string menu_path = 4;
+	string ip_client = 5;
+	string device = 6;
+	string os = 7;
+	string browser = 8;
+	string field_name = 9;
+	string delete_ids = 10;
+	string restore_ids = 11;
+	string reason = 12;
+}
+
+
+message FindDeletedRecordsRequest {
+    string table_name = 1;
+    string columns = 2;
+    bool only_me = 3;
+}
+
+message FindDeletedRecordsResponse {
+    string json = 1;
+}
+
+message SoftDeleteManyRequest {
+    string table_name = 1;
+	string ids = 2;
+}
+
+message SoftDeleteManyResponse {
+    int64 effected_rows = 1;
+}
+
+service TableUtilService {
+    rpc FindSimpleListHandler(FindSimpleListRequest) returns (FindSimpleListResponse) {
+        option (google.api.http) = {get : "/table-util/simple-list"};
+    }
+
+    rpc GetOneHandler(GetOneTableUtilRequest) returns (GetOneTableUtilResponse) {
+        option (google.api.http) = {get : "/table-util/{id}"};
+    }
+
+    rpc HasAnyDeletedRecordHandler(HasAnyDeletedRecordRequest) returns (HasAnyDeletedRecordResponse) {
+        option (google.api.http) = {get : "/table-util/has-any-deleted-record"};
+    }
+
+    rpc RestoreOrForeverDeleteHandler(RestoreOrForeverDeleteRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            put : "/table-util/restore-or-forever-delete"
+        };
+    }
+
+    rpc FindDeletedRecordsHandler(FindDeletedRecordsRequest) returns (FindDeletedRecordsResponse) {
+        option (google.api.http) = {
+            get : "/table-util/find-deleted-records"
+        };
+    }
+
+    rpc SoftDeleteManyHandler(SoftDeleteManyRequest) returns (SoftDeleteManyResponse) {
+        option (google.api.http) = {
+            delete : "/table-util"
+        };
+    }
+}
+

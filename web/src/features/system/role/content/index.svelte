@@ -223,7 +223,7 @@
           } else {
             // success
             if ($isUpdateMode$) {
-              SkyLogStore.save(selectedData.name, { action: 'EDIT', payload: dataChanged }).subscribe();
+              SkyLogStore.save(selectedData.name, { action: 'EDIT', payload: dataChanged });
               // update
               scRef.snackbarRef().showUpdateSuccess();
               if (!window.isSmartPhone) {

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package skylog;
+
+option go_package = ".;pt";
+
+message Skylog {
+    int64 id = 1 [ jstype = JS_STRING];
+    int64 company_id = 2 [ jstype = JS_STRING];
+    int64 branch_id = 3 [ jstype = JS_STRING];
+    string menu_path = 4;
+    string ip_client = 5;
+    string device = 6;
+    string os = 7;
+    string browser = 8;
+    string short_description = 9;
+    string description = 10;
+    string reason = 11;
+}

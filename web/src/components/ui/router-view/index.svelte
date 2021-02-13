@@ -3,10 +3,10 @@
   import Page404 from 'src/pages/404/index.svelte';
   import PageLoading from 'src/pages/loading/index.svelte';
   import { onMount } from 'svelte';
-  import { forkJoin } from 'rxjs';
   import { LoginInfo } from 'src/store/login-info';
   import { RoleControlStore } from 'src/store/role-control';
   import { SearchUtilStore } from 'src/store/search-util';
+  import { log } from 'qrcode/lib/core/galois-field';
 
   let TheComponent;
   const { currentComponentUri$ } = routerLinkStore;
@@ -30,17 +30,19 @@
   };
 
   const loadRoleControlAndSearchField = (uri) => {
-    const roleControl$ = RoleControlStore.findRoleControls(LoginInfo.departmentId$.value, menuPath);
+    const roleControl = RoleControlStore.findRoleControls(LoginInfo.departmentId$.value, menuPath);
+    const searchField = SearchUtilStore.findSearchFields(menuPath);
 
-    const searchField$ = SearchUtilStore.findSearchFields(menuPath);
+    Promise.all([roleControl, searchField]).then((res) => {
+      const rc = res[0].toObject().dataList;
+      searchFields = res[1].toObject().fieldsList;
 
-    forkJoin([roleControl$, searchField$]).subscribe((res) => {
-      if (res[0].data[0] && res[0].data[0].fullControl) {
+      if (rc[0].fullControl) {
         fullControl = true;
       } else {
-        roleControls = res[0].data;
+        roleControls = rc
       }
-      searchFields = res[1].data;
+
       loadComponent(uri);
     });
   };

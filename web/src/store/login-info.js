@@ -9,7 +9,7 @@ export class LoginInfo {
   static theme$ = new BehaviorSubject('ivory');
   static departmentId$ = new BehaviorSubject();
   static menuPath$ = new BehaviorSubject();
-  static ip = new BehaviorSubject();
+  static ip;
 
   static getUserId = () =>
     localStorage.getItem('remember') === 'true' ? localStorage.getItem('userId') : sessionStorage.getItem('userId');

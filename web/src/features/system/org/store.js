@@ -1,7 +1,4 @@
 import { BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { RxHttp } from 'src/lib/rx-http';
-import { BaseUrl } from 'src/lib/constants';
 import { callGRPC, protoFromObject, grpcOrgClient } from 'src/lib/grpc';
 import { FindBranchRequest, FindDepartmentRequest, FindLastDepartmentRequest } from 'src/pt/proto/org/org_service_pb';
 import { defaultHeader } from 'src/lib/authentication';

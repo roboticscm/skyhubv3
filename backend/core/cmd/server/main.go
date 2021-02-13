@@ -19,6 +19,9 @@ import (
 	"suntech.com.vn/skygroup/services/menu"
 	"suntech.com.vn/skygroup/services/org"
 	"suntech.com.vn/skygroup/services/role"
+	"suntech.com.vn/skygroup/services/search_util"
+	sky_log "suntech.com.vn/skygroup/services/skylog"
+	"suntech.com.vn/skygroup/services/table_util"
 	"suntech.com.vn/skygroup/services/user_settings"
 	"suntech.com.vn/skylib/skydba.git/skydba"
 	"suntech.com.vn/skylib/skylog.git/skylog"
@@ -75,6 +78,9 @@ func init() {
 	mapFunc["org.Service"] = map[string]interface{}{"grpc": pt.RegisterOrgServiceServer, "rest": pt.RegisterOrgServiceHandlerFromEndpoint, "instance": org.NewService(org.DefaultStore())}
 	mapFunc["language.Service"] = map[string]interface{}{"grpc": pt.RegisterLanguageServiceServer, "rest": pt.RegisterLanguageServiceHandlerFromEndpoint, "instance": language.NewService(language.DefaultStore())}
 	mapFunc["menu.Service"] = map[string]interface{}{"grpc": pt.RegisterMenuServiceServer, "rest": pt.RegisterMenuServiceHandlerFromEndpoint, "instance": menu.NewService(menu.DefaultStore())}
+	mapFunc["search_util.Service"] = map[string]interface{}{"grpc": pt.RegisterSearchUtilServiceServer, "rest": pt.RegisterSearchUtilServiceHandlerFromEndpoint, "instance": search_util.NewService(search_util.DefaultStore())}
+	mapFunc["skylog.Service"] = map[string]interface{}{"grpc": pt.RegisterSkylogServiceServer, "rest": pt.RegisterSkylogServiceHandlerFromEndpoint, "instance": sky_log.NewService(sky_log.DefaultStore())}
+	mapFunc["table_util.Service"] = map[string]interface{}{"grpc": pt.RegisterTableUtilServiceServer, "rest": pt.RegisterTableUtilServiceHandlerFromEndpoint, "instance": table_util.NewService(table_util.DefaultStore())}
 	//...
 	//End add more service
 }

@@ -75,8 +75,7 @@ export class ViewStore {
       pageSize: this.pageSize,
       onlyMe: this.onlyMe,
       includeDisabled: this.includeDisabled,
-    }).subscribe((res) => {
-      const data = res.data;
+    }).then((data) => {
       if (data.payload.length === 0 && this.page > 1) {
         this.page--;
         this.findSimpleList(textSearch);
@@ -105,26 +104,22 @@ export class ViewStore {
 
   doDelete = (id, snackbarRef, doAddNew) => {
     this.deleteRunning$.next(true);
-    TableUtilStore.softDeleteMany(this.tableName, [id]).subscribe({
-      next: (res) => {
-        const payload = {
-          ...this.selectedData$.value,
-          deletedBy: Authentication.getUsername(),
-          deletedAt: SDate.newDateInMilli(),
-        };
-        SkyLogStore.save(this.selectedData$.value.name, {
-          action: 'DELETE',
-          payload,
-        }).subscribe();
-        snackbarRef.showDeleteSuccess(res.data.deletedRows + ' ' + T('SYS.LABEL.RECORD'));
-      },
-      error: (err) => {
-        snackbarRef.show(err.message);
-      },
-      complete: () => {
-        doAddNew();
-        this.deleteRunning$.next(false);
-      },
+    TableUtilStore.softDeleteMany(this.tableName, [id]).then((res) => {
+      const payload = {
+        ...this.selectedData$.value,
+        deletedBy: Authentication.getUsername(),
+        deletedAt: SDate.newDateInMilli(),
+      };
+      SkyLogStore.save(this.selectedData$.value.name, {
+        action: 'DELETE',
+        payload,
+      });
+      snackbarRef.showDeleteSuccess(res.effectedRows + ' ' + T('SYS.LABEL.RECORD'));
+    }).catch((err) => {
+      snackbarRef.show(err.message);
+    }).finally(() => {
+      doAddNew();
+      this.deleteRunning$.next(false);
     });
   };
 
@@ -493,8 +488,9 @@ export class ViewStore {
     };
 
     this.verifyAction(buttonId, confirmCallback, scRef.confirmPasswordModalRef()).then((_) => {
-      SkyLogStore.findLog(this.menuPath).subscribe((res) => {
-        const data = res.data ? res.data.map((row) => {
+      SkyLogStore.findLog(this.menuPath).then((res) => {
+        res = res.toObject().dataList;
+        const data = res ? res.map((row) => {
           row.date = row.date ? SDate.convertMillisecondToDateTimeString(parseInt(row.date)) : '';
           row.action = JSON.parse(row.description).action;
           row.view = T('SYS.LABEL.VIEW');
@@ -509,11 +505,8 @@ export class ViewStore {
   };
 
   checkDeletedRecord = (onlyMe) => {
-    TableUtilStore.hasAnyDeletedRecord(this.tableName, onlyMe).subscribe((res) => {
-      const data = res.data;
-      if (data.length > 0) {
-        this.hasAnyDeletedRecord$.next(data[0].exists);
-      }
+    TableUtilStore.hasAnyDeletedRecord(this.tableName, onlyMe).then((res) => {
+      this.hasAnyDeletedRecord$.next(res);
     });
   };
 
@@ -530,9 +523,9 @@ export class ViewStore {
   };
 
   doShowTrashRestoreModal = (onlyMe, trashRestoreModalRef, snackbarRef) => {
-    TableUtilStore.findDeletedRecords(this.tableName, this.trashRestoreColumns, onlyMe).subscribe((res) => {
-      const newData = res.data
-        ? res.data.map((item, index) => {
+    TableUtilStore.findDeletedRecords(this.tableName, this.trashRestoreColumns, onlyMe).then((res) => {
+      const newData = res
+        ? res.map((item, index) => {
             item.restore = false;
             item.foreverDelete = false;
             item.deletedDate = SDate.convertMillisecondToDateTimeString(item.deletedDate);
@@ -563,7 +556,7 @@ export class ViewStore {
                 .map((it) => it.id)
                 .join(',');
 
-              TableUtilStore.restoreOrForeverDeleteWithLog(this.tableName, deletedIds, restoreIds).subscribe(() => {
+              TableUtilStore.restoreOrForeverDeleteWithLog(this.tableName, deletedIds, restoreIds).then(() => {
                 if (deletedIds && deletedIds.split(',').length === newData.length) {
                   snackbarRef.showTrashEmpty();
                 } else {
