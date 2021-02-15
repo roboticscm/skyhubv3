@@ -39,10 +39,10 @@ class SelectDoctor extends StatelessWidget {
             padding: const EdgeInsets.all(5),
             child: Row(
               children: [
-                Text('${'BOOKING.LABEL.BOOKING'.t()}/', style: TextStyle(color: _themeController.getGrayTextColor()),),
-                Text('${'BOOKING.LABEL.SELECT_DOCTOR_OR_DATE'.t()}/', style:  TextStyle(color: _themeController.getGrayTextColor()),),
+                Text('${'BOOKING.LABEL.BOOKING'.t()}/', style: TextStyle(color: _themeController.getDisabledColor()),),
+                Text('${'BOOKING.LABEL.SELECT_DOCTOR_OR_DATE'.t()}/', style:  TextStyle(color: _themeController.getDisabledColor()),),
                 Text('${'BOOKING.LABEL.SELECT_DOCTOR'.t()}/',),
-                Text('BOOKING.LABEL.SELECT_DATE'.t(), style: TextStyle(color: _themeController.getGrayTextColor())),
+                Text('BOOKING.LABEL.SELECT_DATE'.t(), style: TextStyle(color: _themeController.getDisabledColor())),
               ],
             ),
           ),

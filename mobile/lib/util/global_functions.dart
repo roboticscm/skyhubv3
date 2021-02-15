@@ -54,3 +54,20 @@ void log(dynamic data) {
 
 
 bool isDigit(String s) => (s.codeUnitAt(0) ^ 0x30) <= 9;
+
+
+double getScreenWidth(BuildContext context) {
+  return MediaQuery.of(context).size.width;
+}
+
+double getScreenHeight(BuildContext context) {
+return MediaQuery.of(context).size.height;
+}
+
+bool isPhoneScreen(BuildContext context) {
+return getScreenWidth (context) < 640;
+}
+
+int calcNumOfGridColumn(BuildContext context) {
+return (getScreenWidth(context)/200).round();
+}

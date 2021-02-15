@@ -1,11 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:skyone_mobile/modules/calendar/controller.dart';
+import 'package:skyone_mobile/the_app_controller.dart';
 
 class CalendarPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Center (
-      child: Text('Calendar Page'),
-    );
+  final _calendarController = Get.put(CalendarController());
+
+  CalendarPage() {
+    final TheAppController _theAppController = Get.find();
+    _theAppController.showAppBar.value = true;
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Center (
+      child: Column(
+        children: [
+          RaisedButton(onPressed: () {
+            _calendarController.count.value++;
+          }, child: Text("Click"),),
+          Obx(() => Text('${_calendarController.count}')),
+        ],
+      ),
+    );
+  }
 }

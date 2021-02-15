@@ -1,4 +1,5 @@
 import 'package:skyone_mobile/util/global_functions.dart';
+import 'package:remove_accentuation_extension/remove_accentuation_extension.dart';
 
 class StringUtil {
   static String toSnackCase(String source, {String sep = '-'}) {
@@ -31,5 +32,11 @@ class StringUtil {
     });
 
     return result.trim();
+  }
+
+  static bool contains(String source, String pattern) {
+    final _source = source.remove.toLowerCase();
+    final _pattern = pattern.remove.toLowerCase();
+    return _source.contains(_pattern);
   }
 }

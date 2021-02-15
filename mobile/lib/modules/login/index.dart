@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:grpc/grpc.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:skyone_mobile/modules/home/index.dart';
-import 'package:skyone_mobile/modules/login/model.dart';
 import 'package:skyone_mobile/modules/login/repo.dart';
 import 'package:skyone_mobile/modules/login/validation.dart';
+import 'package:skyone_mobile/pt/proto/auth/auth_service.pb.dart';
 import 'package:skyone_mobile/the_app_controller.dart';
 import 'package:skyone_mobile/theme/theme_controller.dart';
 import 'package:skyone_mobile/util/app.dart';
@@ -23,7 +24,6 @@ import 'package:skyone_mobile/widgets/scircular_progress_indicator.dart';
 import 'package:async/async.dart';
 import 'package:skyone_mobile/extension/string.dart';
 import 'package:skyone_mobile/widgets/sflat_button.dart';
-import 'package:tuple/tuple.dart';
 import 'package:http/http.dart' as http;
 import 'package:skyone_mobile/modules/entry/index.dart';
 
@@ -83,6 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                   if (snapshot.hasData && snapshot.data != null) {
                     final theAppController = Get.find<TheAppController>();
                     theAppController.changeStatus(LoggedInStatus());
+
                     return HomePage();
                   } else {
                     return _buildLoginPage(context);
@@ -91,6 +92,7 @@ class _LoginPageState extends State<LoginPage> {
           } else if (snapshot.hasData && snapshot.data == 'loggedIn') {
             final theAppController = Get.find<TheAppController>();
             theAppController.changeStatus(LoggedInStatus());
+            LoginRepo.initData(GlobalParam.userId);
             return HomePage();
           } else if (snapshot.hasData && snapshot.data == 'loggingIn') {
             return _buildLoginPage(context, isLoggingIn: _isLoggingIn);
@@ -105,9 +107,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<bool> _checkValidToken() async {
-    GlobalParam.token = App.storage.getString("TOKEN");
+    GlobalParam.accessToken = App.storage.getString("ACCESS_TOKEN");
     GlobalParam.userId = App.storage.getInt("USER_ID");
-    final res = await LoginRepo.isValidToken(GlobalParam.token);
+    final res = await LoginRepo.isValidToken(GlobalParam.accessToken);
+    await LoginRepo.initData(GlobalParam.userId);
     return res.item1;
   }
 
@@ -126,29 +129,20 @@ class _LoginPageState extends State<LoginPage> {
       });
 
       _loginCompleter.complete(LoginRepo.login(username: username, password: password));
-      _loginCompleter.operation.value.then((response) {
-        if (response.item1?.loginResult == 'WRONG_USERNAME') {
+      _loginCompleter.operation.value.then((res) {
+        if (res.item1 != null) {
+          final loginResponse = res.item1 as LoginResponse;
+          _saveLoggedState(loginResponse.userId.toInt(), loginResponse.accessToken.toString(), loginResponse.refreshToken.toString() );
+        } else if (res.item2 != null) {
+          final grpcError = res.item2 as GrpcError;
           Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text(LR.l10n('PORTAL.MESSAGE.USERNAME_DOES_NOT_EXIST')),
+            content: Text(LR.l10n(grpcError.message)),
           ));
           _clearRememberingLogin();
-          _loginSubject.add("wrongUsername");
-        } else if (response.item1?.loginResult == 'WRONG_PASSWORD') {
-          Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text(LR.l10n('PORTAL.MESSAGE.PASSWORD_IS_INCORRECT')),
-          ));
-          _clearRememberingLogin();
-          _loginSubject.add("wrongPassword");
-        } else if (response.item1?.loginResult == 'SUCCESS') {
-          _saveLoggedState(response.item1.userId as int, response.item1.token as String);
-        } else {
-          _clearRememberingLogin();
-          Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text('${LR.l10n('PORTAL.MESSAGE.UNKNOWN_ERROR')}: ${response.item2}'),
-          ));
-          _loginSubject.add("unknownError");
+          _loginSubject.add(grpcError.message);
         }
       });
+
       _loginCompleter.operation.value.whenComplete(() {
         _isLoggingIn = false;
         _isCanceled = false;
@@ -162,8 +156,8 @@ class _LoginPageState extends State<LoginPage> {
     _isCanceled = !_isCanceled;
   }
 
-  void _saveLoggedState(int userId, String token) {
-    _saveToken(userId, token);
+  void _saveLoggedState(int userId, String accessToken, String refreshToken) {
+    _saveToken(userId, accessToken, refreshToken);
     if (_rememberLogin) {
       _saveRememberingLogin();
     }
@@ -198,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
                 FlatButton(
                   onPressed: () {
                     if (++_hitCount == 3) {
-                      Server.showConfigDialog(context);
+                      ServerConfig.showConfigDialog(context);
                       _hitCount = 0;
                     }
                   },
@@ -308,11 +302,13 @@ class _LoginPageState extends State<LoginPage> {
     await App.storage.remove('REMEMBER_LOGIN');
   }
 
-  void _saveToken(int userId, String token) async {
-    GlobalParam.token = token;
+  void _saveToken(int userId, String accessToken, String refreshToken) async {
+    GlobalParam.accessToken = accessToken;
+    GlobalParam.refreshToken = refreshToken;
     GlobalParam.userId = userId;
     await App.storage.setInt('USER_ID', userId);
-    await App.storage.setString('TOKEN', token);
+    await App.storage.setString('ACCESS_TOKEN', accessToken);
+    await App.storage.setString('REFRESH_TOKEN', refreshToken);
   }
 
   void _showActionSheet() {
@@ -337,11 +333,11 @@ class _LoginPageState extends State<LoginPage> {
                       try {
                         final GoogleSignInAccount res = await googleSignIn.signIn();
                         if (res.email != null) {
-                          final Tuple2<LoginResponse, dynamic> verifiedRes =
-                              await LoginRepo.signInWithOauth2(id: res.email);
-                          if (verifiedRes.item1 != null) {
-                            _saveLoggedState(verifiedRes.item1.userId, verifiedRes.item1.token);
-                          }
+//                          final Tuple2<LoginResponse, dynamic> verifiedRes =
+//                              await LoginRepo.signInWithOauth2(id: res.email);
+//                          if (verifiedRes.item1 != null) {
+//                            _saveLoggedState(verifiedRes.item1.userId, verifiedRes.item1.token);
+//                          }
                         }
                       } catch (error) {
                         log(error);
@@ -362,11 +358,11 @@ class _LoginPageState extends State<LoginPage> {
                           'https://graph.facebook.com/v2.12/me?fields=picture,name,first_name,last_name,email&access_token=$token');
                       final profile = json.decode(graphResponse.body);
                       if (profile['email'] != null) {
-                        final Tuple2<LoginResponse, dynamic> verifiedRes =
-                        await LoginRepo.signInWithOauth2(id: profile['email'] as String);
-                        if (verifiedRes.item1 != null) {
-                          _saveLoggedState(verifiedRes.item1.userId, verifiedRes.item1.token);
-                        }
+//                        final Tuple2<LoginResponse, dynamic> verifiedRes =
+//                        await LoginRepo.signInWithOauth2(id: profile['email'] as String);
+//                        if (verifiedRes.item1 != null) {
+//                          _saveLoggedState(verifiedRes.item1.userId, verifiedRes.item1.token);
+//                        }
                       }
                     },
                   ),

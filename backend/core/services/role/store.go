@@ -99,3 +99,25 @@ func (store *Store) FindRoleControl(depID int64, menuPath string, userID int64) 
 	json.Unmarshal([]byte(jsonOut), &items)
 	return items, nil
 }
+
+//Find function
+func (store *Store) Find(page, pageSize int32) ([]*pt.Role, int32, error) {
+	const sql = `SELECT * FROM find_simple_list($1, $2, $3, $4, $5, $6, $7, $8) as json`
+
+	var jsonOut string
+	if err := store.q.Query(sql, []interface{}{"role", "id,code,name", "sort,name", page, pageSize, false, 0, true}, &jsonOut); err != nil {
+		return nil, 0, err
+	}
+
+	var out jsonWithPagination
+	if err := json.Unmarshal([]byte(jsonOut), &out); err != nil {
+		return nil, 0, err
+	}
+
+	return out.Payload, out.FullCount, nil
+}
+
+type jsonWithPagination struct {
+	FullCount int32      `json:"full_count"`
+	Payload   []*pt.Role `json:"payload"`
+}

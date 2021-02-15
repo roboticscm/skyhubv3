@@ -107,13 +107,13 @@ class Booking extends StatelessWidget {
                 ),
                 Text(
                   '${'BOOKING.LABEL.SELECT_DOCTOR_OR_DATE'.t()}/',
-                  style: TextStyle(color: _themeController.getGrayTextColor()),
+                  style: TextStyle(color: _themeController.getDisabledColor()),
                 ),
                 Text(
                   '${'BOOKING.LABEL.SELECT_DOCTOR'.t()}/',
-                  style: TextStyle(color: _themeController.getGrayTextColor()),
+                  style: TextStyle(color: _themeController.getDisabledColor()),
                 ),
-                Text('BOOKING.LABEL.SELECT_DATE'.t(), style: TextStyle(color: _themeController.getGrayTextColor())),
+                Text('BOOKING.LABEL.SELECT_DATE'.t(), style: TextStyle(color: _themeController.getDisabledColor())),
               ],
             ),
           ),

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -6,18 +5,17 @@ import 'package:get/get.dart';
 import 'package:skyone_mobile/modules/calendar/index.dart';
 import 'package:skyone_mobile/modules/entry/index.dart';
 import 'package:skyone_mobile/modules/home/index.dart';
-import 'package:skyone_mobile/modules/home/settings.dart';
 import 'package:skyone_mobile/modules/login/index.dart';
 import 'package:skyone_mobile/modules/message/index.dart';
 import 'package:skyone_mobile/modules/profile/index.dart';
-import 'package:skyone_mobile/modules/schedule/index.dart';
+import 'package:skyone_mobile/modules/menu/index.dart';
 import 'package:skyone_mobile/modules/splash/index.dart';
 import 'package:skyone_mobile/the_app_controller.dart';
 import 'package:skyone_mobile/theme/theme_controller.dart';
 import 'package:skyone_mobile/util/app.dart';
 import 'package:skyone_mobile/util/global_var.dart';
-import 'package:skyone_mobile/util/locale_resource.dart';
 import 'package:skyone_mobile/extension/string.dart';
+import 'package:skyone_mobile/widgets/default_drawer.dart';
 import 'package:skyone_mobile/widgets/stab_bar.dart';
 import 'package:skyone_mobile/widgets/tab_bar_item.dart';
 import 'package:skyone_mobile/pt/proto/auth/auth_service.pbgrpc.dart';
@@ -26,7 +24,7 @@ import 'package:skyone_mobile/grpc//service_url.dart';
 import 'package:skyone_mobile/pt/google/protobuf/empty.pb.dart' as protobuf;
 
 class TheApp extends StatelessWidget {
-//  final TheAppController _theAppController = Get.put(TheAppController());
+  final TheAppController _theAppController = Get.put(TheAppController());
   final ThemeController _themeController = Get.find();
   static final NotifyController _notifyController = Get.put(NotifyController());
   static final RxInt _selectedIndex$ = RxInt(0);
@@ -64,23 +62,13 @@ class TheApp extends StatelessWidget {
       color: textColor,
     );
 
-    return GetX(
-        init: TheAppController(),
-        builder: (TheAppController _theAppController) {
-          final appStatus = _theAppController.appStatusContainer.value.status;
-          return Scaffold(
-//            resizeToAvoidBottomInset: false,
-            drawer: _buildDrawer(context),
-            appBar: _theAppController.showAppBar.value
-                ? AppBar(
-                    title: const Text(App.appName),
-                  )
-                : null,
-            body: Center(child: _buildPage(context, appStatus)),
-            bottomNavigationBar:
-                (_theAppController.appStatusContainer.value.status is LoggedInStatus) ? buildBottomTab() : null,
-          );
-        });
+    return Obx(() => Scaffold(
+          drawer: DefaultDrawer(),
+          appBar: _theAppController.showAppBar.value ? AppBar(title: const Text(App.appName),) : null,
+          body: Center(child: _buildPage(context, _theAppController.appStatusContainer.value.status)),
+          bottomNavigationBar:
+              (_theAppController.appStatusContainer.value.status is LoggedInStatus) ? buildBottomTab() : null,
+        ));
   }
 
   static Widget buildBottomTab() {
@@ -96,8 +84,8 @@ class TheApp extends StatelessWidget {
         ),
         TabBarItem(
           index: 1,
-          iconData: Icons.schedule,
-          title: 'HOME.TAB.SCHEDULE'.t(),
+          iconData: Icons.menu,
+          title: 'HOME.TAB.MENU'.t(),
           notifyNumber$: _notifyController.scheduleNotify$,
           selectedIndex$: _selectedIndex$,
         ),
@@ -142,7 +130,7 @@ class TheApp extends StatelessWidget {
       if (_selectedIndex$.value == 0) {
         return HomePage();
       } else if (_selectedIndex$.value == 1) {
-        return SchedulePage();
+        return MenuPage();
       } else if (_selectedIndex$.value == 2) {
         return CalendarPage();
       } else if (_selectedIndex$.value == 3) {
@@ -153,47 +141,7 @@ class TheApp extends StatelessWidget {
     }
   }
 
-  Widget _buildDrawer(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-            ),
-            child: IconButton(
-                icon: Image.asset(
-                  'assets/logo.png',
-                ),
-                onPressed: () {}),
-          ),
-          ListTile(
-            leading: const Icon(Icons.settings),
-            title: Text(LR.l10n('COMMON.LABEL.SETTINGS')),
-            onTap: () {
-              Navigator.pop(context);
 
-              showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) {
-                    return SettingsPage();
-                  });
-            },
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.exit_to_app),
-            title: Text(LR.l10n('PORTAL.BUTTON.LOGOUT')),
-            onTap: () {
-              logout(context);
-            },
-          ),
-        ],
-      ),
-    );
-  }
 
   static void logout(BuildContext context) async {
     final channel = createChannel(ServiceURL.core);
@@ -206,7 +154,8 @@ class TheApp extends StatelessWidget {
 
   static void forceLogout(BuildContext context) async {
     App.storage.remove("REMEMBER_LOGIN");
-    App.storage.remove("TOKEN");
+    App.storage.remove("ACCESS_TOKEN");
+    App.storage.remove("REFRESH_TOKEN");
     Navigator.pop(context);
     Get.find<TheAppController>().changeStatus(LoginStatus());
 

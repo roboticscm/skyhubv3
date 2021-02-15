@@ -74,3 +74,25 @@ func (service *Service) FindRoleControlHandler(ctx context.Context, req *pt.Find
 
 	return &pt.FindRoleControlResponse{Data: items}, nil
 }
+
+
+//FindHandler function
+func (service *Service) FindHandler(ctx context.Context, req *pt.FindRoleRequest) (*pt.FindRoleResponse, error) {
+	page := req.Page
+	pageSize := req.PageSize
+
+	if page == 0 {
+		return nil, skyutl.Error400("SYS.MSG.MISSING_PAGE", "", nil)
+	}
+
+	if pageSize == 0 {
+		return nil, skyutl.Error400("SYS.MSG.MISSING_PAGE_SIZE", "", nil)
+	}
+
+	payload, fullCount, err := service.Store.Find(page, pageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pt.FindRoleResponse{Data: payload, FullCount: fullCount}, nil
+}

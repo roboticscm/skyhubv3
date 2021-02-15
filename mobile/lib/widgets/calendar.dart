@@ -67,7 +67,7 @@ class Calendar extends StatelessWidget {
                       ()=> Text(
                         ' ${_rxCurrentYear?.value}/${Number.fillZero(source: _rxCurrentMonth?.value, len: 2)}',
                         style: TextStyle(
-                            fontSize: 16, color: _themeController.getGrayTextColor(), fontWeight: FontWeight.bold),
+                            fontSize: 16, color: _themeController.getDisabledColor(), fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -184,7 +184,7 @@ class Calendar extends StatelessWidget {
                               fontSize: 12,
                               fontStyle: FontStyle.italic,
                               color: drawDay == _rxSelectedDay?.value
-                                  ? _themeController.getGrayTextColor()
+                                  ? _themeController.getDisabledColor()
                                   : Colors.black45),
                         ),
                       ],

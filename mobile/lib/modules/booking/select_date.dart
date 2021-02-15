@@ -57,15 +57,15 @@ class SelectDate extends StatelessWidget {
                 children: [
                   Text(
                     '${'BOOKING.LABEL.BOOKING'.t()}/',
-                    style: TextStyle(color: _themeController.getGrayTextColor()),
+                    style: TextStyle(color: _themeController.getDisabledColor()),
                   ),
                   Text(
                     '${'BOOKING.LABEL.SELECT_DOCTOR_OR_DATE'.t()}/',
-                    style: TextStyle(color: _themeController.getGrayTextColor()),
+                    style: TextStyle(color: _themeController.getDisabledColor()),
                   ),
                   Text(
                     '${'BOOKING.LABEL.SELECT_DOCTOR'.t()}/',
-                    style: TextStyle(color: _themeController.getGrayTextColor()),
+                    style: TextStyle(color: _themeController.getDisabledColor()),
                   ),
                   Text('BOOKING.LABEL.SELECT_DATE'.t()),
                 ],
@@ -117,7 +117,7 @@ class SelectDate extends StatelessWidget {
                   padding: defaultPadding,
                   margin: const EdgeInsets.only(top: defaultPaddingValue, bottom: defaultPaddingValue),
                   decoration: BoxDecoration(
-                      border: Border.all(color: _themeController.getGrayTextColor()),
+                      border: Border.all(color: _themeController.getDisabledColor()),
                       borderRadius: BorderRadius.circular(defaultBorderRadius)),
                   child: Column(
                     children: [

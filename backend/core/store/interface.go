@@ -23,6 +23,7 @@ type LocaleResourceStore interface {
 type RoleStore interface {
 	Upsert(userID int64, input models.Role) (*models.Role, error)
 	FindRoleControl(depID int64, menuPath string, userID int64) ([]*pt.FindRoleControlResponseItem, error)
+	Find(page, pageSize int32) ([]*pt.Role, int32, error)
 }
 
 //UserSettingsStore interface

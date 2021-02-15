@@ -53,10 +53,11 @@ class ThemeController extends GetxController {
   }
 
   Color getErrorTextColor() {
-    return  Colors.red;
+    return Colors.red;
   }
 
-  Color getGrayTextColor() {
-    return  Colors.black38;
+  Color getDisabledColor() {
+    return themeData.value.disabledColor;
   }
+
 }

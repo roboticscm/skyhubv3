@@ -15,11 +15,11 @@ class L10nDelegate extends LocalizationsDelegate {
 
   @override
   Future load(Locale locale) async {
-    final res = await LocaleResourceRepo.findLocaleResource($fixnum.Int64(),
+    final res = await LocaleResourceRepo.findLocaleResource(null,
         '${locale.languageCode}-${locale.countryCode}');
     if (!res) {
       Future.delayed(const Duration(seconds: 1), () {
-        Server.showConfigDialog(locator<NavigationService>().navigatorKey.currentContext);
+        ServerConfig.showConfigDialog(locator<NavigationService>().navigatorKey.currentContext);
       });
     } else {
       return res;

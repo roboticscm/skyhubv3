@@ -4,7 +4,7 @@
   import { fromEvent, of, EMPTY } from 'rxjs';
   import { fromPromise } from 'rxjs/internal-compatibility';
   import { T } from 'src/lib/locale';
-  import Form from 'src/lib/form/form';
+  import Form from 'src/lib/grpc-form/form';
   import { SObject } from 'src/lib/sobject';
   import { ButtonType, ButtonId } from 'src/components/ui/button/types';
   import TreeView from 'src/components/ui/tree-view';

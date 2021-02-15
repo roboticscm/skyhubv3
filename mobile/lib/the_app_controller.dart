@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:skyone_mobile/util/app.dart';
 
 class AppStatus {}
 
@@ -31,4 +33,15 @@ class TheAppController extends GetxController {
 
     showAppBar.value = newAppStatus is LoggedInStatus;
   }
+}
+
+
+class TheAppProvider extends ChangeNotifier {
+  var _appBar = AppBar(title: const Text(App.appName),);
+
+  void changeAppBar(AppBar newAppBar) {
+    _appBar = newAppBar;
+  }
+
+  AppBar get appBar => _appBar;
 }

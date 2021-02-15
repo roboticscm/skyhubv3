@@ -57,6 +57,7 @@ dependencies:
   intl: ^0.16.1
   grpc: ^2.9.0
   protobuf: ^1.1.1
+  remove_accentuation_extension: ^0.0.2
 
 dev_dependencies:
   flutter_test:

@@ -38,6 +38,16 @@ message FindRoleControlResponse {
   repeated FindRoleControlResponseItem data = 1;
 }
 
+message FindRoleRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+message FindRoleResponse {
+  int32 full_count = 1;
+  repeated Role data = 2;
+}
+
 service RoleService {
   rpc UpsertHandler(UpsertRoleRequest) returns (UpsertRoleResponse) {
     option (google.api.http) = {
@@ -46,9 +56,11 @@ service RoleService {
     };
   };
 
+  rpc FindHandler(FindRoleRequest) returns (FindRoleResponse) {
+    option (google.api.http) = { get: "/role"  };
+  }
+
   rpc FindRoleControlHandler(FindRoleControlRequest) returns (FindRoleControlResponse) {
-    option (google.api.http) = {
-      get: "/role/control" 
-    };
+    option (google.api.http) = { get: "/role/control" };
   }
 }

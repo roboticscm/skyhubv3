@@ -15,7 +15,6 @@ ClientChannel createChannel(String serverURL) {
   }
   final host = split[0]?.trim();
   final port = int.tryParse(split[1]?.trim());
-
   if (port == null) {
     throw Exception('Port must be a number');
   }
@@ -32,7 +31,7 @@ Future<dynamic> unAuthCall(Function func, dynamic requestParam) async {
 }
 
 Future<dynamic> authCall(Function func, dynamic requestParam) async {
-  final metadata = {'authorization': 'Bearer ${GlobalParam.token}'};
+  final metadata = {'authorization': 'Bearer ${GlobalParam.accessToken}'};
   try {
     final res = await func(requestParam,
         options: CallOptions(
@@ -61,10 +60,10 @@ Future <RefreshTokenResponse> refreshToken() async {
   try {
     final res = await unAuthCall(authService.refreshTokenHandler, request) as RefreshTokenResponse;
     if (res.success) {
-      print('New token; ${GlobalParam.token}');
-      GlobalParam.token = res.accessToken;
+      print('New token; ${GlobalParam.accessToken}');
+      GlobalParam.accessToken = res.accessToken;
     } else {
-      GlobalParam.token = null;
+      GlobalParam.accessToken = null;
     }
   } on GrpcError catch (e) {
     print(e);
