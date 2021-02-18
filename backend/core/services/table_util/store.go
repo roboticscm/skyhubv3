@@ -27,11 +27,11 @@ func DefaultStore() *Store {
 }
 
 //FindSimpleList function
-func (store *Store) FindSimpleList(tableName, columns, orderBy string, page, pageSize int32, onlyMe bool, userID int64, includeDisabled bool) (string, error) {
-	const sql = `SELECT * FROM find_simple_list($1, $2, $3, $4, $5, $6, $7, $8) as json`
+func (store *Store) FindSimpleList(tableName, columns, filterText, orderBy string, page, pageSize int32, onlyMe bool, userID int64, includeDisabled bool) (string, error) {
+	const sql = `SELECT * FROM find_simple_list($1, $2, $3, $4, $5, $6, $7, $8, $9) as json`
 
 	var jsonOut string
-	if err := store.q.Query(sql, []interface{}{tableName, columns, orderBy, page, pageSize, onlyMe, userID, includeDisabled}, &jsonOut); err != nil {
+	if err := store.q.Query(sql, []interface{}{tableName, columns, filterText, orderBy, page, pageSize, onlyMe, userID, includeDisabled}, &jsonOut); err != nil {
 		return "", nil
 	}
 

@@ -10,11 +10,12 @@ import "google/protobuf/empty.proto";
 message FindSimpleListRequest {
     string table_name = 1;
 	string columns = 2;
-	string order_by = 3;
-	int32 page = 4;
-	int32 page_size = 5;
-	bool only_me = 6;
-	bool include_disabled = 7;
+    string filter_text = 3;
+	string order_by = 4;
+	int32 page = 5;
+	int32 page_size = 6;
+	bool only_me = 7;
+	bool include_disabled = 8;
 }
 
 message FindSimpleListResponse {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skyone_mobile/modules/menu/controller.dart';
-import 'package:skyone_mobile/modules/pages/role/index.dart';
+import 'package:skyone_mobile/modules/pages/role/list/index.dart';
 import 'package:skyone_mobile/pt/proto/menu/menu_message.pb.dart';
 import 'package:skyone_mobile/the_app_controller.dart';
 import 'package:skyone_mobile/theme/theme_controller.dart';
@@ -23,8 +23,6 @@ class MenuPage extends StatelessWidget {
   };
 
   MenuPage() {
-    final TheAppController _theAppController = Get.find();
-    _theAppController.showAppBar.value = false;
     _menuController.findDepartment(branchId: _loginInfoController.branchId.value.toInt());
     _searchController.addListener(() {
       _menuController.findDepartment(

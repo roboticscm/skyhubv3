@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:skyone_mobile/modules/notify_listener/controller.dart';
 import 'package:skyone_mobile/util/app.dart';
 import 'package:skyone_mobile/util/server.dart';
 
@@ -14,6 +15,7 @@ class GlobalParam {
 
   static void load() {
     Get.put(LoginInfoController());
+    Get.put(NotifyListenerController());
     serverUrl = App.storage.getString('SERVER_URL') ?? ServerConfig.defaultServerUrl;
     baseApiUrl = '$serverUrl/api/';
     connectionTimeout = App.storage.getInt('CONNECTION_TIMEOUT') ?? ServerConfig.defaultConnectionTimeout;

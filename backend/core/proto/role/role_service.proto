@@ -39,8 +39,9 @@ message FindRoleControlResponse {
 }
 
 message FindRoleRequest {
-  int32 page = 1;
-  int32 page_size = 2;
+  string filter_text = 1;
+  int32 page = 2;
+  int32 page_size = 3;
 }
 
 message FindRoleResponse {

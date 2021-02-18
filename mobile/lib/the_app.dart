@@ -29,6 +29,12 @@ class TheApp extends StatelessWidget {
   static final NotifyController _notifyController = Get.put(NotifyController());
   static final RxInt _selectedIndex$ = RxInt(0);
 
+  HomePage _homePage;
+  MenuPage _menuPage;
+  CalendarPage _calendarPage;
+  MessagePage _messagePage;
+  ProfilePage _profilePage;
+
   @override
   Widget build(BuildContext context) {
 //    Future.delayed(Duration(seconds: 5)).then((value) {
@@ -128,15 +134,20 @@ class TheApp extends StatelessWidget {
       );
     } else {
       if (_selectedIndex$.value == 0) {
-        return HomePage();
+        _theAppController.showAppBar.value = true;
+        return _homePage ??= HomePage();
       } else if (_selectedIndex$.value == 1) {
-        return MenuPage();
+        _theAppController.showAppBar.value = false;
+        return _menuPage ??= MenuPage();
       } else if (_selectedIndex$.value == 2) {
-        return CalendarPage();
+        _theAppController.showAppBar.value = true;
+        return _calendarPage ??= CalendarPage();
       } else if (_selectedIndex$.value == 3) {
-        return MessagePage();
+        _theAppController.showAppBar.value = true;
+        return _messagePage ??= MessagePage();
       } else if (_selectedIndex$.value == 4) {
-        return ProfilePage();
+        _theAppController.showAppBar.value = true;
+        return _profilePage ??= ProfilePage();
       }
     }
   }

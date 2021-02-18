@@ -49,7 +49,7 @@ class _SaveButtonState extends State<SaveButton> {
               ],
             ),
             Text(
-              widget.isSaveMode ? LR.l10n('PORTAL.BUTTON.SAVE') : LR.l10n('PORTAL.BUTTON.UPDATE'),
+              widget.isSaveMode ? LR.l10n('SYS.BUTTON.SAVE') : LR.l10n('PORTAL.BUTTON.UPDATE'),
               style: TextStyle(color: widget.color),
             )
           ],

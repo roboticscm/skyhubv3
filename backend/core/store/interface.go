@@ -23,7 +23,7 @@ type LocaleResourceStore interface {
 type RoleStore interface {
 	Upsert(userID int64, input models.Role) (*models.Role, error)
 	FindRoleControl(depID int64, menuPath string, userID int64) ([]*pt.FindRoleControlResponseItem, error)
-	Find(page, pageSize int32) ([]*pt.Role, int32, error)
+	Find(filterText string, page, pageSize int32) ([]*pt.Role, int32, error)
 }
 
 //UserSettingsStore interface
@@ -66,7 +66,7 @@ type SkyLogStore interface {
 
 //TableUtilStore interface
 type TableUtilStore interface {
-	FindSimpleList(tableName, columns, orderBy string, page, pageSize int32, onlyMe bool, userID int64, includeDisabled bool) (string, error)
+	FindSimpleList(tableName, columns, filterText, orderBy string, page, pageSize int32, onlyMe bool, userID int64, includeDisabled bool) (string, error)
 	GetOne(tableName string, id int64) (string, error)
 	HasAnyDeletedRecord(tableName string, onlyMe bool, userID int64) (string, error)
 	RestoreOrForeverDelete(tableName string, deleteIdsRef, restoreIdsRef interface{}, userID, companyID, branchID int64, menuPath, ipClient, device, os, browser string, reasonRef interface{}, fieldName string) error

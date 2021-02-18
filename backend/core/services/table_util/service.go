@@ -25,6 +25,7 @@ func NewService(store store.TableUtilStore) *Service {
 //FindSimpleListHandler function
 func (service *Service) FindSimpleListHandler(ctx context.Context, req *pt.FindSimpleListRequest) (*pt.FindSimpleListResponse, error) {
 	tableName := strings.TrimSpace(req.TableName)
+	filterText := strings.TrimSpace(req.FilterText)
 	columns := strings.TrimSpace(req.Columns)
 	orderBy := strings.TrimSpace(req.OrderBy)
 	page := req.Page
@@ -55,7 +56,7 @@ func (service *Service) FindSimpleListHandler(ctx context.Context, req *pt.FindS
 
 	var jsonOut string
 
-	jsonOut, err := service.Store.FindSimpleList(tableName, columns, orderBy, page, pageSize, onlyMe, userID, includeDisabled)
+	jsonOut, err := service.Store.FindSimpleList(tableName, columns, filterText, orderBy, page, pageSize, onlyMe, userID, includeDisabled)
 	if err != nil {
 		return nil, err
 	}

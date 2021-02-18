@@ -15,7 +15,7 @@ import { Authentication } from 'src/lib/authentication';
 export class ViewStore {
   tableName = undefined;
   columns = ['name'];
-  orderBy = ['sort nulls last'];
+  orderBy = ['sort nulls last,name'];
   trashRestoreColumns = ['name'];
   page = 1;
   pageSize = App.DEFAULT_PAGE_SIZE;
@@ -67,24 +67,28 @@ export class ViewStore {
   };
 
   findSimpleList = (textSearch = '') => {
-    TableUtilStore.findSimpleList({
-      tableName: this.tableName,
-      columns: this.columns.join(','),
-      orderBy: this.orderBy.join(','),
-      page: this.page,
-      pageSize: this.pageSize,
-      onlyMe: this.onlyMe,
-      includeDisabled: this.includeDisabled,
-    }).then((data) => {
-      if (data.payload.length === 0 && this.page > 1) {
-        this.page--;
-        this.findSimpleList(textSearch);
-      } else {
+    return new Promise((resolve, reject) => {
+      TableUtilStore.findSimpleList({
+        tableName: this.tableName,
+        columns: this.columns.join(','),
+        filterText: textSearch,
+        orderBy: this.orderBy.join(','),
+        page: this.page,
+        pageSize: this.pageSize,
+        onlyMe: this.onlyMe,
+        includeDisabled: this.includeDisabled,
+      }).then((data) => {
+        if (data.payload.length === 0 && this.page > 1) {
+          this.page--;
+          this.findSimpleList(textSearch);
+        } else {
+          this.dataList$.next(data.payload);
+          this.fullCount$.next(data.fullCount);
+        }
         this.dataList$.next(data.payload);
         this.fullCount$.next(data.fullCount);
-      }
-      this.dataList$.next(data.payload);
-      this.fullCount$.next(data.fullCount);
+        resolve(true);
+      }).catch((err) => reject(err));
     });
   };
 

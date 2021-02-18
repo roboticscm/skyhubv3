@@ -12,6 +12,7 @@
   const columns = view.customWorkListColumns ? view.customWorkListColumns() : view.createWorkListColumns();
   const { dataList$, fullCount$ } = view;
 
+  let textSearch;
   let tableRef;
   let pageRef;
   let needSelectIdSub, needHighlightIdSub, selectDataSub, notifyListenerSub;
@@ -61,18 +62,21 @@
       }
     });
   };
+
   // =========================//SUBSCRIPTION===========================
 
   // =========================HELPER FUNCTION===========================
   const reload = () => {
-    if (view.customFindList) {
-      view.customFindList();
-    } else {
-      view.findSimpleList();
-    }
+    return new Promise((resolve, reject) => {
+      tableRef && tableRef.unSelectAll();
+      view.checkDeletedRecord(false);
 
-    tableRef && tableRef.unSelectAll();
-    view.checkDeletedRecord(false);
+      if (view.customFindList) {
+        view.customFindList(textSearch).then((res) => resolve(res));
+      } else {
+        view.findSimpleList(textSearch).then((res) => resolve(res));
+      }
+    });
   };
 
   // =========================HELPER FUNCTION===========================
@@ -86,6 +90,14 @@
 
   const onPaginationInit = (event) => {
     view.pageSize = event.detail;
+  };
+
+  const onInput = (e, filterFunc) => {
+    textSearch = e.target.value.trim();
+    reload().then(() => {
+      filterFunc(textSearch);
+    });
+    
   };
   // =========================//EVENT HANDLE===========================
 
@@ -128,7 +140,7 @@
     id={`${view.getViewName()}_TableId`}>
     <span style="display: flex; padding-bottom: 6px;" slot="header" let:filter>
       <div style="width: 100%;">
-        <QuickSearch on:input={(e) => filter(e.target.value)} />
+        <QuickSearch on:input={(e) => onInput(e, filter)} />
       </div>
     </span>
   </SelectableTable>

@@ -6,11 +6,6 @@ import 'package:skyone_mobile/the_app_controller.dart';
 class CalendarPage extends StatelessWidget {
   final _calendarController = Get.put(CalendarController());
 
-  CalendarPage() {
-    final TheAppController _theAppController = Get.find();
-    _theAppController.showAppBar.value = true;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Center (

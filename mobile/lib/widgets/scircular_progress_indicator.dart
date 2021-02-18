@@ -15,7 +15,7 @@ class SCircularProgressIndicator {
             maxWidth: 20,
             maxHeight: 20,
             child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(themeController.getPrimaryBodyTextColor()),
+              valueColor: AlwaysStoppedAnimation(themeController.getPrimaryColor()),
             )));
   }
 }

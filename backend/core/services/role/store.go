@@ -101,11 +101,11 @@ func (store *Store) FindRoleControl(depID int64, menuPath string, userID int64) 
 }
 
 //Find function
-func (store *Store) Find(page, pageSize int32) ([]*pt.Role, int32, error) {
-	const sql = `SELECT * FROM find_simple_list($1, $2, $3, $4, $5, $6, $7, $8) as json`
+func (store *Store) Find(filterText string, page, pageSize int32) ([]*pt.Role, int32, error) {
+	const sql = `SELECT * FROM find_simple_list($1, $2, $3, $4, $5, $6, $7, $8, $9) as json`
 
 	var jsonOut string
-	if err := store.q.Query(sql, []interface{}{"role", "id,code,name", "sort,name", page, pageSize, false, 0, true}, &jsonOut); err != nil {
+	if err := store.q.Query(sql, []interface{}{"role", "id,code,name,sort,org_id,disabled", filterText, "sort nulls last,name", page, pageSize, false, 0, false}, &jsonOut); err != nil {
 		return nil, 0, err
 	}
 

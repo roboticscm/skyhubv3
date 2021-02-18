@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:skyone_mobile/util/locale_resource.dart';
 
-class SCloseButton extends StatelessWidget {
+class EditButton extends StatelessWidget {
   final Function() onTap;
-  final Color color;
   final bool showText;
 
-  const SCloseButton({this.onTap, this.color, this.showText = true});
+  const EditButton({this.onTap, this.showText = true});
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +22,14 @@ class SCloseButton extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Container(color: Colors.red, child: Icon(Icons.close, color: color)),
+            const Icon(Icons.edit),
             if(showText)
               const SizedBox(
                 height: 5,
               ),
             if(showText)
               Text(
-                LR.l10n('SYS.BUTTON.CLOSE'),
-                style: TextStyle(color: color),
+                LR.l10n('SYS.BUTTON.EDIT'),
               )
           ],
         ),

@@ -3,7 +3,6 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 import 'package:skyone_mobile/modules/booking/index.dart';
 import 'package:skyone_mobile/modules/home/model.dart';
 import 'package:skyone_mobile/the_app_controller.dart';
@@ -17,10 +16,6 @@ class HomePage extends StatelessWidget {
   final ThemeController _themeController = Get.put(ThemeController());
   final marginTop = 30.0;
 
-  HomePage() {
-    final TheAppController _theAppController = Get.find();
-    _theAppController.showAppBar.value = true;
-  }
   @override
   Widget build(BuildContext context) {
     App.homeContext = context;

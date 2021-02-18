@@ -1,5 +1,5 @@
 
 
 class ServiceURL {
-  static String core = '192.168.43.9:9090';
+  static String core = '172.16.30.20:9090';
 }

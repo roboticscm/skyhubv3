@@ -35,13 +35,3 @@ class TheAppController extends GetxController {
   }
 }
 
-
-class TheAppProvider extends ChangeNotifier {
-  var _appBar = AppBar(title: const Text(App.appName),);
-
-  void changeAppBar(AppBar newAppBar) {
-    _appBar = newAppBar;
-  }
-
-  AppBar get appBar => _appBar;
-}
