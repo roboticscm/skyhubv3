@@ -22,10 +22,7 @@ class RolePage extends StatelessWidget {
   RolePage({@required this.title}) {
     _roleController.init();
     _searchController.addListener(() {
-      final textSearch = _searchController.text.trim();
-//      _roleController.clear();
-//      _roleController.find(textSearch: textSearch);
-      _roleController.textSearch$.sink.add(textSearch);
+      _roleController.textSearch.value = _searchController.text.trim();
     });
 
     _scrollController.addListener(() {

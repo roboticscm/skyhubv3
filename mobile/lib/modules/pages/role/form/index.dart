@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_treeview/tree_view.dart';
+import 'package:flutter_treeview/tree_view.dart' as tree;
 import 'package:get/get.dart';
-import 'package:protobuf/protobuf.dart';
 import 'package:skyone_mobile/modules/pages/role/form/controller.dart';
 import 'package:skyone_mobile/pt/proto/org/org_service.pb.dart';
 import 'package:skyone_mobile/pt/proto/role/role_message.pb.dart';
 import 'package:skyone_mobile/extension/string.dart';
+import 'package:skyone_mobile/util/form_item.dart';
 import 'package:skyone_mobile/util/global_var.dart';
 import 'package:skyone_mobile/widgets/edit_button.dart';
-import 'package:skyone_mobile/widgets/save_button.dart';
 import 'package:skyone_mobile/widgets/scheckbox.dart';
 import 'package:skyone_mobile/widgets/scircular_progress_indicator.dart';
+import 'package:skyone_mobile/widgets/upsert_button.dart';
 
 class RoleForm extends StatelessWidget {
   final String module;
@@ -24,26 +24,34 @@ class RoleForm extends StatelessWidget {
   bool _disabled = false;
 
   RoleForm({this.module, this.selectedData, this.isUpdateMode}) {
-    _roleFormController.init().then((value) {
-      if (isUpdateMode) {
-        _roleFormController.isReadOnlyMode.value = true;
-        _codeController.text = selectedData.code;
-        _nameController.text = selectedData.name;
-        _sortController.text = selectedData.sort?.toString() ?? '';
-        _disabled = selectedData.disabled;
-        _roleFormController.selectedOrgId.value = selectedData.orgId.toInt();
-      } else {
-        _roleFormController.isReadOnlyMode.value = false;
-        _codeController.text = "";
-        _nameController.text = "";
-        _sortController.text = "1";
-        _disabled = false;
-        _roleFormController.selectedOrgId.value = null;
-      }
+    _codeController.addListener(() {
+      _roleFormController.code.value = FormItemString(value: _codeController.text.trim());
     });
 
     _nameController.addListener(() {
-      _roleFormController.name.value = _nameController.text;
+      _roleFormController.name.value = FormItemString(value: _nameController.text.trim());
+    });
+
+    _roleFormController.init().then((value) {
+      if (isUpdateMode) {
+        _roleFormController.isReadOnlyMode.value = true;
+      } else {
+        _roleFormController.isReadOnlyMode.value = false;
+
+        selectedData.code = "";
+        selectedData.name = "";
+        selectedData.sort = 1;
+        selectedData.disabled = false;
+        selectedData.orgId = null;
+      }
+
+
+
+      _codeController.text = selectedData.code;
+      _nameController.text = selectedData.name;
+      _sortController.text = "${selectedData.sort ?? 1}";
+      _disabled = selectedData.disabled;
+      _roleFormController.selectedOrgId.value = selectedData.orgId?.toInt();
     });
   }
 
@@ -69,41 +77,51 @@ class RoleForm extends StatelessWidget {
   }
 
   Widget _buildForm(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          _buildButtons(context),
-          TextFormField(
-            controller: _codeController,
-            decoration: InputDecoration(
-              errorText: _roleFormController.codeError.value,
-              labelText: 'SYS.LABEL.CODE'.t(),
+    return Column(
+      children: [
+        _buildButtons(context),
+        Expanded(
+          child: SingleChildScrollView(
+            child: IgnorePointer(
+              ignoring: _roleFormController.isReadOnlyMode.value,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _codeController,
+                    decoration: InputDecoration(
+                      errorText: _roleFormController.code.value.error,
+                      labelText: 'SYS.LABEL.CODE'.t(),
+                    ),
+                  ),
+                  TextFormField(
+                    controller: _nameController,
+                    onChanged: (value) => print("aaaa $value"),
+                    decoration: InputDecoration(
+                      errorText: _roleFormController.name.value.error,
+                      labelText: "${'SYS.LABEL.NAME'.t()} (*)",
+                    ),
+                  ),
+                  TextFormField(
+                    controller: _sortController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                    decoration: InputDecoration(
+                      labelText: 'SYS.LABEL.SORT'.t(),
+                    ),
+                  ),
+                  SCheckbox(
+                      onChanged: (bool value) {
+                        _disabled = value;
+                      },
+                      checked: _disabled,
+                      text: 'SYS.LABEL.DISABLED'.t()),
+                  _buildOrgTree(context)
+                ],
+              ),
             ),
           ),
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              errorText: _roleFormController.nameError.value,
-              labelText: 'SYS.LABEL.NAME'.t(),
-            ),
-          ),
-          TextFormField(
-            controller: _sortController,
-            keyboardType: TextInputType.number,
-            inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-            decoration: InputDecoration(
-              labelText: 'SYS.LABEL.SORT'.t(),
-            ),
-          ),
-          SCheckbox(
-              onChanged: (bool value) {
-                _disabled = value;
-              },
-              checked: _disabled,
-              text: 'SYS.LABEL.DISABLED'.t()),
-          _buildOrgTree(context)
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -112,24 +130,19 @@ class RoleForm extends StatelessWidget {
       children: [
         if (_roleFormController.isReadOnlyMode.value)
           EditButton(
-            onTap: () {
+            onPressed: () {
               _roleFormController.isReadOnlyMode.value = !_roleFormController.isReadOnlyMode.value;
             },
           ),
         if (!_roleFormController.isReadOnlyMode.value)
-          SaveButton(
-            isSaveMode: !isUpdateMode,
-            onTap: () {
-              Role newObject;
-              if (isUpdateMode) {
-                newObject = selectedData.deepCopy();
-                newObject.name = _nameController.text.trim();
-              } else {
-                newObject = Role();
-              }
-              Navigator.of(context).pop(newObject);
-            },
-          )
+          UpsertButton(
+              showText: true,
+              isUpdateMode: isUpdateMode,
+              isLoading: _roleFormController.isUpsertLoading,
+              onPressed: !_roleFormController.formValid
+                  ? null
+                  : () => _roleFormController.upsertHandler(
+                      context: context, selectedData: selectedData, isUpdateMode: isUpdateMode))
       ],
     );
   }
@@ -138,16 +151,18 @@ class RoleForm extends StatelessWidget {
     return _roleFormController.orgTree.where((e) => e.pId == pId).toList();
   }
 
-  List<Node> _createNodes(int pId) {
-    final List<Node> nodes = [];
+  List<tree.Node> _createNodes(int pId) {
+    final List<tree.Node> nodes = [];
     final dataNodes = _getSubDataNode(pId);
     if (dataNodes.isNotEmpty) {
       for (final row in dataNodes) {
-        final node = Node(
+        final node = tree.Node(
           key: '${row.id}:${row.type ?? 0}',
           label: row.name,
           expanded: true,
-          icon: _roleFormController.selectedOrgId.value == row.id.toInt() ? NodeIcon.fromIconData(Icons.check) : null,
+          icon: _roleFormController.selectedOrgId.value == row.id.toInt()
+              ? tree.NodeIcon.fromIconData(Icons.check)
+              : null,
           children: _createNodes(row.id.toInt()),
         );
         nodes.add(node);
@@ -158,8 +173,8 @@ class RoleForm extends StatelessWidget {
 
   Widget _buildOrgTree(BuildContext context) {
     final nodes = _createNodes(0);
-    final _treeViewController = TreeViewController(children: nodes);
-    return TreeView(
+    final _treeViewController = tree.TreeViewController(children: nodes);
+    return tree.TreeView(
         controller: _treeViewController,
         allowParentSelect: true,
         supportParentDoubleTap: false,

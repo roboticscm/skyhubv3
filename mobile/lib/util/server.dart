@@ -7,8 +7,7 @@ import 'package:skyone_mobile/util/global_functions.dart';
 import 'package:skyone_mobile/util/global_param.dart';
 import 'package:skyone_mobile/util/locale_resource.dart';
 import 'package:skyone_mobile/widgets/close_button.dart';
-import 'package:skyone_mobile/widgets/save_button.dart';
-import 'package:fixnum/fixnum.dart' as $fixnum;
+import 'package:skyone_mobile/widgets/upsert_button.dart';
 
 class ServerConfig {
   static const defaultServerUrlReleaseMode = 'https://skyhub.suntech.com.vn:8443';
@@ -66,8 +65,8 @@ class ServerConfigPage extends StatelessWidget {
       ),
       actions: <Widget>[
         const SCloseButton(),
-        SaveButton(
-          onTap: () async {
+        UpsertButton(
+          onPressed: () async {
             GlobalParam.serverUrl = _serverURLController.text.trim();
             GlobalParam.baseApiUrl = '${GlobalParam.serverUrl}/api/';
 

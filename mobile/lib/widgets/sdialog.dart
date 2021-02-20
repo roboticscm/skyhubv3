@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:skyone_mobile/main.dart';
-import 'package:skyone_mobile/util/app.dart';
 import 'package:skyone_mobile/util/global_var.dart';
 import 'package:skyone_mobile/util/locale_resource.dart';
 import 'package:flutter/foundation.dart';

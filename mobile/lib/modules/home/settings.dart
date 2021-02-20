@@ -7,8 +7,8 @@ import 'package:skyone_mobile/theme/theme_controller.dart';
 import 'package:skyone_mobile/util/app.dart';
 import 'package:skyone_mobile/util/locale_resource.dart';
 import 'package:skyone_mobile/widgets/close_button.dart';
-import 'package:skyone_mobile/widgets/save_button.dart';
 import 'package:skyone_mobile/widgets/sdialog.dart';
+import 'package:skyone_mobile/widgets/upsert_button.dart';
 
 class SettingsPage extends StatelessWidget {
   final LanguageUI _languageUI = LanguageUI();
@@ -53,15 +53,15 @@ class SettingsPage extends StatelessWidget {
       ),
       actions: <Widget>[
         LimitedBox(child: SCloseButton(
-          onTap: () {
+          onPressed: () {
             final ThemeController themeController = Get.find<ThemeController>();
             final prevThemeIndex = App.storage.getInt('THEME') ?? 0;
             themeController.changeTheme(prevThemeIndex);
             Navigator.of(context).pop();
           },
         )),
-        LimitedBox(child: SaveButton(
-          onTap: () async {
+        LimitedBox(child: UpsertButton(
+          onPressed: () async {
             await _languageUI.saveSettings();
             await _themeUI.saveSettings();
             final profilesRes = await _profilesUI.changePassword(context);

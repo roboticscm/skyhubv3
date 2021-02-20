@@ -1,40 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:skyone_mobile/util/locale_resource.dart';
+import 'package:skyone_mobile/extension/string.dart';
 
 class SCloseButton extends StatelessWidget {
-  final Function() onTap;
-  final Color color;
+  final Function() onPressed;
   final bool showText;
 
-  const SCloseButton({this.onTap, this.color, this.showText = true});
+  const SCloseButton({this.onPressed, this.showText = true});
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        if (onTap != null) {
-          onTap();
-        } else {
-          Navigator.of(context).pop();
+    return FlatButton(
+      onPressed: () {
+        Navigator.of(context).pop();
+        if(onPressed != null) {
+          onPressed();
         }
       },
-      child: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Container(color: Colors.red, child: Icon(Icons.close, color: color)),
-            if(showText)
-              const SizedBox(
-                height: 5,
-              ),
-            if(showText)
-              Text(
-                LR.l10n('SYS.BUTTON.CLOSE'),
-                style: TextStyle(color: color),
-              )
-          ],
-        ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.close),
+          if (showText) Text('SYS.BUTTON.CLOSE'.t()) else Container()
+        ],
       ),
     );
   }

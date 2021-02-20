@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:skyone_mobile/util/app.dart';
 
 class AppStatus {}
 

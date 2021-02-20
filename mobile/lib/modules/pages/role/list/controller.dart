@@ -17,20 +17,19 @@ class RoleController extends GetxController {
   bool isRefreshing = false;
   bool isLoading = false;
   final isInitializing = false.obs;
-  final PublishSubject<String> textSearch$ = PublishSubject<String>();
+  final textSearch = "".obs;
 
   @override
   void onInit() {
-    textSearch$.debounce((_) => TimerStream(true, const Duration(milliseconds: 300))).listen((value) {
+    super.onInit();
+    debounce(textSearch, (String value) {
       clear();
-      print("?????");
       find(textSearch: value);
-    });
+    }, time: const Duration(milliseconds: 300));
   }
 
   @override
-  FutureOr onClose() async {
-    textSearch$.close();
+  FutureOr onClose() async  {
   }
 
   Future init () async {

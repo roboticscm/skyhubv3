@@ -167,7 +167,7 @@ class TheApp extends StatelessWidget {
     App.storage.remove("REMEMBER_LOGIN");
     App.storage.remove("ACCESS_TOKEN");
     App.storage.remove("REFRESH_TOKEN");
-    Navigator.pop(context);
+    Navigator.of(context).popUntil((route) => route.isFirst);
     Get.find<TheAppController>().changeStatus(LoginStatus());
 
     await googleSignIn.signOut();

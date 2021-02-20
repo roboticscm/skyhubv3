@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:skyone_mobile/modules/booking/index.dart';
 import 'package:skyone_mobile/modules/home/model.dart';
-import 'package:skyone_mobile/the_app_controller.dart';
 import 'package:skyone_mobile/theme/theme_controller.dart';
 import 'package:skyone_mobile/extension/string.dart';
 import 'package:skyone_mobile/util/global_var.dart';
