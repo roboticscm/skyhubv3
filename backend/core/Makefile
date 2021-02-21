@@ -92,7 +92,12 @@ both-server:
 wboth-server:
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
 	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
-	go run cmd/server/main.go -port 9090 -mode both -endpoint 0.0.0.0:9090
+	nodemon --exec go run cmd\server\main.go -port 9090 -mode both -endpoint 0.0.0.0:9090
+
+wgrpc-server:
+	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
+	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
+	nodemon --exec go run cmd\server\main.go -port 9090 -mode grpc
 
 grpc-server:
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
@@ -125,7 +130,12 @@ build:
 	mkdir -p ${BUILD_DIR}/${KEYS_DIR}
 	cp config/config_prod.json ${BUILD_DIR}/${CONFIG_DIR}/config.json
 	cp keys/app.* ${BUILD_DIR}/${KEYS_DIR}
-	go build -o ${BUILD_DIR} cmd/server/main.go 
+	go env  GOOS=windows GOARCH=amd64
+	go build -o ${BUILD_DIR}/win_runner.exe cmd/server/main.go 
+	go env  GOOS=linux GOARCH=amd64
+	go build -o ${BUILD_DIR}/linux_runner cmd/server/main.go 
+	go env  GOOS=darwin GOARCH=amd64
+	go build -o ${BUILD_DIR}/mac_runner cmd/server/main.go 
 
 wbuild: wgen-go
 	if exist ${BUILD_DIR} rd /q /s ${BUILD_DIR}
@@ -133,7 +143,12 @@ wbuild: wgen-go
 	mkdir ${BUILD_DIR}\${KEYS_DIR}
 	copy config\config_prod.json ${BUILD_DIR}\${CONFIG_DIR}\config.json
 	copy keys\app.* ${BUILD_DIR}\${KEYS_DIR}
-	go build -o ${BUILD_DIR} cmd\server\main.go 
+	go env  GOOS=darwin GOARCH=amd64
+	go build -o ${BUILD_DIR}\mac_runner cmd\server\main.go 
+	go env  GOOS=linux GOARCH=amd64
+	go build -o ${BUILD_DIR}\linux_runner cmd\server\main.go 
+	go env GOOS=windows GOARCH=amd64
+	go build -o ${BUILD_DIR}\win_runner.exe cmd\server\main.go 
 
 start-prod:
 	cd ${BUILD_DIR} && \
