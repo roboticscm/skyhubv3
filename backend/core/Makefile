@@ -11,6 +11,27 @@ SOURCE_PROTO_DIR=proto
 BUILD_DIR=build
 CONFIG_DIR=config
 KEYS_DIR=keys
+
+install:
+	go clean -modcache
+	go get github.com/cespare/reflex
+
+winstall:
+	go clean -modcache
+	npm install -g nodemon
+	if exist  C:${HOMEPATH}\go\bin rd /q /s  C:${HOMEPATH}\go\bin
+	mkdir C:${HOMEPATH}\go\bin
+	curl -L -o C:${HOMEPATH}\go\bin\protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.15.3/protoc-3.15.3-win64.zip 
+	cd /d C:${HOMEPATH}\go\bin && tar -xf protoc.zip
+	copy C:${HOMEPATH}\go\bin\bin\protoc.exe C:${HOMEPATH}\go\bin
+	
+	del /f  C:${HOMEPATH}\go\bin\protoc.zip
+	go get google.golang.org/protobuf/cmd/protoc-gen-go
+	go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
+	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
+	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
+	curl -L -o C:${HOMEPATH}\go\bin\protoc-gen-grpc-web.exe https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-windows-x86_64.exe 
+	go mod tidy
 gen-go:
 	rm -Rf  ${OUT_DIR}
 	rm -Rf ${ROOT_DOC_DIR}
@@ -92,7 +113,7 @@ both-server:
 	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
 	reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode both -endpoint 0.0.0.0:9090"
 
-wboth-server:
+wboth-server: 
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
 	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
 	nodemon --exec go run cmd\server\main.go -port 9090 -mode both -endpoint 0.0.0.0:9090
@@ -128,6 +149,7 @@ mock-all:
 	mockgen -package mockdb -destination mock/store.go suntech.com.vn/skygroup/store AuthStore
 
 build:
+	go mod tidy
 	rm -Rf  ${BUILD_DIR}
 	mkdir -p ${BUILD_DIR}/${CONFIG_DIR}
 	mkdir -p ${BUILD_DIR}/${KEYS_DIR}
@@ -141,6 +163,7 @@ build:
 	go build -o ${BUILD_DIR}/mac_runner cmd/server/main.go 
 
 wbuild: wgen-go
+	go mod tidy
 	if exist ${BUILD_DIR} rd /q /s ${BUILD_DIR}
 	mkdir ${BUILD_DIR}\${CONFIG_DIR}
 	mkdir ${BUILD_DIR}\${KEYS_DIR}
@@ -167,4 +190,5 @@ wclient:
 client:
 	reflex -r '\.go' -s -- sh -c "go run cmd/client/main.go -server 127.0.0.1:9090"	
 
-.PHONY: client gen-dart build start-prod
+.PHONY: client gen-dart wbuild  build start-prod winstall wboth-server
+ 
