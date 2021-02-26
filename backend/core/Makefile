@@ -83,6 +83,9 @@ wgen-dart:
 		-I. \
 		--proto_path=${SOURCE_PROTO_DIR} \
 		--dart_out=grpc:${WDART_OUT_DIR} 
+gen-all: gen-go gen-web gen-dart
+
+wgen-all: wgen-go wgen-web wgen-dart
 
 both-server:
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git

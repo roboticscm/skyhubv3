@@ -8,7 +8,7 @@
   import MainContent from './content/index.svelte';
   import ProgressBar from 'src/components/ui/progress-bar';
   import { Store } from './store';
-
+  import {App} from 'src/lib/constants';
   // Props
   export let showTitle = true;
   export let menuPath;
@@ -24,6 +24,9 @@
 
   // Init view
   const view = new ViewStore(menuPath);
+  export const getMenuInfo$ = () => view.menuInfo$;
+  export const getViewTitle = () => view.getViewTitle();
+
   // view.customFindList = () => {
   //   view.dataList$.next([{
   //     id: 1,
@@ -45,29 +48,25 @@
 
   // ================= SUBSCRIPTION ========================
   const subscription = () => {
-    view.completeLoading$.pipe(take(1)).subscribe((_) => {
+    store.completeLoading$.pipe(take(1)).subscribe((_) => {
       view.loading$.next(false);
     });
   };
   // ================= //SUBSCRIPTION ========================
 
-  // ================= KOOK ========================
+  // ================= HOOK ========================
   onMount(() => {
     subscription();
   });
 
-  export const getViewTitle = () => {
-    return view.getViewTitle();
-  };
-
-  export const getMenuInfo$ = () => {
-    return view.menuInfo$;
-  };
-  // ================= //KOOK ========================
+  // ================= //HOOK ========================
 </script>
 
 <ProgressBar loading$={view.loading$} />
 
+<svelte:head>
+  <title>{`${App.NAME} - ${view.getViewTitle()}`}</title>
+</svelte:head>
 <TwoColumnView minLeftPane={!showWorkList} {showTitle} {menuPath}>
   <section style="height: 100%" slot="leftView">
     <WorkList {view} {menuPath} {callFrom} {store} on:callback />

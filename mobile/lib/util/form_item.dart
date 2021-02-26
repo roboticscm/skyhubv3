@@ -20,3 +20,9 @@ class FormItemDouble extends FormItem {
 
   FormItemDouble({String error, this.value}) : super (error: error);
 }
+
+class FormItemBool extends FormItem {
+  bool value;
+
+  FormItemBool({String error, this.value}) : super (error: error);
+}

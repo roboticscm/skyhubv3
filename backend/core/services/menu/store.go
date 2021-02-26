@@ -29,6 +29,15 @@ func DefaultStore() *Store {
 	return NewStore(skydba.DefaultQuery())
 }
 
+//MenuStore interface
+type MenuStore interface {
+	Find(userID, departmentID int64) ([]*pt.Menu, error)
+	Get(menuPath string) (*pt.Menu, error)
+	UpsertMenuHistory(userID, menuID, depID int64) error
+	FindMenuControl(menuPath string) ([]*pt.FindMenuControlResponseItem, error)
+	SaveOrDeleteMenuControl(userID int64, menuPath string, menuControls []*pt.MenuControl) error
+}
+
 //Find function
 func (store *Store) Find(userID, departmentID int64) ([]*pt.Menu, error) {
 	const sql = `SELECT * FROM find_menu($1, $2)`
@@ -40,6 +49,17 @@ func (store *Store) Find(userID, departmentID int64) ([]*pt.Menu, error) {
 	}
 
 	return items, nil
+}
+
+//Get function
+func (store *Store) Get(menuPath string) (*pt.Menu, error) {
+	var item pt.Menu
+
+	if err := store.q.ReadWithParam(&item, map[string]interface{}{"path": menuPath}); err != nil {
+		return nil, err
+	}
+
+	return &item, nil
 }
 
 //UpsertMenuHistory function

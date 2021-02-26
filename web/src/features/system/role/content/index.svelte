@@ -1,15 +1,15 @@
 <script>
-  import { tick, onMount, onDestroy } from 'svelte';
+  import { tick, onMount, onDestroy, createEventDispatcher } from 'svelte';
   import { catchError, concatMap, switchMap, filter } from 'rxjs/operators';
   import { fromEvent, of, EMPTY } from 'rxjs';
   import { fromPromise } from 'rxjs/internal-compatibility';
   import { T } from 'src/lib/locale';
   import Form from 'src/lib/grpc-form/form';
   import { SObject } from 'src/lib/sobject';
-  import { ButtonType, ButtonId } from 'src/components/ui/button/types';
+  
   import TreeView from 'src/components/ui/tree-view';
   import { validation } from './validation';
-
+  import { ButtonType, ButtonId } from 'src/components/ui/button/types';
   import Button from 'src/components/ui/button/flat-button';
   import FloatNumberInput from 'src/components/ui/float-input/number-input';
   import FloatTextInput from 'src/components/ui/float-input/text-input';
@@ -20,7 +20,7 @@
   import { LoginInfo } from 'src/store/login-info';
   import { NotifyListener } from 'src/store/notify-listener';
   import { SkyLogStore } from 'src/store/skylog';
-  import { UpsertRoleRequest } from 'src/pt/proto/role/role_service_pb';
+  import { Role as PtRole } from 'src/pt/proto/role/role_message_pb';
 
   // Props
   export let view;
@@ -28,6 +28,8 @@
   export let store;
   export let backCallback;
   export let detailTitle = '';
+
+  const dispatch =  createEventDispatcher();
 
   // Observable
   const { hasAnyDeletedRecord$, deleteRunning$, saveRunning$, isReadOnlyMode$, isUpdateMode$ } = view;
@@ -159,6 +161,7 @@
 
     return true;
   };
+
   // ============================== //CLIENT VALIDATION ==========================
 
   // ============================== FUNCTIONAL ==========================
@@ -205,7 +208,7 @@
         switchMap((_) => {
           /*Call grpc on server*/
           saveRunning$.next(true);
-          return fromPromise(store.grpcUpsert(UpsertRoleRequest, form.data())).pipe(
+          return fromPromise(store.grpcUpsert(PtRole, form.data())).pipe(
             catchError((error) => {
               return of({ hasError: true, error });
             }),
@@ -221,6 +224,10 @@
             form.errors.errors = form.recordErrors(res.error);
           } else {
             // success
+            setTimeout(() => {
+              dispatch('callback', res.toObject().id);
+            }, 2000);
+
             if ($isUpdateMode$) {
               SkyLogStore.save(selectedData.name, { action: 'EDIT', payload: dataChanged });
               // update
@@ -487,9 +494,7 @@
           radioType="all">
           <div slot="label" class="label">{T('SYS.LABEL.ORG')}:</div>
         </TreeView>
-        {#if form.errors.has('orgId')}
-          <span class="error">{form.errors.get('orgId')}</span>
-        {/if}
+        <Error {form} field="orgId" />
       </div>
     </div>
   </form>

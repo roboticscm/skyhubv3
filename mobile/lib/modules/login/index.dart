@@ -76,9 +76,9 @@ class _LoginPageState extends State<LoginPage> {
     return StreamBuilder<String>(
         stream: _loginSubject.stream,
         builder: (context, snapshot) {
-          if (_checkRememberLogin() && !snapshot.hasData) {
+          if (checkRememberLogin() && !snapshot.hasData) {
             return FutureBuilder(
-                future: _checkValidToken(),
+                future: checkValidToken(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData && snapshot.data != null) {
                     final theAppController = Get.find<TheAppController>();
@@ -102,17 +102,17 @@ class _LoginPageState extends State<LoginPage> {
         });
   }
 
-  bool _checkRememberLogin() {
-    return App.storage.getBool('REMEMBER_LOGIN') ?? false;
-  }
-
-  Future<bool> _checkValidToken() async {
-    GlobalParam.accessToken = App.storage.getString("ACCESS_TOKEN");
-    GlobalParam.userId = App.storage.getInt("USER_ID");
-    final res = await LoginRepo.isValidToken(GlobalParam.accessToken);
-    await LoginRepo.initData(GlobalParam.userId);
-    return res.item1;
-  }
+//  bool _checkRememberLogin() {
+//    return App.storage.getBool('REMEMBER_LOGIN') ?? false;
+//  }
+//
+//  Future<bool> _checkValidToken() async {
+//    GlobalParam.accessToken = App.storage.getString("ACCESS_TOKEN");
+//    GlobalParam.userId = App.storage.getInt("USER_ID");
+//    final res = await LoginRepo.isValidToken(GlobalParam.accessToken);
+//    await LoginRepo.initData(GlobalParam.userId);
+//    return res.item1;
+//  }
 
   void _checkLogin(BuildContext context) {
     print('CompanyID ${widget.companyId}');

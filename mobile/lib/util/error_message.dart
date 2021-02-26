@@ -10,3 +10,17 @@ class ErrorMessage {
   static const  SELECT_AT_LEAST_ONE_LEAF_NODE = 'SYS.MSG.PLEASE_SELECT_AT_LEAST_ONE_LEAF_NODE';
   static const  SELECT_AT_LEAST_ONE_NODE = 'SYS.MSG.PLEASE_SELECT_ONE_NODE';
 }
+
+class GrpcErrorMessage {
+  final String field;
+  final String message;
+
+  const GrpcErrorMessage({this.field, this.message});
+
+  factory GrpcErrorMessage.fromJson(Map<String, dynamic> json) {
+    return GrpcErrorMessage(
+      field: json["field"] as String,
+      message: json["message"] as String,
+    );
+  }
+}

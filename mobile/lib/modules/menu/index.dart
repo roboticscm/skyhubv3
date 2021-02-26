@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:skyone_mobile/modules/menu/controller.dart';
 import 'package:skyone_mobile/modules/pages/role/list/index.dart';
 import 'package:skyone_mobile/pt/proto/menu/menu_message.pb.dart';
-import 'package:skyone_mobile/the_app_controller.dart';
 import 'package:skyone_mobile/theme/theme_controller.dart';
 import 'package:skyone_mobile/util/global_functions.dart';
 import 'package:skyone_mobile/util/global_param.dart';
@@ -18,9 +17,7 @@ class MenuPage extends StatelessWidget {
   final LoginInfoController _loginInfoController = Get.find();
   final ThemeController _themeController = Get.find();
   final _searchController = TextEditingController();
-  final _pageInstance = {
-    "role": RolePage(title: "SYS.MENU.ROLE".t(),)
-  };
+  final Map<String, Widget> _pageInstances = {};
 
   MenuPage() {
     _menuController.findDepartment(branchId: _loginInfoController.branchId.value.toInt());
@@ -47,16 +44,17 @@ class MenuPage extends StatelessWidget {
         return RefreshIndicator(
           onRefresh: () {
             return _menuController.findDepartment(
-            branchId: _loginInfoController.branchId.value.toInt(), textSearch: _searchController.text);
+                branchId: _loginInfoController.branchId.value.toInt(), textSearch: _searchController.text);
           },
           child: ListView.separated(
-            itemBuilder: (context, index) {
-              return Obx(() => _buildDepartment(context, (_menuController.rxDepartment[index]).name, _menuController.rxMenu[index]));
-            },
-            separatorBuilder: (context, index) {
-              return const Divider();
-            },
-            itemCount: _menuController.rxDepartment.length),
+              itemBuilder: (context, index) {
+                return Obx(() => _buildDepartment(context, (_menuController.rxDepartment[index]).id.toInt(),
+                    (_menuController.rxDepartment[index]).name, _menuController.rxMenu[index]));
+              },
+              separatorBuilder: (context, index) {
+                return const Divider();
+              },
+              itemCount: _menuController.rxDepartment.length),
         );
       } else {
         return SCircularProgressIndicator.buildSmallCenter();
@@ -68,13 +66,14 @@ class MenuPage extends StatelessWidget {
     if (itemCount < 1) {
       return Container();
     } else {
-      return Container(padding: defaultPadding,
+      return Container(
+          padding: defaultPadding,
           alignment: AlignmentDirectional.centerStart,
           child: Text("$departmentName ($itemCount)"));
     }
   }
 
-  Widget _buildDepartment(BuildContext context, String departmentName, List<Menu> menuList) {
+  Widget _buildDepartment(BuildContext context, int depId, String departmentName, List<Menu> menuList) {
     return Column(
       children: [
         _buildDepartmentHeader(departmentName, menuList.length),
@@ -84,31 +83,44 @@ class MenuPage extends StatelessWidget {
           crossAxisSpacing: 3,
           childAspectRatio: 2,
           crossAxisCount: calcNumOfGridColumn(context),
-          children: <Widget>[for (var menu in menuList) _buildMenuItem(context, menu)],
+          children: <Widget>[for (var menu in menuList) _buildMenuItem(context, depId, menu)],
         ),
       ],
     );
   }
 
-  void _showMenuDetail(BuildContext context, String codeKey) {
-    if (_pageInstance[codeKey] != null) {
-      Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-        return _pageInstance[codeKey];
+  Widget _getWidgetInstance(int depId, String codeKey, String menuName, String menuPath) {
+    if (codeKey.toUpperCase() == "ROLE") {
+      return RolePage(
+        title: "SYS.MENU.${menuName.toUpperCase()}".t(),
+        depId: depId,
+        menuPath: menuPath,
+      );
+    }
+
+    return null;
+  }
+
+  void _showMenuDetail(BuildContext context, int depId, String codeKey, String menuName, String menuPath) {
+    final widget = _getWidgetInstance(depId, codeKey, menuName, menuPath);
+    if (widget != null) {
+      _pageInstances[codeKey] = widget;
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+        return _pageInstances[codeKey];
       }));
     } else {
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text("SYS.MSG.PLEASE_INIT_PAGE_INSTANCE".t()),
       ));
     }
-
   }
 
-  Widget _buildMenuItem(BuildContext context, Menu menu) {
+  Widget _buildMenuItem(BuildContext context, int depId, Menu menu) {
     return Card(
         child: Center(
       child: InkWell(
         onTap: () {
-          _showMenuDetail(context, menu.code);
+          _showMenuDetail(context, depId, menu.code, menu.name, menu.path);
         },
         child: FittedBox(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[

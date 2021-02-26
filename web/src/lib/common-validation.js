@@ -11,6 +11,8 @@ export class CommonValidation {
   static REQUIRED_VALUE = 'SYS.MSG.REQUIRED_VALUE';
   static SELECT_AT_LEAST_ONE_LEAF_NODE = 'SYS.MSG.PLEASE_SELECT_AT_LEAST_ONE_LEAF_NODE';
   static SELECT_AT_LEAST_ONE_NODE = 'SYS.MSG.PLEASE_SELECT_ONE_NODE';
+  static CHECK_AT_LEAST_ONE_NODE = 'SYS.MSG.PLEASE_CHECK_ONE_NODE';
+  
   static isEmptyString(source) {
     if (!source) {
       return true;

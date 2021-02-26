@@ -2,24 +2,27 @@ package menu
 
 import (
 	"context"
-	"fmt"
 
 	"google.golang.org/protobuf/types/known/emptypb"
 	"suntech.com.vn/skygroup/pt"
-	"suntech.com.vn/skygroup/store"
 	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 //Service struct
 type Service struct {
-	Store store.MenuStore
+	Store MenuStore
 }
 
 //NewService function return new Service struct instance
-func NewService(store store.MenuStore) *Service {
+func NewService(store MenuStore) *Service {
 	return &Service{
 		Store: store,
 	}
+}
+
+//DefaultService function return new Service struct instance
+func DefaultService() *Service {
+	return NewService(DefaultStore())
 }
 
 //FindHandler function
@@ -38,6 +41,18 @@ func (service *Service) FindHandler(ctx context.Context, req *pt.FindMenuRequest
 
 	return &pt.FindMenuResponse{
 		Data: out,
+	}, nil
+}
+
+//GetHandler function
+func (service *Service) GetHandler(ctx context.Context, req *pt.GetMenuRequest) (*pt.GetMenuResponse, error) {
+	item, err := service.Store.Get(req.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pt.GetMenuResponse{
+		Data: item,
 	}, nil
 }
 
@@ -67,7 +82,6 @@ func (service *Service) FindMenuControlHandler(ctx context.Context, req *pt.Find
 func (service *Service) SaveOrDeleteMenuControlHandler(ctx context.Context, req *pt.SaveOrDeleteMenuControlRequest) (*emptypb.Empty, error) {
 	userID, _ := skyutl.GetUserID(ctx)
 
-	fmt.Println("xxxxx", req)
 	if err := service.Store.SaveOrDeleteMenuControl(userID, req.MenuPath, req.MenuControls); err != nil {
 		return nil, err
 	}

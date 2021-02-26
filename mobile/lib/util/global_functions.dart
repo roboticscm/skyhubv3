@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:skyone_mobile/main.dart';
 import 'package:skyone_mobile/modules/home/language.dart';
+import 'package:skyone_mobile/modules/login/repo.dart';
 import 'package:skyone_mobile/util/app.dart';
+import 'package:skyone_mobile/util/global_param.dart';
 import 'package:skyone_mobile/util/global_var.dart';
 
 Future<dynamic> firebaseBackgroundMessageHandler(Map<String, dynamic> message) async {
@@ -52,6 +54,17 @@ void log(dynamic data) {
   }
 }
 
+bool checkRememberLogin() {
+  return App.storage.getBool('REMEMBER_LOGIN') ?? false;
+}
+
+Future<bool> checkValidToken() async {
+  GlobalParam.accessToken = App.storage.getString("ACCESS_TOKEN");
+  GlobalParam.userId = App.storage.getInt("USER_ID");
+  final res = await LoginRepo.isValidToken(GlobalParam.accessToken);
+  await LoginRepo.initData(GlobalParam.userId);
+  return res.item1;
+}
 
 bool isDigit(String s) => (s.codeUnitAt(0) ^ 0x30) <= 9;
 

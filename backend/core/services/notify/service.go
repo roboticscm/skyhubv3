@@ -86,16 +86,18 @@ func WaitForNotification(l *pq.Listener, service *Service) {
 	for {
 		select {
 		case n := <-l.Notify:
-			skylog.Error("Received data from channel [", n.Channel, "] :")
-			// Prepare notification payload for pretty print
-			var prettyJSON bytes.Buffer
-			err := json.Indent(&prettyJSON, []byte(n.Extra), "", "\t")
-			if err != nil {
-				fmt.Println("Error processing JSON: ", err)
-				return
-			}
+			if n != nil {
+				skylog.Error("Received data from channel [", n.Channel, "] :")
+				// Prepare notification payload for pretty print
+				var prettyJSON bytes.Buffer
+				err := json.Indent(&prettyJSON, []byte(n.Extra), "", "\t")
+				if err != nil {
+					fmt.Println("Error processing JSON: ", err)
+					return
+				}
 
-			service.Messages <- strings.ReplaceAll(string(prettyJSON.Bytes()), "\n", "")
+				service.Messages <- strings.ReplaceAll(string(prettyJSON.Bytes()), "\n", "")
+			}
 			return
 		case <-time.After(90 * time.Second):
 			fmt.Println("Received no events for 90 seconds, checking connection")

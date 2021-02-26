@@ -24,6 +24,11 @@ func DefaultStore() *Store {
 	return NewStore(skydba.DefaultQuery())
 }
 
+//SearchUtilStore interface
+type SearchUtilStore interface {
+	Find(menuPath string) ([]string, error)
+}
+
 //Find function
 func (store *Store) Find(menuPath string) ([]string, error) {
 	// TODO

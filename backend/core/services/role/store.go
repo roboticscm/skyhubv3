@@ -28,12 +28,20 @@ func DefaultStore() *Store {
 	return NewStore(skydba.DefaultQuery())
 }
 
+//RoleStore interface
+type RoleStore interface {
+	Upsert(userID int64, input models.Role) (*models.Role, error)
+	FindRoleControl(depID int64, menuPath string, userID int64) ([]*pt.FindRoleControlResponseItem, error)
+	Find(filterText string, page, pageSize int32) ([]*pt.Role, int32, error)
+}
+
 //Upsert function: save or update data into table and return saved/updated record
 func (store *Store) Upsert(userID int64, input models.Role) (*models.Role, error) {
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
 
 	if input.Id != 0 {
+
 		if input.Code != nil {
 			isDuplicated, _ := skydba.IsTextValueDuplicated("role", "code", *input.Code, input.Id)
 			if isDuplicated {
@@ -54,6 +62,7 @@ func (store *Store) Upsert(userID int64, input models.Role) (*models.Role, error
 		role.Code = input.Code
 		role.Name = input.Name
 		role.Sort = input.Sort
+		role.Disabled = input.Disabled
 		role.OrgId = input.OrgId
 		skydba.MakeUpdateWithID(userID, &role)
 		updatedRole, err := store.q.UpdateWithID(&role)
@@ -102,6 +111,8 @@ func (store *Store) FindRoleControl(depID int64, menuPath string, userID int64) 
 
 //Find function
 func (store *Store) Find(filterText string, page, pageSize int32) ([]*pt.Role, int32, error) {
+	store.mutex.Lock()
+	defer store.mutex.Unlock()
 	const sql = `SELECT * FROM find_simple_list($1, $2, $3, $4, $5, $6, $7, $8, $9) as json`
 
 	var jsonOut string
@@ -113,7 +124,6 @@ func (store *Store) Find(filterText string, page, pageSize int32) ([]*pt.Role, i
 	if err := json.Unmarshal([]byte(jsonOut), &out); err != nil {
 		return nil, 0, err
 	}
-
 	return out.Payload, out.FullCount, nil
 }
 

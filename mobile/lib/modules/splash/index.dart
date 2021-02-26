@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skyone_mobile/modules/entry/index.dart';
 import 'package:skyone_mobile/the_app_controller.dart';
+import 'package:skyone_mobile/util/global_functions.dart';
 import 'package:skyone_mobile/widgets/scircular_progress_indicator.dart';
 
 class SplashPage extends StatelessWidget {
@@ -46,7 +47,16 @@ class SplashController extends GetxController {
    await Future.delayed(const Duration(seconds: 1));
     final TheAppController theAppController = Get.find();
     if(_entryController.isDefaultCustomer()) {
-      theAppController.changeStatus(LoginStatus());
+      if (checkRememberLogin()) {
+        if (await checkValidToken()) {
+          theAppController.changeStatus(LoggedInStatus());
+        } else {
+          theAppController.changeStatus(LoginStatus());
+        }
+      } else {
+        theAppController.changeStatus(LoginStatus());
+      }
+//      theAppController.changeStatus(LoginStatus());
     } else {
       theAppController.changeStatus(EntryStatus());
     }

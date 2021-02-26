@@ -11,6 +11,9 @@ import { MenuControlStore } from 'src/store/menu-control';
 import { SDate } from 'src/lib/sdate';
 import { SkyLogStore } from 'src/store/skylog';
 import { Authentication } from 'src/lib/authentication';
+import { RoleControlStore } from 'src/store/role-control';
+import { LoginInfo } from 'src/store/login-info';
+import { MenuStore } from 'src/features/system/menu/store';
 
 export class ViewStore {
   tableName = undefined;
@@ -38,8 +41,17 @@ export class ViewStore {
   customFindList = undefined;
   customWorkListColumns = undefined;
 
+  ModalContentView$ = new BehaviorSubject();
+  modalFullControl$ = new BehaviorSubject();
+  modalRoleControls$ = new BehaviorSubject()
+  menuInfo$ = new BehaviorSubject();
+
   constructor(menuPath) {
     this.menuPath = menuPath;
+    MenuStore.get(menuPath)
+    .then((res) => {
+      this.menuInfo$.next(res.toObject().data);
+    });
   }
 
   completeLoading$ = forkJoin([
@@ -127,8 +139,8 @@ export class ViewStore {
     });
   };
 
-  isDisabled = (controlCode, hasError = false) => {
-    if (hasError) {
+  isDisabled = (controlCode, isDisabled = false) => {
+    if (isDisabled) {
       return true;
     }
     if (this.fullControl) {
@@ -638,5 +650,27 @@ export class ViewStore {
     }
 
     return result;
+  };
+
+  loadModalComponent = (menuPath) => {
+    console.log('xxxx ', LoginInfo.departmentId$.value, menuPath);
+    return new Promise((resolve, reject) => {
+      RoleControlStore
+        .findRoleControls(LoginInfo.departmentId$.value, menuPath)
+        .then((res) => {
+          const rc = res.toObject().dataList;
+          if (rc && rc.length > 0 && rc[0].fullControl) {
+            this.modalFullControl$.next(true);
+          } else {
+            this.modalRoleControls$.next(rc);
+          }
+          import('src/features/' + menuPath + '/index.svelte')
+            .then((res) => {
+              this.ModalContentView$.next(res.default);
+              resolve('ok');
+            })
+            .catch((error) => reject(error));
+        });
+    });
   };
 }

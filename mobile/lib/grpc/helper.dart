@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:grpc/grpc.dart';
 import 'package:skyone_mobile/util/global_param.dart';
 import 'package:skyone_mobile/pt/proto/auth/auth_service.pbgrpc.dart';
@@ -45,9 +47,9 @@ Future<dynamic> authCall(Function func, dynamic requestParam) async {
       if (App.homeContext != null) {
         TheApp.forceLogout(App.homeContext);
       }
-      return null;
+      rethrow;
     } else {
-      return null;
+      rethrow;
     }
   }
 }

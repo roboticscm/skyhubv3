@@ -2,7 +2,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { callGRPC, protoFromObject, grpcMenuClient } from 'src/lib/grpc';
 import { defaultHeader } from 'src/lib/authentication';
-import { FindMenuRequest, UpsertMenuHistoryRequest } from 'src/pt/proto/menu/menu_service_pb';
+import { FindMenuRequest, GetMenuRequest, UpsertMenuHistoryRequest } from 'src/pt/proto/menu/menu_service_pb';
 
 export class MenuStore {
   static menu$ = new BehaviorSubject();
@@ -13,6 +13,13 @@ export class MenuStore {
         return grpcMenuClient.findHandler(req, defaultHeader).then((res) => {
           MenuStore.menu$.next(res.toObject().dataList);
         });
+    });
+  }
+
+  static get(menuPath) {
+    return callGRPC(() => {
+      const req = protoFromObject(new GetMenuRequest(), { menuPath });
+      return grpcMenuClient.getHandler(req, defaultHeader);
     });
   }
 

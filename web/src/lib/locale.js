@@ -106,6 +106,10 @@ export const findLanguage = (companyId, locale) => {
       I18N = res.toObject().dataList;
       convertLocaleResource();
       resolve(I18N);
+      String.prototype.t = function () {
+        var str = this.valueOf();
+        return T(str);
+    };
     }).catch(err => reject(err));
   });
 };

@@ -46,6 +46,64 @@ message FindLastDepartmentResponse {
     int64 dep_id = 1 [ jstype = JS_STRING];
 }
 
+message FindOrgRoleTreeRequest {
+    bool include_deleted = 1;
+    bool include_disabled = 2;
+}
+
+message FindOrgRoleTreeResponseItem {
+    string id = 1;
+    string name = 2;
+    string p_id = 3;
+    int32 type = 4;
+    int32 sort = 5;
+    bool open = 6;
+    bool done = 7;
+}
+
+message FindOrgRoleTreeResponse {
+    repeated FindOrgRoleTreeResponseItem data = 1;
+}
+
+message FindOrgTreeRequest {
+    int64 parent_id = 1 [ jstype = JS_STRING];
+    bool include_deleted = 2;
+    bool include_disabled = 3;
+}
+
+message FindOrgTreeResponseItem {
+    int64 id = 1 [ jstype = JS_STRING];
+    string name = 2;
+    int64 p_id = 3 [ jstype = JS_STRING];
+    int32 type = 4;
+    int32 sort = 5;
+    bool open = 6;
+}
+
+message FindOrgTreeResponse {
+    repeated FindOrgTreeResponseItem data = 1;
+}
+
+
+message FindOrgMenuTreeRequest {
+    string org_ids = 1;
+    bool include_deleted = 2;
+    bool include_disabled = 3;
+}
+
+message FindOrgMenuTreeResponseItem {
+    string id = 1;
+    string name = 2;
+    string p_id = 3;
+    int32 type = 4;
+    int32 sort = 5;
+    bool open = 6;
+    bool done = 7;
+}
+
+message FindOrgMenuTreeResponse {
+    repeated FindOrgMenuTreeResponseItem data = 1;
+}
 service OrgService {
     rpc FindBranchHandler(FindBranchRequest) returns (FindBranchResponse) {
         option (google.api.http) = {
@@ -62,6 +120,24 @@ service OrgService {
     rpc FindLastDepartmentHandler(FindLastDepartmentRequest) returns (FindLastDepartmentResponse) {
         option (google.api.http) = {
             get : "/department/last"
+        };
+    };
+
+    rpc FindOrgRoleTreeHandler(FindOrgRoleTreeRequest) returns (FindOrgRoleTreeResponse) {
+        option (google.api.http) = {
+            get : "/org/role"
+        };
+    };
+
+    rpc FindOrgTreeHandler(FindOrgTreeRequest) returns (FindOrgTreeResponse) {
+        option (google.api.http) = {
+            get : "/org"
+        };
+    };
+
+    rpc FindOrgMenuTreeHandler(FindOrgMenuTreeRequest) returns (FindOrgMenuTreeResponse) {
+        option (google.api.http) = {
+            get : "/org/menu"
         };
     };
 }

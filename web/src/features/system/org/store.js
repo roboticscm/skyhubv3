@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { callGRPC, protoFromObject, grpcOrgClient } from 'src/lib/grpc';
-import { FindBranchRequest, FindDepartmentRequest, FindLastDepartmentRequest } from 'src/pt/proto/org/org_service_pb';
+import { FindBranchRequest, FindDepartmentRequest, FindLastDepartmentRequest, FindOrgRoleTreeRequest, FindOrgTreeRequest, FindOrgMenuTreeRequest } from 'src/pt/proto/org/org_service_pb';
 import { defaultHeader } from 'src/lib/authentication';
 
 export class OrgStore {
@@ -43,6 +43,27 @@ export class OrgStore {
     return callGRPC(() => {
       const req = protoFromObject(new FindLastDepartmentRequest(), {branchId});
       return grpcOrgClient.findLastDepartmentHandler(req, defaultHeader);
+    });
+  }
+
+  static findOrgRoleTree(includeDeleted = false, includeDisabled = false) {
+    return callGRPC(() => {
+      const req = protoFromObject(new FindOrgRoleTreeRequest(), {includeDeleted, includeDisabled});
+      return grpcOrgClient.findOrgRoleTreeHandler(req, defaultHeader);
+    });
+  }
+
+  static findOrgTree(parentId, includeDeleted = false, includeDisabled = false) {
+    return callGRPC(() => {
+      const req = protoFromObject(new FindOrgTreeRequest(), {parentId, includeDeleted, includeDisabled});
+      return grpcOrgClient.findOrgTreeHandler(req, defaultHeader);
+    });
+  }
+
+  static findOrgMenuTree(orgIds, includeDeleted = false, includeDisabled = false) {
+    return callGRPC(() => {
+      const req = protoFromObject(new FindOrgMenuTreeRequest(), {orgIds, includeDeleted, includeDisabled});
+      return grpcOrgClient.findOrgMenuTreeHandler(req, defaultHeader);
     });
   }
 }

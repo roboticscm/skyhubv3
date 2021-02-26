@@ -6,7 +6,6 @@
   import { LoginInfo } from 'src/store/login-info';
   import { RoleControlStore } from 'src/store/role-control';
   import { SearchUtilStore } from 'src/store/search-util';
-  import { log } from 'qrcode/lib/core/galois-field';
 
   let TheComponent;
   const { currentComponentUri$ } = routerLinkStore;
@@ -37,7 +36,7 @@
       const rc = res[0].toObject().dataList;
       searchFields = res[1].toObject().fieldsList;
 
-      if (rc[0].fullControl) {
+      if (rc && rc.length> 0 && rc[0].fullControl) {
         fullControl = true;
       } else {
         roleControls = rc
@@ -89,5 +88,4 @@
     };
   });
 </script>
-
 <svelte:component this={TheComponent} {menuPath} {fullControl} {roleControls} {selectedId} {searchFields} />

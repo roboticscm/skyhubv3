@@ -6,17 +6,17 @@ option go_package = ".;pt";
 import "google/api/annotations.proto";
 import "proto/role/role_message.proto";
 
-message UpsertRoleRequest {
-    int64 id = 1 [jstype=JS_STRING];
-    string code = 2;
-    string name = 3;
-    int32 sort = 4;
-    int64 org_id = 5 [jstype=JS_STRING];
-}
+// message UpsertRoleRequest {
+//     int64 id = 1 [jstype=JS_STRING];
+//     string code = 2;
+//     string name = 3;
+//     int32 sort = 4;
+//     int64 org_id = 5 [jstype=JS_STRING];
+// }
 
-message UpsertRoleResponse {
-    Role data = 1;
-}
+// message UpsertRoleResponse {
+//     Role data = 1;
+// }
 
 
 message FindRoleControlRequest {
@@ -50,7 +50,7 @@ message FindRoleResponse {
 }
 
 service RoleService {
-  rpc UpsertHandler(UpsertRoleRequest) returns (UpsertRoleResponse) {
+  rpc UpsertHandler(Role) returns (Role) {
     option (google.api.http) = {
       post : "/role"
       body : "*"

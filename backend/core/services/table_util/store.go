@@ -26,6 +26,16 @@ func DefaultStore() *Store {
 	return NewStore(skydba.DefaultQuery())
 }
 
+//TableUtilStore interface
+type TableUtilStore interface {
+	FindSimpleList(tableName, columns, filterText, orderBy string, page, pageSize int32, onlyMe bool, userID int64, includeDisabled bool) (string, error)
+	GetOne(tableName string, id int64) (string, error)
+	HasAnyDeletedRecord(tableName string, onlyMe bool, userID int64) (string, error)
+	RestoreOrForeverDelete(tableName string, deleteIdsRef, restoreIdsRef interface{}, userID, companyID, branchID int64, menuPath, ipClient, device, os, browser string, reasonRef interface{}, fieldName string) error
+	FindDeletedRecords(tableName, columns string, onlyMe bool, userID int64) (string, error)
+	SoftDeleteMany(tableName, ids string, userID int64) (int64, error)
+}
+
 //FindSimpleList function
 func (store *Store) FindSimpleList(tableName, columns, filterText, orderBy string, page, pageSize int32, onlyMe bool, userID int64, includeDisabled bool) (string, error) {
 	const sql = `SELECT * FROM find_simple_list($1, $2, $3, $4, $5, $6, $7, $8, $9) as json`

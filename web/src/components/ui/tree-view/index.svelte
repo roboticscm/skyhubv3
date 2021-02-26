@@ -16,10 +16,10 @@
   const noDataImage = require('../../../../public/images/no-data-found.png').default;
 
   const setFontCss = (treeId, treeNode) => {
-    const body = document.querySelector('body[class^="theme-"]');
-    // let highlightColor = getComputedStyle(body)
-    //   .getPropertyValue('--my-active-color')
-    //   .trim();
+    const body = document.querySelector('body');
+    let highlightColor = getComputedStyle(body)
+      .getPropertyValue('--my-active-color')
+      .trim();
     return treeNode.done === true ? { color: highlightColor } : {};
   };
 
@@ -212,7 +212,7 @@
 
   // @ts-ignore
   $: {
-    window['$'].fn.zTree.destroy(window['$']('#' + id));
+    //window['$'].fn.zTree.destroy(window['$']('#' + id));
     const setting = {
       check: {
         enable: isCheckableNode || radioType,
@@ -253,6 +253,8 @@
     } else if ($data$) {
       // @ts-ignore
       _data = $data$;
+    } else {
+     _data = [];
     }
   }
 

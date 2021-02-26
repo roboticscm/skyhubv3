@@ -26,6 +26,11 @@ func DefaultStore() *Store {
 	return NewStore(skydba.DefaultQuery())
 }
 
+//LocaleResourceStore interface
+type LocaleResourceStore interface {
+	Find(companyID int64, locale string) ([]models.LocaleResource, error)
+}
+
 //Find function
 func (store *Store) Find(companyID int64, locale string) ([]models.LocaleResource, error) {
 	store.mutex.Lock()

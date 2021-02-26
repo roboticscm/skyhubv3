@@ -6,24 +6,28 @@ import (
 
 	"suntech.com.vn/skygroup/models"
 	"suntech.com.vn/skygroup/pt"
-	"suntech.com.vn/skygroup/store"
 	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 //Service struct
 type Service struct {
-	Store store.RoleStore
+	Store RoleStore
 }
 
 //NewService function return new Service struct instance
-func NewService(store store.RoleStore) *Service {
+func NewService(store RoleStore) *Service {
 	return &Service{
 		Store: store,
 	}
 }
 
+//DefaultService function return new Service struct instance
+func DefaultService() *Service {
+	return NewService(DefaultStore())
+}
+
 //UpsertHandler function
-func (service *Service) UpsertHandler(ctx context.Context, req *pt.UpsertRoleRequest) (*pt.UpsertRoleResponse, error) {
+func (service *Service) UpsertHandler(ctx context.Context, req *pt.Role) (*pt.Role, error) {
 	input := models.Role{}
 	if err := skyutl.ProtoStructConvert(req, &input); err != nil {
 		return nil, err
@@ -48,9 +52,7 @@ func (service *Service) UpsertHandler(ctx context.Context, req *pt.UpsertRoleReq
 		return nil, err
 	}
 
-	return &pt.UpsertRoleResponse{
-		Data: &savedRole,
-	}, nil
+	return &savedRole, nil
 }
 
 //FindRoleControlHandler function

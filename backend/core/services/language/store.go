@@ -25,6 +25,11 @@ func DefaultStore() *Store {
 	return NewStore(skydba.DefaultQuery())
 }
 
+//LanguageStore interface
+type LanguageStore interface {
+	Find() ([]*models.Language, error)
+}
+
 //Find function
 func (store *Store) Find() ([]*models.Language, error) {
 	sql := `SELECT *

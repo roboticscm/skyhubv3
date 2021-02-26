@@ -45,10 +45,24 @@ message SaveOrDeleteMenuControlRequest {
     repeated MenuControl menu_controls = 2;
 }
 
+message GetMenuRequest {
+    string path = 1;
+}
+
+message GetMenuResponse {
+    Menu data = 1;
+}
+
 service MenuService {
     rpc FindHandler(FindMenuRequest) returns (FindMenuResponse) {
         option (google.api.http) = {
             get : "/menu"
+        };
+    };
+
+    rpc GetHandler(GetMenuRequest) returns (GetMenuResponse) {
+        option (google.api.http) = {
+            get : "/menu/get"
         };
     };
 

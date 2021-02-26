@@ -31,6 +31,15 @@ func DefaultStore() *Store {
 	return NewStore(skydba.DefaultQuery())
 }
 
+//AuthStore interface
+type AuthStore interface {
+	Login(username string, password string) (*models.Account, error)
+	UpdateFreshToken(userID int64, token string) error
+	ChangePassword(userID int64, currentPassword string, newPassword string) error
+	Logout(userID int64) error
+	RefreshToken(refreshToken string) (string, error)
+}
+
 //Login return Account if username and password are correct
 func (store *Store) Login(username string, password string) (*models.Account, error) {
 	store.mutex.Lock()

@@ -26,6 +26,12 @@ func DefaultStore() *Store {
 	return NewStore(skydba.DefaultQuery())
 }
 
+//SkyLogStore interface
+type SkyLogStore interface {
+	Find(menuPath string, startDate, endDate int64) ([]*pt.FindSkylogResponseItem, error)
+	Save(skylog models.SkyLog) error
+}
+
 //Find function
 func (store *Store) Find(menuPath string, startDate, endDate int64) ([]*pt.FindSkylogResponseItem, error) {
 	var sql = `

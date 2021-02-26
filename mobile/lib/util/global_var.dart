@@ -21,6 +21,8 @@ const defaultPadding = EdgeInsets.all(defaultPaddingValue);
 const defaultBorderColor =  Color.fromRGBO(0, 0, 0, 0.1);
 const defaultBorderRadius = 10.0;
 const pageSize = 15;
+const disableOpacity = 0.3;
+const defaultDelayTyping = 300;//millisecond
 
 final transparentImage = Uint8List.fromList(<int>[
   0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,

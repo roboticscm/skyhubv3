@@ -25,12 +25,14 @@ export class Errors {
     this.errors = errors;
     let firstError = Object.keys(this.errors)[0];
     if (firstError) {
-      const el = document.getElementsByName(firstError)[0];
-      if (el) {
-        el && el.focus();
-      } else {
-        log.error(`Can not find element with id: ${firstError}`);
-      }
+      setTimeout(() => {
+        const el = document.getElementsByName(firstError)[0];
+        if (el) {
+          el && el.focus();
+        } else {
+          log.error(`Can not find element with id: ${firstError}`);
+        }
+      }, 100);
     }
   }
 

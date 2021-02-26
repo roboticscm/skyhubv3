@@ -5,20 +5,24 @@ import (
 
 	"google.golang.org/protobuf/types/known/emptypb"
 	"suntech.com.vn/skygroup/pt"
-	"suntech.com.vn/skygroup/store"
 	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 //Service struct
 type Service struct {
-	Store store.LanguageStore
+	Store LanguageStore
 }
 
 //NewService function return new Service struct instance
-func NewService(store store.LanguageStore) *Service {
+func NewService(store LanguageStore) *Service {
 	return &Service{
 		Store: store,
 	}
+}
+
+//DefaultService function return new Service struct instance
+func DefaultService() *Service {
+	return NewService(DefaultStore())
 }
 
 //FindHandler function

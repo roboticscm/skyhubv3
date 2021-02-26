@@ -17,6 +17,7 @@ export class Store {
       this.viewStore.completeLoading$,
     ]);
   }
+
   findOrgTree() {
     OrgStore.findBranches(false, 1, 100).then((res) => {
       this.dataList$.next(res);

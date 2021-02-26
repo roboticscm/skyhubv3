@@ -12,6 +12,8 @@ import 'package:skyone_mobile/widgets/search_bar.dart';
 import 'package:skyone_mobile/extension/string.dart';
 
 class RolePage extends StatelessWidget {
+  final String menuPath;
+  final int depId;
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   final _roleController = Get.put(RoleController());
   final String title;
@@ -19,14 +21,14 @@ class RolePage extends StatelessWidget {
   final _scrollController = ScrollController();
   final ThemeController _themeController = Get.find();
   final NotifyListenerController _notifyListenerController = Get.find();
-  RolePage({@required this.title}) {
+  RolePage({@required this.title, this.menuPath, this.depId}) {
     _roleController.init();
     _searchController.addListener(() {
-      _roleController.textSearch.value = _searchController.text.trim();
+      _roleController.textSearch$.value = _searchController.text.trim();
     });
 
     _scrollController.addListener(() {
-      if (_scrollController.offset == _scrollController.position.maxScrollExtent) {
+      if (_scrollController.offset == _scrollController.position.maxScrollExtent ) {
         _roleController.findMore(textSearch: _searchController.text.trim());
       }
     });
@@ -34,7 +36,7 @@ class RolePage extends StatelessWidget {
     final res = _notifyListenerController.register();
     if (res.item1 != null) {
       res.item1.listen((value) {
-        if((value as NotifyListener).table == "role") {
+        if ((value as NotifyListener).table == "role") {
           _roleController.refresh(textSearch: _searchController.text.trim());
         }
       });
@@ -100,8 +102,10 @@ class RolePage extends StatelessWidget {
           ),
         ),
         body: Obx(() {
-          if (_roleController.isInitializing.value) {
-            return Center(child: SCircularProgressIndicator.buildSmallCenter(),);
+          if (_roleController.isInitializing$.value) {
+            return Center(
+              child: SCircularProgressIndicator.buildSmallCenter(),
+            );
           } else {
             return _buildList(context);
           }
@@ -118,8 +122,8 @@ class RolePage extends StatelessWidget {
         child: ListView.separated(
             controller: _scrollController,
             itemBuilder: (BuildContext context, int index) {
-              if (index < _roleController.list.length) {
-                return _buildListItem(context, _roleController.list[index]);
+              if (index < _roleController.list$.length) {
+                return _buildListItem(context, _roleController.list$[index]);
               } else if (!_roleController.endOfData() && !_roleController.isRefreshing) {
                 return SCircularProgressIndicator.buildSmallest();
               } else if (_roleController.isRefreshing) {
@@ -134,7 +138,7 @@ class RolePage extends StatelessWidget {
             separatorBuilder: (BuildContext context, int index) {
               return const Divider();
             },
-            itemCount: _roleController.list.length + 1)));
+            itemCount: _roleController.list$.length + 1)));
   }
 
   Widget _buildListItem(BuildContext context, Role item) {
@@ -150,7 +154,13 @@ class RolePage extends StatelessWidget {
 
   void _showForm(BuildContext context, {String module, bool edit, Role selectedData}) {
     Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-      return  RoleForm(module: module, isUpdateMode: edit, selectedData: selectedData,);
+      return RoleForm(
+        module: module,
+        isUpdateMode: edit,
+        selectedData: selectedData,
+        depId: depId,
+        menuPath: menuPath,
+      );
     })).then((value) {
       if (value != null) {
         final obj = value as Role;

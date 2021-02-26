@@ -4,7 +4,6 @@
   import { fromPromise } from 'rxjs/internal-compatibility';
   import { switchMap, tap, filter } from 'rxjs/operators';
   import SimpleWorkList from 'src/components/work-list/simple-work-list';
-  import { SObject } from 'src/lib/sobject';
   import { AppStore } from 'src/store/app';
   import { getViewTitleFromMenuPath } from 'src/lib/url-util';
   import MainContent from '../content/index.svelte';
@@ -57,7 +56,6 @@
         observer.next(event);
       });
       selectSub = doSelect(change$);
-
       dispatch('callback', event.detail[0].id);
     }
   };

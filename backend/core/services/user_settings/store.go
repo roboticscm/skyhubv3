@@ -30,6 +30,13 @@ func DefaultStore() *Store {
 	return NewStore(skydba.DefaultQuery())
 }
 
+//UserSettingsStore interface
+type UserSettingsStore interface {
+	FindInitial(userID int64) (*models.InitialUserSetting, error)
+	Find(userID int64, branchID int64, menuPath, elementID, key, keys string) ([]models.UserSetting, error)
+	Upsert(userID int64, req *pt.UpsertUserSettingsRequest, keys []string, values []string) error
+}
+
 //FindInitial function
 func (store *Store) FindInitial(userID int64) (*models.InitialUserSetting, error) {
 	const sql = `SELECT * FROM get_last_user_settings($1)`

@@ -11,9 +11,10 @@ class SCloseButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlatButton(
       onPressed: () {
-        Navigator.of(context).pop();
         if(onPressed != null) {
           onPressed();
+        } else {
+          Navigator.of(context).pop();
         }
       },
       child: Column(

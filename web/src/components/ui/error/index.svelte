@@ -5,5 +5,5 @@
 </script>
 
 {#if form.errors.has(field)}
-  <span class={className}>{form.errors.get(field)}</span>
+  <span class={className} name={field}>{form.errors.get(field)}</span>
 {/if}

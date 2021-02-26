@@ -12,6 +12,7 @@ export class BaseUrl {
 
 export class App {
   static NAME = 'SKYHUB';
+  static DEFAULT_ICON = `<i class="fa fa-bars"></i>`;
   static SNACKBAR_TIMEOUT = 2000;
   static MAX_HEADER_HEIGHT = 100;
   static MIN_HEADER_HEIGHT = 30;
