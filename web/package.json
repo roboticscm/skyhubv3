@@ -7,6 +7,7 @@
     "fast-build": "cross-env NODE_ENV=production CACHE=true  webpack",
     "build": "cross-env NODE_ENV=production CACHE=false  webpack",
     "dev": "start http://localhost & webpack-dev-server --open",
+    "wdev": "start http://localhost & webpack-dev-server",
     "format": "npx prettier --write 'src/**/*.{js,ts,svelte,css,scss}'",
     "eslint": "npx eslint  src/**/*.*",
     "storybook": "start-storybook -p 4061 -s public"

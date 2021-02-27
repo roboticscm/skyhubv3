@@ -21,7 +21,13 @@ export class Store {
 
   findOrgRoleTree(incudeDeleted = false, includeDisabled = false) {
     OrgStore.findOrgRoleTree(incudeDeleted, includeDisabled).then((res) => {
-      this.roles$.next(res.toObject().dataList);
+      this.roles$.next(res.toObject().dataList.map((it) => {
+        if (it.name==="Admin") {
+          it.select = true;
+        }
+        
+        return it;
+      }));
     });
   }
 

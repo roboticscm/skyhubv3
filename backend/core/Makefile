@@ -112,11 +112,13 @@ wgen-all: wgen-go wgen-web wgen-dart
 both-server:
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
 	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
+	go mod tidy
 	reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode both -endpoint 0.0.0.0:9090"
 
 wboth-server: 
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
 	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
+	go mod tidy
 	nodemon --exec go run cmd\server\main.go -port 9090 -mode both -endpoint 0.0.0.0:9090
 
 wgrpc-server:
