@@ -1,0 +1,18 @@
+FROM golang:latest as builder
+LABEL maintainer="Khai.lv <roboticscm2018@gmail.com>"
+WORKDIR /src
+COPY . .
+RUN go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
+RUN git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
+RUN go mod tidy
+RUN CGO_ENABLED=0 go build -o /bin/skycore ./cmd/server/main.go
+
+
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+WORKDIR /app
+COPY --from=builder /bin/skycore .
+COPY config/config_prod.json ./config/config.json
+COPY keys/*.* ./keys/
+EXPOSE 7070 7071
+ENTRYPOINT ["./skycore", "-port", "7070", "-mode", "both", "-endpoint", "0.0.0.0:7070"] 

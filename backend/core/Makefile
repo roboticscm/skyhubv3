@@ -31,7 +31,8 @@ winstall:
 	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
 	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 	curl -L -o C:${HOMEPATH}\go\bin\protoc-gen-grpc-web.exe https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-windows-x86_64.exe 
-	go mod tidy
+	go get github.com/ktr0731/evans
+	
 gen-go:
 	rm -Rf  ${OUT_DIR}
 	rm -Rf ${ROOT_DOC_DIR}
@@ -175,6 +176,22 @@ wbuild: wgen-go
 	go build -o ${BUILD_DIR}\linux_runner cmd\server\main.go 
 	go env GOOS=windows GOARCH=amd64
 	go build -o ${BUILD_DIR}\win_runner.exe cmd\server\main.go 
+
+wbuild-linux: wgen-go
+	go mod tidy
+	if exist ${BUILD_DIR} rd /q /s ${BUILD_DIR}
+	mkdir ${BUILD_DIR}\${CONFIG_DIR}
+	mkdir ${BUILD_DIR}\${KEYS_DIR}
+	copy config\config_prod.json ${BUILD_DIR}\${CONFIG_DIR}\config.json
+	copy keys\app.* ${BUILD_DIR}\${KEYS_DIR}
+	go env  GOOS=linux GOARCH=amd64
+	go build -o ${BUILD_DIR}\linux_runner cmd\server\main.go 
+
+docker: 
+	docker image rm -f skycore
+	docker build -t skycore -f Dockerfile.multistage .
+	docker rm -f skycore
+	docker run -d --rm  -p 9090:7070 -p 9091:7071 --network skyplus-network --name skycore  skycore
 
 start-prod:
 	cd ${BUILD_DIR} && \
