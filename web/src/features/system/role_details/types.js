@@ -1,6 +1,6 @@
 export class RoleParam  {
     constructor() {
-      this.roleId = undefined;
+      this.role = undefined;
       this.filterOrgIds = undefined;
       this.checkedRoleOrgMenu = undefined;
     }

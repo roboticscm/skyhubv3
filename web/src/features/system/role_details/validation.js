@@ -3,8 +3,8 @@ import { CommonValidation } from 'src/lib/common-validation';
 export const validation = (form) => {
   const error = {};
 
-  if (CommonValidation.isEmptyString(form.roleId)) {
-    error.roleId = CommonValidation.SELECT_AT_LEAST_ONE_LEAF_NODE;
+  if (!form.role) {
+    error.role = CommonValidation.SELECT_AT_LEAST_ONE_LEAF_NODE;
   }
 
   if (!form.filterOrgIds || form.filterOrgIds.length === 0) {

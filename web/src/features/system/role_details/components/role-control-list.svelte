@@ -18,11 +18,12 @@
     <Button btnType={ButtonType.custom} text={'SYS.BUTTON.BACK'.t()} on:click={onBack} disabled={false} />
   </div>
 
-  <div style="width: 30%; white-space: nowrap; text-align: right">
-    
-  </div>
+  <div style="width: 30%; white-space: nowrap; text-align: right" />
 </section>
-
-{#each orgMenuList as orgMenu}
-  <Item />
-{/each}
+<div class="row" style="grid-column-gap:5px">
+  {#each orgMenuList as orgMenu}
+    <div class="col-xs-24 col-md-12 col-lg-8 mx-xs-0 px-xs-0 mb-xs-1 mr-md-0">
+      <Item {role} {orgMenu}/>
+    </div>
+  {/each}
+</div>

@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import { take } from 'rxjs/operators';
   import { ViewStore } from 'src/store/view';
   import { ButtonType } from 'src/components/ui/button/types';
@@ -12,7 +12,7 @@
   import TreeView from 'src/components/ui/tree-view';
   import Form from 'src/lib/grpc-form/form';
   import RoleControlList from './components/role-control-list.svelte';
-  import { BehaviorSubject } from 'rxjs';
+  import { BehaviorSubject, from } from 'rxjs';
   import { validation } from './validation';
   import Error from 'src/components/ui/error';
 
@@ -40,9 +40,7 @@
     orgRoleTreeRef,
     filterOrgTreeRef,
     orgMenuTreeRef,
-    checkedRoleOrgMenu,
-    selectedRole,
-    next$ = new BehaviorSubject(false);
+    next$ = new BehaviorSubject(undefined);
   // Init view
   const view = new ViewStore(menuPath);
   export const getView = () => view;
@@ -60,6 +58,11 @@
   };
   let form = resetForm();
 
+  $: if ($next$ === false && form && form.role) {
+    tick().then(() => {
+      orgRoleTreeRef && orgRoleTreeRef.selectNodeById('role' + form.role.id, false);
+    }) 
+  }
   // ================= SUBSCRIPTION ========================
   const subscription = () => {
     store.completeLoading$.pipe(take(1)).subscribe((_) => {
@@ -76,9 +79,14 @@
 
   const onNext = () => {
     if (validate()) {
+      for(const menu of form.checkedRoleOrgMenu) {
+        menu.controlList = [
+          {controlId: '1', controlName: 'Save Button', confirm: true, requirePassword: false},
+          {controlId: '2', controlName: 'Delete Button', confirm: false, requirePassword: true},
+        ];
+      }
       next$.next(true);
     }
-
   };
 
   const onOpenModal = (menuPath) => {
@@ -106,24 +114,23 @@
   };
 
   const onClickOrgRoleTree = (event) => {
-    form.errors.clear('roleId');
+    form.errors.clear('role');
     form.errors.errors = { ...form.errors.errors };
 
     const treeNode = event.detail.treeNode;
 
     if (treeNode.isParent) {
       filterOrg$.next(null);
-      form.roleId = undefined;
+      form.role = undefined;
       return;
     }
     const orgId = extractOrgId(treeNode);
     const roleId = extractRoleId(treeNode);
 
-    selectedRole = {
+    form.role = {
       id: roleId,
       name: treeNode.name,
     };
-    form.roleId = roleId;
     store.findOrgTree(orgId);
   };
 
@@ -146,16 +153,19 @@
     form.errors.clear('filterOrgIds');
     form.errors.errors = { ...form.errors.errors };
 
-    const checkOrgIds = filterOrgTreeRef.getCheckedLeafIds(true);
-    form.filterOrgIds = checkOrgIds;
-    store.findOrgMenuTree(checkOrgIds.join(','));
+    form.filterOrgIds = filterOrgTreeRef.getCheckedLeafIds(true);
+    filterOrg$.value.map((it) => {
+      it.checked = form.filterOrgIds.includes(it.id);
+      return it;
+    });
+    store.findOrgMenuTree(form.filterOrgIds.join(','));
   };
 
   const onCheckOrgMenuTree = (event) => {
     form.errors.clear('checkedRoleOrgMenu');
     form.errors.errors = { ...form.errors.errors };
 
-    checkedRoleOrgMenu = orgMenuTreeRef
+    form.checkedRoleOrgMenu = orgMenuTreeRef
       .getCheckedLeafNodes(true)
       .filter((node) => node.id.startsWith('menu'))
       .map((node) => {
@@ -183,7 +193,11 @@
 
         return obj;
       });
-      form.checkedRoleOrgMenu = checkedRoleOrgMenu;
+
+      orgMenu$.value.map((it) => {
+        it.checked = form.checkedRoleOrgMenu.map((menu) => 'menu' + menu.menuId).includes(it.id);
+        return it;
+      });
   };
 
   const validate = () => {
@@ -199,9 +213,7 @@
   };
 
   // ============================== HELPER ==========================
-  const preprocessData = () => {
-    
-  };
+  const preprocessData = () => {};
   // ============================== // HELPER ==========================
 </script>
 
@@ -236,7 +248,11 @@
       <div style="width: 70%; display: flex; flex-wrap: nowrap" />
 
       <div style="width: 30%; white-space: nowrap; text-align: right">
-        <Button btnType={ButtonType.custom} text={'SYS.BUTTON.NEXT'.t()} on:click={onNext} disabled={form.errors.any()} />
+        <Button
+          btnType={ButtonType.custom}
+          text={'SYS.BUTTON.NEXT'.t()}
+          on:click={onNext}
+          disabled={form.errors.any()} />
       </div>
     </section>
 
@@ -252,7 +268,7 @@
               disabled={$isReadOnlyMode$}>
               <div slot="label" class="label">{'SYS.LABEL.ROLE'.t()}:</div>
             </TreeView>
-            <Error {form} field="roleId" />
+            <Error {form} field="role" />
           </div>
           <div class="col-md-24 col-lg-8 default-border">
             <TreeView
@@ -276,7 +292,7 @@
               disabled={$isReadOnlyMode$}>
               <div slot="label" class="label">{'SYS.LABEL.MENU'.t()}:</div>
             </TreeView>
-            
+
             <Error {form} field="checkedRoleOrgMenu" />
           </div>
           <div class="col-md-24 col-lg-8">
@@ -286,6 +302,6 @@
       </form>
     </section>
   {:else}
-    <RoleControlList {next$} role={selectedRole} orgMenuList={checkedRoleOrgMenu} />
+    <RoleControlList {next$} role={form.role} orgMenuList={form.checkedRoleOrgMenu} />
   {/if}
 </section>

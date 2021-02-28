@@ -39,7 +39,12 @@ export class Store {
 
   findOrgMenuTree(orgIds, incudeDeleted = false, includeDisabled = false) {
     OrgStore.findOrgMenuTree(orgIds, incudeDeleted, includeDisabled).then((res) => {
-      this.orgMenu$.next(res.toObject().dataList);
+      this.orgMenu$.next(res.toObject().dataList.map((it) => {
+        if (it.id.startsWith("menu")) {
+          it.name = `SYS.MENU.${it.name.toUpperCase()}`.t()
+        }
+        return it;
+      }));
     });
   }
 }
