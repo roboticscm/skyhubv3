@@ -6,7 +6,7 @@
   import { T } from 'src/lib/locale';
   import Form from 'src/lib/grpc-form/form';
   import { SObject } from 'src/lib/sobject';
-  
+
   import TreeView from 'src/components/ui/tree-view';
   import { validation } from './validation';
   import { ButtonType, ButtonId } from 'src/components/ui/button/types';
@@ -14,6 +14,7 @@
   import FloatNumberInput from 'src/components/ui/float-input/number-input';
   import FloatTextInput from 'src/components/ui/float-input/text-input';
   import Error from 'src/components/ui/error';
+  import CheckBox from 'src/components/ui/input/checkbox';
   import SC from 'src/components/set-common';
   import BackIcon from 'src/icons/back24x16.svelte';
   import { Role } from '../types';
@@ -29,10 +30,10 @@
   export let backCallback;
   export let detailTitle = '';
 
-  const dispatch =  createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
   // Observable
-  const { hasAnyDeletedRecord$, deleteRunning$, saveRunning$, isReadOnlyMode$, isUpdateMode$ } = view;
+  const { selectedData$, hasAnyDeletedRecord$, deleteRunning$, saveRunning$, isReadOnlyMode$, isUpdateMode$ } = view;
 
   const { dataList$ } = store;
 
@@ -45,7 +46,6 @@
   let orgTreeRef;
 
   // Other vars
-  let selectedData;
   let saveOrUpdateSub;
   let dataChanged;
   /**
@@ -80,7 +80,7 @@
    */
   const onEdit = (event) => {
     // verify permission
-    view.verifyEditAction(event.currentTarget.id, scRef, selectedData.name).then((_) => {
+    view.verifyEditAction(event.currentTarget.id, scRef, $selectedData$.name).then((_) => {
       // just switch to edit mode
       isReadOnlyMode$.next(false);
       tick().then(() => {
@@ -97,9 +97,9 @@
    */
   const onDelete = (event) => {
     // verify permission
-    view.verifyDeleteAction(event.currentTarget.id, scRef, selectedData.name).then((_) => {
+    view.verifyDeleteAction(event.currentTarget.id, scRef, $selectedData$.name).then((_) => {
       // if everything is OK, call the action
-      view.doDelete(selectedData.id, scRef.snackbarRef(), doAddNew);
+      view.doDelete($selectedData$.id, scRef.snackbarRef(), doAddNew);
     });
   };
 
@@ -174,7 +174,7 @@
     // reset status flag
     isReadOnlyMode$.next(false);
     isUpdateMode$.next(false);
-    view.selectedData$.next(null);
+    selectedData$.next(null);
 
     // reset form
     form = resetForm();
@@ -219,7 +219,6 @@
         /* do something after form submit*/
         next: (res) => {
           if (res.hasError) {
-            log.error(res.error);
             //error occured
             form.errors.errors = form.recordErrors(res.error);
           } else {
@@ -229,11 +228,11 @@
             }, 2000);
 
             if ($isUpdateMode$) {
-              SkyLogStore.save(selectedData.name, { action: 'EDIT', payload: dataChanged });
+              SkyLogStore.save($selectedData$.name, { action: 'EDIT', payload: dataChanged });
               // update
               scRef.snackbarRef().showUpdateSuccess();
               if (!window.isSmartPhone) {
-                view.needSelectId$.next(selectedData.id);
+                view.needSelectId$.next($selectedData$.id);
               }
             } else {
               // save
@@ -245,22 +244,15 @@
           saveRunning$.next(false);
         },
         error: (error) => {
-          log.errorSection("Role form", error);
+          log.errorSection('Role form', error);
           saveRunning$.next(false);
         },
       });
   };
 
-  // const grpcUpsert = () => {
-  //   return callGRPC(() => {
-  //     const req = protoFromObject(UpsertRoleRequest, form.data());
-  //     return grpcRoleClient.upsertHandler(req, defaultHeader);
-  //   });
-  // };
-
-  const doSelect = (data) => {
-    selectedData = data;
+  const doSelect = (selectedData) => {
     if (selectedData) {
+      selectedData.id=`${selectedData.id}`
       isReadOnlyMode$.next(true);
       isUpdateMode$.next(true);
       form = new Form({
@@ -276,7 +268,7 @@
   // ============================== REACTIVE ==========================
   // Monitoring selected data from other users
   // When other users edit on the same data, display a confirmation of the change with the current user
-  view.selectedData$
+  selectedData$
     .pipe(
       switchMap((it) => {
         if (!it) return EMPTY;
@@ -294,13 +286,9 @@
       }),
     )
     .subscribe(async (res) => {
-      view.doNotifyConflictData(form, res.data, view.selectedData$.value.id, $isReadOnlyMode$, scRef);
+      view.doNotifyConflictData(form, res.data, selectedData$.value.id, $isReadOnlyMode$, scRef);
     });
-
-  // when user click on work list. load selected data to the right form
-  const selectDataSub = view.selectedData$.subscribe((data) => {
-    doSelect(data);
-  });
+    $: doSelect($selectedData$)
   // ============================== //REACTIVE ==========================
 
   // ============================== HELPER ==========================
@@ -388,59 +376,64 @@
 
 <!--Form controller-->
 <section class="view-content-controller">
-  {#if view.isRendered(ButtonId.addNew)}
-    <Button btnType={ButtonType.addNew} on:click={onAddNew} disabled={view.isDisabled(ButtonId.addNew)} />
-  {/if}
+  <div style="width: 50%; display: flex; flex-wrap: nowrap">
+    {#if view.isRendered(ButtonId.addNew)}
+      <Button btnType={ButtonType.addNew} on:click={onAddNew} disabled={view.isDisabled(ButtonId.addNew)} />
+    {/if}
 
-  {#if view.isRendered(ButtonId.save, !$isUpdateMode$)}
-    <Button
-      action={useSaveOrUpdateAction}
-      bind:this={btnSaveRef}
-      btnType={ButtonType.save}
-      disabled={view.isDisabled(ButtonId.save, form.errors.any())}
-      running={$saveRunning$} />
-  {/if}
+    {#if view.isRendered(ButtonId.save, !$isUpdateMode$)}
+      <Button
+        action={useSaveOrUpdateAction}
+        bind:this={btnSaveRef}
+        btnType={ButtonType.save}
+        disabled={view.isDisabled(ButtonId.save, form.errors.any())}
+        running={$saveRunning$} />
+    {/if}
 
-  {#if view.isRendered(ButtonId.edit, $isReadOnlyMode$ && $isUpdateMode$)}
-    <Button btnType={ButtonType.edit} on:click={onEdit} disabled={view.isDisabled(ButtonId.edit)} />
-  {/if}
+    {#if view.isRendered(ButtonId.edit, $isReadOnlyMode$ && $isUpdateMode$)}
+      <Button btnType={ButtonType.edit} on:click={onEdit} disabled={view.isDisabled(ButtonId.edit)} />
+    {/if}
 
-  {#if view.isRendered(ButtonId.update, !$isReadOnlyMode$ && $isUpdateMode$)}
-    <Button
-      action={useSaveOrUpdateAction}
-      bind:this={btnUpdateRef}
-      btnType={ButtonType.update}
-      disabled={view.isDisabled(ButtonId.update, form.errors.any())}
-      running={$saveRunning$} />
-  {/if}
+    {#if view.isRendered(ButtonId.update, !$isReadOnlyMode$ && $isUpdateMode$)}
+      <Button
+        action={useSaveOrUpdateAction}
+        bind:this={btnUpdateRef}
+        btnType={ButtonType.update}
+        disabled={view.isDisabled(ButtonId.update, form.errors.any())}
+        running={$saveRunning$} />
+    {/if}
 
-  {#if view.isRendered(ButtonId.delete, $isUpdateMode$)}
-    <Button
-      btnType={ButtonType.delete}
-      on:click={onDelete}
-      disabled={view.isDisabled(ButtonId.delete)}
-      running={$deleteRunning$} />
-  {/if}
+  </div>
+  <div style="width: 50%; white-space: nowrap; text-align: right">
 
-  {#if view.isRendered(ButtonId.config)}
-    <Button btnType={ButtonType.config} on:click={onViewConfig} disabled={view.isDisabled(ButtonId.config)} />
-  {/if}
+    {#if view.isRendered(ButtonId.delete, $isUpdateMode$)}
+      <Button
+        btnType={ButtonType.delete}
+        on:click={onDelete}
+        disabled={view.isDisabled(ButtonId.delete, $isReadOnlyMode$)}
+        running={$deleteRunning$} />
+    {/if}
 
-  {#if view.isRendered(ButtonId.trashRestore, $hasAnyDeletedRecord$)}
-    <Button
-      btnType={ButtonType.trashRestore}
-      on:click={onTrashRestore}
-      disabled={view.isDisabled(ButtonId.trashRestore)} />
-  {/if}
+    {#if view.isRendered(ButtonId.config)}
+      <Button btnType={ButtonType.config} on:click={onViewConfig} disabled={view.isDisabled(ButtonId.config)} />
+    {/if}
 
-  {#if view.isRendered(ButtonId.viewLog)}
-    <Button btnType={ButtonType.viewLog} on:click={onViewLog} disabled={view.isDisabled(ButtonId.viewLog)} />
-  {/if}
+    {#if view.isRendered(ButtonId.trashRestore, $hasAnyDeletedRecord$)}
+      <Button
+        btnType={ButtonType.trashRestore}
+        on:click={onTrashRestore}
+        disabled={view.isDisabled(ButtonId.trashRestore)} />
+    {/if}
+
+    {#if view.isRendered(ButtonId.viewLog)}
+      <Button btnType={ButtonType.viewLog} on:click={onViewLog} disabled={view.isDisabled(ButtonId.viewLog)} />
+    {/if}
+  </div>
 </section>
 <!--//Form controller-->
 
 <!--Main content-->
-<section class="view-content-main">
+<section class="view-content-main {$isReadOnlyMode$ ? 'disabled-container' : ''}">
   <form class="form" on:keydown={(event) => form.errors.clear(event.target.name)}>
     <div class="row">
       <div class="col-xs-24 col-sm-12">
@@ -483,6 +476,19 @@
           </div>
         </div>
         <!-- // Sort -->
+
+        <!-- disabled -->
+        <div class="row " style="grid-column-gap:0">
+          <div class="col-24">
+            <CheckBox
+              text={T('SYS.LABEL.DISABLED')}
+              name="disabled"
+              disabled={$isReadOnlyMode$}
+              bind:checked={form.disabled} />
+          </div>
+        </div>
+        <!-- // disabled -->
+
       </div>
       <div class="default-border col-xs-24 col-sm-12">
         <TreeView

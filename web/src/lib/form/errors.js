@@ -14,7 +14,6 @@ export class Errors {
   }
 
   get(field) {
-    console.log('?????? ', field)
     if (this.errors[field]) {
       return `${T(this.errors[field])}`;
     } else {

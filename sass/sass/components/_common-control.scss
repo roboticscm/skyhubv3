@@ -379,9 +379,10 @@
         color: var(--my-active-color);
       }
     }
-
-
   }
+}
 
-
+.disabled-container {
+    opacity: 0.3;
+    pointer-events: none;
 }
