@@ -98,3 +98,23 @@ func (service *Service) FindHandler(ctx context.Context, req *pt.FindRoleRequest
 
 	return &pt.FindRoleResponse{Data: payload, FullCount: fullCount}, nil
 }
+
+//FindRoleControlDetailHandler function
+func (service *Service) FindRoleControlDetailHandler(ctx context.Context, req *pt.FindRoleControlDetailRequest) (*pt.FindRoleControlDetailResponse, error) {
+	items, err := service.Store.FindRoleControlDetail(req.RoleDetailId, req.MenuId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pt.FindRoleControlDetailResponse{Data: items}, nil
+}
+
+//GetRoleDetailHandler function
+func (service *Service) GetRoleDetailHandler(ctx context.Context, req *pt.GetRoleDetailRequest) (*pt.GetRoleDetailResponse, error) {
+	item, err := service.Store.GetRoleDetail(req.RoleId, req.DepId, req.MenuId)
+	if err != nil {
+		return nil, err
+	}
+
+	return item, nil
+}

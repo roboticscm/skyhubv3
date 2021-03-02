@@ -142,8 +142,17 @@
         break;
 
       case ButtonType.back:
-        preset(undefined, 'BACK', '<i class="fa fa-arrow-left"></i>', 'btn-flat');
+        preset(ButtonId.back, 'BACK', '<i class="fa fa-arrow-left"></i>', 'btn-flat');
         break;
+
+      case ButtonType.next:    
+        preset(ButtonId.next, 'NEXT', '<i class="fa fa-arrow-right"></i>', 'btn-flat');
+        break;
+
+      case ButtonType.copy:    
+        preset(ButtonId.copy, 'COPY', '<i class="fas fa-copy"></i>', 'btn-flat');
+        break;
+
       default:
     }
 
@@ -217,10 +226,8 @@
   bind:this={btnRef}
   {id}
   {type}
-  class="{className}
-  {uppercase ? 'uppercase' : ''}
-  {disabled ? 'disabled' : ''}"
-  {disabled}
+  class="{className} {uppercase ? 'uppercase' : ''} {disabled ? 'text-disabled' : ''} "
+  disabled = {disabled || running}
   on:click|stopPropagation>
   {#if running}
     <i class="fa fa-spinner fa-spin" />

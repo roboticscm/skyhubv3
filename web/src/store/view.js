@@ -28,6 +28,7 @@ export class ViewStore {
   loading$ = new BehaviorSubject(false);
   saveRunning$ = new BehaviorSubject(false);
   deleteRunning$ = new BehaviorSubject(false);
+  copying$ = new BehaviorSubject(false);
   isReadOnlyMode$ = new BehaviorSubject(false); // true: form can edit, false form disable
   isUpdateMode$ = new BehaviorSubject(false); // true: update mode, false: save mode
   dataList$ = new BehaviorSubject([]);
@@ -137,6 +138,14 @@ export class ViewStore {
       doAddNew();
       this.deleteRunning$.next(false);
     });
+  };
+
+  //TODO
+  doCopy = (id, snackbarRef) => {
+    this.copying$.next(true);
+    setTimeout(() => {
+      this.copying$.next(false);
+    }, 1000);
   };
 
   isDisabled = (controlCode, isDisabled = false) => {
@@ -336,6 +345,17 @@ export class ViewStore {
       scRef.confirmModalRef(),
       scRef.confirmPasswordModalRef(),
       'DELETE',
+      extraMessage,
+      disabled,
+    );
+  };
+
+  verifyCopyAction = (buttonId, scRef, extraMessage = '', disabled = false) => {
+    return this.verifySimpleAction(
+      buttonId,
+      scRef.confirmModalRef(),
+      scRef.confirmPasswordModalRef(),
+      'COPY',
       extraMessage,
       disabled,
     );

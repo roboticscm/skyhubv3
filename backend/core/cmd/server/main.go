@@ -88,7 +88,7 @@ func init() {
 		skylog.SetLogFile("app")
 	}
 
-	skydba.Init("Main Data Source", "postgres", conf.DBServer, conf.DBName, conf.DBUser, conf.DBPassword, conf.DBPort, conf.DBTimeOut, conf.DBReconnect)
+	skydba.Init(conf.AppName, "Main Data Source", "postgres", conf.DBServer, conf.DBName, conf.DBUser, conf.DBPassword, conf.DBPort, conf.DBTimeOut, conf.DBReconnect)
 
 	//Set JwtManager global instance
 	skyutl.JwtManagerInstance = skyutl.NewJwtManager(keys.SignKey, keys.VerifyKey)

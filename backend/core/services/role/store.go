@@ -33,6 +33,8 @@ type RoleStore interface {
 	Upsert(userID int64, input models.Role) (*models.Role, error)
 	FindRoleControl(depID int64, menuPath string, userID int64) ([]*pt.FindRoleControlResponseItem, error)
 	Find(filterText string, page, pageSize int32) ([]*pt.Role, int32, error)
+	FindRoleControlDetail(roleDetailID, menuID int64) ([]*pt.FindRoleControlDetailItem, error)
+	GetRoleDetail(roleID, depID, menuID int64) (*pt.GetRoleDetailResponse, error)
 }
 
 //Upsert function: save or update data into table and return saved/updated record
@@ -130,4 +132,32 @@ func (store *Store) Find(filterText string, page, pageSize int32) ([]*pt.Role, i
 type jsonWithPagination struct {
 	FullCount int32      `json:"full_count"`
 	Payload   []*pt.Role `json:"payload"`
+}
+
+//FindRoleControlDetail function
+func (store *Store) FindRoleControlDetail(roleDetailID, menuID int64) ([]*pt.FindRoleControlDetailItem, error) {
+	store.mutex.Lock()
+	defer store.mutex.Unlock()
+	const sql = `SELECT * FROM find_role_control_detail($1, $2)`
+
+	var items []*pt.FindRoleControlDetailItem
+	if err := store.q.Query(sql, []interface{}{roleDetailID, menuID}, &items); err != nil {
+		return nil, err
+	}
+
+	return items, nil
+}
+
+//GetRoleDetail function
+func (store *Store) GetRoleDetail(roleID, depID, menuID int64) (*pt.GetRoleDetailResponse, error) {
+	store.mutex.Lock()
+	defer store.mutex.Unlock()
+	const sql = `SELECT * FROM get_role_detail($1, $2, $3)`
+
+	var item pt.GetRoleDetailResponse
+	if err := store.q.Query(sql, []interface{}{roleID, depID, menuID}, &item); err != nil {
+		return nil, err
+	}
+
+	return &item, nil
 }

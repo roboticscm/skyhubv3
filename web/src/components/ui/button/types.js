@@ -30,6 +30,8 @@ export class ButtonType {
   static complete = 'complete';
   static unComplete = 'unComplete';
   static back = 'back';
+  static next = 'next';
+  static copy = 'copy';
 }
 
 export class ButtonPressed {
@@ -61,4 +63,7 @@ export class ButtonId {
   static dashboard = 'btnDashboard';
   static complete = 'btnComplete';
   static unComplete = 'btnUnComplete';
+  static next = 'btnNext';
+  static back = 'btnBack';
+  static copy = 'btnCopy';
 }

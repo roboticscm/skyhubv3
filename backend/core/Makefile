@@ -14,7 +14,20 @@ KEYS_DIR=keys
 
 install:
 	go clean -modcache
+	rm -Rf ~/go/bin
+	mkdir ~/go/bin
 	go get github.com/cespare/reflex
+	curl -L -o ~/go/bin/protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.15.3/protoc-3.15.3-osx-x86_64.zip
+	cd ~/go/bin && tar -xf protoc.zip
+	cp ~/go/bin/bin/protoc ~/go/bin
+	rm -f  ~/go/bin/protoc.zip
+	go get google.golang.org/protobuf/cmd/protoc-gen-go
+	go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
+	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
+	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
+	curl -L -o ~/go/bin/protoc-gen-grpc-web https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-darwin-x86_64 
+	chmod +x ~/go/bin/protoc-gen-grpc-web
+	go get github.com/ktr0731/evans
 
 winstall:
 	go clean -modcache
@@ -124,16 +137,19 @@ wboth-server:
 wgrpc-server:
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
 	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
+	go mod tidy
 	nodemon --exec go run cmd\server\main.go -port 9090 -mode grpc
 
 grpc-server:
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
 	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
+	go mod tidy
 	reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode grpc"
 
 rest-server:
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
 	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
+	go mod tidy
 	reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9091 -mode rest -endpoint 0.0.0.0:9090"
 
 test-auth:

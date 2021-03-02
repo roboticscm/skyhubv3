@@ -33,7 +33,7 @@
   const dispatch = createEventDispatcher();
 
   // Observable
-  const { selectedData$, hasAnyDeletedRecord$, deleteRunning$, saveRunning$, isReadOnlyMode$, isUpdateMode$ } = view;
+  const { selectedData$, hasAnyDeletedRecord$, deleteRunning$, saveRunning$, copying$, isReadOnlyMode$, isUpdateMode$ } = view;
 
   const { dataList$ } = store;
 
@@ -46,7 +46,6 @@
   let orgTreeRef;
 
   // Other vars
-  let saveOrUpdateSub;
   let dataChanged;
   /**
    * Reset form (reset input and errors)
@@ -100,6 +99,19 @@
     view.verifyDeleteAction(event.currentTarget.id, scRef, $selectedData$.name).then((_) => {
       // if everything is OK, call the action
       view.doDelete($selectedData$.id, scRef.snackbarRef(), doAddNew);
+    });
+  };
+
+  /**
+   * Event handle for Copy button.
+   * @param {event} Mouse click event.
+   * @return {void}.
+   */
+   const onCopy = (event) => {
+    // verify permission
+    view.verifyCopyAction(event.currentTarget.id, scRef, $selectedData$.name).then((_) => {
+      // if everything is OK, call the action
+      view.doCopy($selectedData$.id, scRef.snackbarRef());
     });
   };
 
@@ -191,7 +203,7 @@
    * @return {void}.
    */
   const doSaveOrUpdate = (ob$) => {
-    saveOrUpdateSub = ob$
+    ob$
       .pipe(
         filter((_) => validate()) /* filter if form pass client validation */,
         concatMap((_) =>
@@ -334,10 +346,7 @@
    * @return {void}.
    */
   onDestroy(() => {
-    selectDataSub.unsubscribe();
-    if (saveOrUpdateSub) {
-      saveOrUpdateSub.unsubscribe();
-    }
+
   });
 
   /**
@@ -403,6 +412,13 @@
         running={$saveRunning$} />
     {/if}
 
+    {#if view.isRendered(ButtonId.copy, $isUpdateMode$)}
+      <Button
+        btnType={ButtonType.copy}
+        on:click={onCopy}
+        disabled={view.isDisabled(ButtonId.copy)}
+        running={$copying$} />
+    {/if}
   </div>
   <div style="width: 50%; white-space: nowrap; text-align: right">
 

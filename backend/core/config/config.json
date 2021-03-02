@@ -4,6 +4,7 @@
 	"dbServer": "172.16.22.17",
     "dbPort": 5434,
     "dbName": "skyhubv3",
+    "appName": "skyhubv3",
     "dbTimeOut": 3,
     "dbReconnect": 2,
 	"dbUser": "skyhubv3",

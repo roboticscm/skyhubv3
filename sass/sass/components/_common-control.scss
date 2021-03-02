@@ -386,3 +386,9 @@
     opacity: 0.3;
     pointer-events: none;
 }
+
+.center-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

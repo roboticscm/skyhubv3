@@ -17,7 +17,7 @@ require (
 	google.golang.org/protobuf v1.25.1-0.20201208041424-160c7477e0e8
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	suntech.com.vn/skylib/skydba.git v1.1.4
+	suntech.com.vn/skylib/skydba.git v1.1.5
 	suntech.com.vn/skylib/skylog.git v1.0.5
 	suntech.com.vn/skylib/skyutl.git v1.1.5
 )

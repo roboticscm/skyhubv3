@@ -4,8 +4,8 @@
   import { Observable } from 'rxjs';
   import { SettingsStore } from 'src/store/settings';
 
-  export let id;
-  export let menuPath;
+  export let id = undefined;
+  export let menuPath = undefined;
 
   export let name = undefined;
   export let disabled = false;
@@ -119,15 +119,14 @@
   }
 </script>
 
-<div class="floating-wrapper">
+<div class="floating-wrapper {className}">
   <select
     on:blur={onChange}
     bind:value
     {name}
     {disabled}
     class="{checked !== undefined ? 'check' : ''}
-    {rightCheck ? 'right' : ''}
-    {className}"
+    {rightCheck ? 'right' : ''}"
     bind:this={inputRef}>
 
     {#if showSelectOneItem}

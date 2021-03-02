@@ -13,6 +13,7 @@ type Configuration struct {
 	DBServer       string        `json:"dbServer"`
 	DBPort         int32         `json:"dbPort"`
 	DBName         string        `json:"dbName"`
+	AppName        string        `json:"appName"`
 	DBTimeOut      int32         `json:"dbTimeOut"`
 	DBReconnect    int32         `json:"dbReconnect"`
 	DBUser         string        `json:"dbUser"`

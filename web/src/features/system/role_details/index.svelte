@@ -2,7 +2,7 @@
   import { onMount, tick } from 'svelte';
   import { take } from 'rxjs/operators';
   import { ViewStore } from 'src/store/view';
-  import { ButtonType } from 'src/components/ui/button/types';
+  import { ButtonType, ButtonId } from 'src/components/ui/button/types';
   import Button from 'src/components/ui/button/flat-button';
   import ProgressBar from 'src/components/ui/progress-bar';
   import { Store } from './store';
@@ -15,6 +15,7 @@
   import { BehaviorSubject, from } from 'rxjs';
   import { validation } from './validation';
   import Error from 'src/components/ui/error';
+  import { SObject } from 'src/lib/sobject';
 
   // Props
   export let showTitle = true;
@@ -29,8 +30,6 @@
   selectedId;
   searchFields;
   showTitle;
-  fullControl;
-  roleControls;
   callFrom;
   showWorkList;
 
@@ -41,11 +40,17 @@
     filterOrgTreeRef,
     orgMenuTreeRef,
     next$ = new BehaviorSubject(undefined);
+
+  let nexting = false,
+    loadingFilterOrg = false,
+    loadingOrgMenu = false;
   // Init view
   const view = new ViewStore(menuPath);
+  view.fullControl = fullControl;
+  view.roleControls = roleControls;
   export const getView = () => view;
 
-  const { ModalContentView$, modalFullControl$, modalRoleControls$, isReadOnlyMode$ } = view;
+  const { ModalContentView$, modalFullControl$, modalRoleControls$, isReadOnlyMode$, copying$ } = view;
 
   view.loading$.next(true);
 
@@ -61,7 +66,7 @@
   $: if ($next$ === false && form && form.role) {
     tick().then(() => {
       orgRoleTreeRef && orgRoleTreeRef.selectNodeById('role' + form.role.id, false);
-    }) 
+    });
   }
   // ================= SUBSCRIPTION ========================
   const subscription = () => {
@@ -77,15 +82,51 @@
   });
   // ================= //HOOK ========================
 
-  const onNext = () => {
+  const onNext = async () => {
     if (validate()) {
-      for(const menu of form.checkedRoleOrgMenu) {
-        menu.controlList = [
-          {controlId: '1', controlName: 'Save Button', confirm: true, requirePassword: false},
-          {controlId: '2', controlName: 'Delete Button', confirm: false, requirePassword: true},
-        ];
+      nexting = true;
+      store.roleDetails = [];
+      store.roleControlDetails = [];
+      store.beforeRoleControlDetails = [];
+      for (let i = 0; i < form.checkedRoleOrgMenu.length; i++) {
+        const rd = await store.getRoleDetail(
+          form.role.id,
+          form.checkedRoleOrgMenu[i].parentId,
+          form.checkedRoleOrgMenu[i].menuId,
+        );
+
+        if (rd.id !== "0") {
+          store.roleDetails.push({ ...rd, found: true });
+        } else {
+          store.roleDetails.push({ ...rd, found: false, dataLevel: 1000 });
+        }
+        const rcd = await store.findRoleControlDetail(rd.id || 0, form.checkedRoleOrgMenu[i].menuId);
+        store.roleControlDetails.push(rcd.toObject().dataList);
       }
+      
+      store.roleDetails = [...store.roleDetails];
+      store.roleControlDetails = [...store.roleControlDetails];
+      store.beforeRoleDetails = SObject.clone(store.roleDetails);
+      store.beforeRoleControlDetails = SObject.clone(store.roleControlDetails);
+      //for compare object
+      store.beforeRoleControlDetails.map((its) =>
+        its.map((it) => {
+          if (!it.found) {
+            it.found = true;
+          }
+          return it;
+        }),
+      );
+
+      store.beforeRoleDetails.map((it) => {
+        if (!it.found) {
+          it.found = true;
+        }
+        return it;
+      });
+
       next$.next(true);
+      nexting = false;
     }
   };
 
@@ -119,9 +160,12 @@
 
     const treeNode = event.detail.treeNode;
 
+    filterOrg$.next([]);
+    store.orgMenu$.next([]);
+    form.role = undefined;
+    form.checkedRoleOrgMenu = [];
+
     if (treeNode.isParent) {
-      filterOrg$.next(null);
-      form.role = undefined;
       return;
     }
     const orgId = extractOrgId(treeNode);
@@ -131,7 +175,9 @@
       id: roleId,
       name: treeNode.name,
     };
-    store.findOrgTree(orgId);
+
+    loadingFilterOrg = true;
+    store.findOrgTree(orgId).then(() => (loadingFilterOrg = false));
   };
 
   const extractRoleId = (node) => {
@@ -158,7 +204,13 @@
       it.checked = form.filterOrgIds.includes(it.id);
       return it;
     });
-    store.findOrgMenuTree(form.filterOrgIds.join(','));
+
+    store.orgMenu$.next([]);
+    form.checkedRoleOrgMenu = [];
+    if (form.filterOrgIds.length > 0) {
+      loadingOrgMenu = true;
+      store.findOrgMenuTree(form.filterOrgIds.join(',')).then(() => (loadingOrgMenu = false));
+    }
   };
 
   const onCheckOrgMenuTree = (event) => {
@@ -194,10 +246,10 @@
         return obj;
       });
 
-      orgMenu$.value.map((it) => {
-        it.checked = form.checkedRoleOrgMenu.map((menu) => 'menu' + menu.menuId).includes(it.id);
-        return it;
-      });
+    orgMenu$.value.map((it) => {
+      it.checked = form.checkedRoleOrgMenu.map((menu) => 'menu' + menu.menuId).includes(it.id);
+      return it;
+    });
   };
 
   const validate = () => {
@@ -211,6 +263,8 @@
 
     return true;
   };
+
+  const onCopy = () => {};
 
   // ============================== HELPER ==========================
   const preprocessData = () => {};
@@ -245,14 +299,18 @@
   {#if !$next$}
     <!--Form controller-->
     <section class="view-content-controller" style="display: flex; justify-content: space-between; flex-wrap: nowrap">
-      <div style="width: 70%; display: flex; flex-wrap: nowrap" />
+      <div style="width: 70%; display: flex; flex-wrap: nowrap">
+        {#if view.isRendered(ButtonId.copy)}
+          <Button
+            running={$copying$}
+            btnType={ButtonType.copy}
+            on:click={onCopy}
+            disabled={view.isDisabled(ButtonId.copy)} />
+        {/if}
+      </div>
 
       <div style="width: 30%; white-space: nowrap; text-align: right">
-        <Button
-          btnType={ButtonType.custom}
-          text={'SYS.BUTTON.NEXT'.t()}
-          on:click={onNext}
-          disabled={form.errors.any()} />
+        <Button running={nexting} btnType={ButtonType.next} on:click={onNext} disabled={form.errors.any()} />
       </div>
     </section>
 
@@ -270,30 +328,38 @@
             </TreeView>
             <Error {form} field="role" />
           </div>
-          <div class="col-md-24 col-lg-8 default-border">
-            <TreeView
-              isCheckableNode={true}
-              on:check={onCheckFilterOrgTree}
-              bind:this={filterOrgTreeRef}
-              id={'filterOrgTree' + view.getViewName() + 'Id'}
-              data={$filterOrg$}
-              disabled={$isReadOnlyMode$}>
-              <div slot="label" class="label">{'SYS.LABEL.FILTER_ORG'.t()}:</div>
-            </TreeView>
-            <Error {form} field="filterOrgIds" />
+          <div class="col-md-24 col-lg-8 default-border {loadingFilterOrg ? 'center-box' : ''}">
+            {#if !loadingFilterOrg}
+              <TreeView
+                isCheckableNode={true}
+                on:check={onCheckFilterOrgTree}
+                bind:this={filterOrgTreeRef}
+                id={'filterOrgTree' + view.getViewName() + 'Id'}
+                data={$filterOrg$}
+                disabled={$isReadOnlyMode$}>
+                <div slot="label" class="label">{'SYS.LABEL.FILTER_ORG'.t()}:</div>
+              </TreeView>
+              <Error {form} field="filterOrgIds" />
+            {:else}
+              {@html App.PROGRESS_BAR}
+            {/if}
           </div>
-          <div class="col-md-24 col-lg-8 default-border">
-            <TreeView
-              isCheckableNode={true}
-              on:check={onCheckOrgMenuTree}
-              bind:this={orgMenuTreeRef}
-              id={'orgMenuTree' + view.getViewName() + 'Id'}
-              data={$orgMenu$}
-              disabled={$isReadOnlyMode$}>
-              <div slot="label" class="label">{'SYS.LABEL.MENU'.t()}:</div>
-            </TreeView>
+          <div class="col-md-24 col-lg-8 default-border {loadingOrgMenu ? 'center-box' : ''}">
+            {#if !loadingOrgMenu}
+              <TreeView
+                isCheckableNode={true}
+                on:check={onCheckOrgMenuTree}
+                bind:this={orgMenuTreeRef}
+                id={'orgMenuTree' + view.getViewName() + 'Id'}
+                data={$orgMenu$}
+                disabled={$isReadOnlyMode$}>
+                <div slot="label" class="label">{'SYS.LABEL.MENU'.t()}:</div>
+              </TreeView>
 
-            <Error {form} field="checkedRoleOrgMenu" />
+              <Error {form} field="checkedRoleOrgMenu" />
+            {:else}
+              {@html App.PROGRESS_BAR}
+            {/if}
           </div>
           <div class="col-md-24 col-lg-8">
             <input type="button" on:click={() => onOpenModal('system/role')} value="Test Show Dialog" />
@@ -302,6 +368,6 @@
       </form>
     </section>
   {:else}
-    <RoleControlList {next$} role={form.role} orgMenuList={form.checkedRoleOrgMenu} />
+    <RoleControlList {view} {menuPath} {store} {next$} role={form.role} orgMenuList={form.checkedRoleOrgMenu} />
   {/if}
 </section>

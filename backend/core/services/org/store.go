@@ -3,7 +3,6 @@ package org
 import (
 	"encoding/json"
 	"sync"
-
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skylib/skydba.git/skydba"
 )
@@ -127,11 +126,14 @@ func (store *Store) FindOrgTree(parentID int64, includeDisabled, includeDeleted 
 func (store *Store) FindOrgMenuTree(orgIds string, includeDisabled, includeDeleted bool) ([]*pt.FindOrgMenuTreeResponseItem, error) {
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
-
-	const sql = `SELECT * FROM find_org_menu_tree($1, $2) as "json"`
+	const sql = `SELECT * FROM find_org_menu_tree($1, $2, $3) as "json"`
 
 	var jsonOut string
-	if err := store.q.Query(sql, []interface{}{includeDeleted, includeDisabled}, &jsonOut); err != nil {
+	var _orgIds interface{}
+	if orgIds != "" {
+		_orgIds = orgIds
+	}
+	if err := store.q.Query(sql, []interface{}{_orgIds, includeDeleted, includeDisabled}, &jsonOut); err != nil {
 		return nil, err
 	}
 
