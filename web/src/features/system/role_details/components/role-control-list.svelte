@@ -8,7 +8,6 @@
   import { fromEvent, of } from 'rxjs';
   import { fromPromise } from 'rxjs/internal-compatibility';
 
-
   export let view;
   export let next$;
   export let role;
@@ -39,18 +38,33 @@
       changedRoleDetails = [];
       changedRoleControlDetails = [];
       for (let i = 0; i < store.roleDetails.length; i++) {
-        changedRoleDetails.push(view.checkObjectChange(store.beforeRoleDetails[i], store.roleDetails[i], scRef.snackbarRef()));
-        changedRoleControlDetails.push(view.checkObjectArrayChange(store.beforeRoleControlDetails[i], store.roleControlDetails[i], scRef.snackbarRef()));
+        changedRoleDetails.push(
+          view.checkObjectChange(store.beforeRoleDetails[i], store.roleDetails[i]),
+        );
+        changedRoleControlDetails.push(
+          view.checkObjectArrayChange(
+            store.beforeRoleControlDetails[i],
+            store.roleControlDetails[i],
+            
+          ),
+        );
       }
 
-      
-      if (!changedRoleDetails.filter(it => it === null) && !changedRoleControlDetails.filter(it => it === null) ) {
+      console.log( changedRoleDetails.filter((it) => it === null).length)
+      console.log( changedRoleDetails.length)
+      console.log( changedRoleControlDetails.filter((it) => it === null).length)
+      console.log(changedRoleControlDetails.length)
+      if (
+        changedRoleDetails.filter((it) => it === null).length === changedRoleDetails.length &&
+        changedRoleControlDetails.filter((it) => it === null).length === changedRoleControlDetails.length
+      ) {
+        scRef.snackbarRef().showNoDataChange();
         return false;
       }
     }
 
+    console.log(store.roleDetails);
     console.log(store.beforeRoleDetails);
-    console.log(store.beforeRoleControlDetails);
 
     console.log(changedRoleDetails);
     console.log(changedRoleControlDetails);
@@ -177,7 +191,11 @@
   <div class="row" style="grid-column-gap:5px">
     {#each orgMenuList as orgMenu, index}
       <div class="col-xs-24 col-md-12 col-lg-8 mx-xs-0 px-xs-0 mb-xs-1 mr-md-0">
-        <Item {role} {orgMenu} roleDetail={store.roleDetails[index]} roleControlDetails={store.roleControlDetails[index]} />
+        <Item
+          {role}
+          {orgMenu}
+          roleDetail={store.roleDetails[index]}
+          roleControlDetails={store.roleControlDetails[index]} />
       </div>
     {/each}
   </div>
