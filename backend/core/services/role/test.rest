@@ -47,27 +47,30 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjkzNzc2MDc2MzAsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJyb290IiwiZnVsbE5hbWUiOiJUT0RPLi4uIn0.xKlSPYS3E98BuNkJsZxTtjvSaBviDflffMaMexxV_WCGbY8ARy1iSTuPbXIwngXQml6u7gh6OCjkpMyygm8i_X135wgAp08g541-_hh8CdgiZe5CJTx3u0Oqr6vvx1ibPiKHNeBmkVZ_OpjyCWGdiAco1QBzqGWTNDv7DIh83CM
 
 {
-    "id": "2521108987198310984",
-    "roleId": "1",
-    "depId": "3",
-    "menuId": "2",
-    "isPrivate": false,
-    "dataLevel": 100,
-    "approve": true,
-    "roleControls": [
+    "UpsertRoleDetailItems": [
         {
-            "id": "1",
-            "controlId": "1",
-            "renderControl": true,
-            "disableControl": false,
-            "confirm": true,
-            "requirePassword": true
-        }, {
-            "controlId": "2",
-            "renderControl": true,
-            "disableControl": false,
-            "confirm": true,
-            "requirePassword": true
+            "roleId": "1",
+            "depId": "3",
+            "menuId": "2",
+            "isPrivate": false,
+            "dataLevel": 100,
+            "approve": true,
+            "RoleControlItems": [
+                {
+                    "controlId": "1",
+                    "renderControl": true,
+                    "disableControl": false,
+                    "confirm": true,
+                    "requirePassword": true
+                }, {
+                    "controlId": "2",
+                    "renderControl": true,
+                    "disableControl": false,
+                    "confirm": true,
+                    "requirePassword": true
+                }
+            ]
         }
     ]
+    
 }

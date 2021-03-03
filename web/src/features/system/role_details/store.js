@@ -2,7 +2,7 @@ import { BehaviorSubject, of, forkJoin } from 'rxjs';
 import { skip, first, catchError } from 'rxjs/operators';
 import { OrgStore } from 'src/features/system/org/store';
 import { callGRPC, protoFromObject, grpcRoleClient } from 'src/lib/grpc';
-import { FindRoleControlDetailRequest, GetRoleDetailRequest, } from 'src/pt/proto/role/role_service_pb';
+import { FindRoleControlDetailRequest, GetRoleDetailRequest, UpsertRoleDetailRequest} from 'src/pt/proto/role/role_service_pb';
 import { defaultHeader } from 'src/lib/authentication';
 
 export class Store {
@@ -80,11 +80,11 @@ export class Store {
     });
   }
 
-  grpcUpsert() {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve({});
-      }, 1000);
-    })
+  grpcUpsert(data) {
+    return callGRPC(() => {
+      console.log({upsertRoleDetailItems: data})
+      const req = protoFromObject(new UpsertRoleDetailRequest(), {upsertRoleDetailItems: data}, "role/role_service_pb");
+      return grpcRoleClient.upsertRoleDetailHandler(req, defaultHeader);
+    });
   }
 }

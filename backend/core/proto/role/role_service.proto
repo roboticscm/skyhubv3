@@ -44,12 +44,13 @@ message FindRoleControlDetailRequest {
 
 message FindRoleControlDetailItem {
   bool found = 1;
-  int64 control_id = 2 [ jstype = JS_STRING ];
-  string control_name = 3;
-  bool render_control = 4;
-  bool disable_control = 5;
-  bool confirm = 6;
-  bool require_password = 7;
+  int64 id = 2 [ jstype = JS_STRING];
+  int64 control_id = 3 [ jstype = JS_STRING ];
+  string control_name = 4;
+  bool render_control = 5;
+  bool disable_control = 6;
+  bool confirm = 7;
+  bool require_password = 8;
 }
 
 message FindRoleControlDetailResponse {
@@ -70,7 +71,7 @@ message GetRoleDetailResponse {
 }
 
 message RoleControlItem {
-  int64 it = 1 [ jstype = JS_STRING ];
+  int64 id = 1 [ jstype = JS_STRING ];
   int64 control_id = 2 [ jstype = JS_STRING ];
   bool render_control = 3;
   bool disable_control = 4;
@@ -78,7 +79,8 @@ message RoleControlItem {
   bool require_password = 6;
 }
 
-message UpsertRoleDetailRequest {
+
+message UpsertRoleDetailItem {
   int64 id = 1 [ jstype = JS_STRING ];
   int64 role_id = 2 [ jstype = JS_STRING ];
   int64 dep_id = 3 [ jstype = JS_STRING ];
@@ -86,8 +88,13 @@ message UpsertRoleDetailRequest {
   bool is_private = 5;
   int32 data_level = 6;
   bool approve = 7;
-  repeated RoleControlItem roleControls = 8;
+  repeated RoleControlItem role_control_items = 8;
 }
+
+message UpsertRoleDetailRequest {
+  repeated UpsertRoleDetailItem upsert_role_detail_items = 1;
+}
+
 service RoleService {
   rpc UpsertHandler(Role) returns (Role) {
     option (google.api.http) = {

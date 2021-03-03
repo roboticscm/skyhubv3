@@ -17,7 +17,7 @@
 
   let scRef, saveOrUpdateSub;
   let changedRoleDetails, changedRoleControlDetails;
-
+  let postData;
   const { saveRunning$, isReadOnlyMode$, isUpdateMode$ } = view;
 
   isUpdateMode$.next(true);
@@ -50,10 +50,6 @@
         );
       }
 
-      console.log( changedRoleDetails.filter((it) => it === null).length)
-      console.log( changedRoleDetails.length)
-      console.log( changedRoleControlDetails.filter((it) => it === null).length)
-      console.log(changedRoleControlDetails.length)
       if (
         changedRoleDetails.filter((it) => it === null).length === changedRoleDetails.length &&
         changedRoleControlDetails.filter((it) => it === null).length === changedRoleControlDetails.length
@@ -63,11 +59,19 @@
       }
     }
 
-    console.log(store.roleDetails);
-    console.log(store.beforeRoleDetails);
+    postData = [];
+    for (let i = 0 ; i < store.roleDetails.length ; i++) {
+      if (changedRoleDetails[i] || changedRoleControlDetails[i]) {
+        postData.push({
+          ...store.roleDetails[i],
+          menuId: orgMenuList[i].menuId,
+          roleId: role.id,
+          depId: orgMenuList[i].parentId,
+          roleControlItems: changedRoleControlDetails[i]
+        });
+      }
+    }
 
-    console.log(changedRoleDetails);
-    console.log(changedRoleControlDetails);
     return true;
   };
 
@@ -89,7 +93,8 @@
         switchMap((_) => {
           /*Call grpc on server*/
           saveRunning$.next(true);
-          return fromPromise(store.grpcUpsert()).pipe(
+
+          return fromPromise(store.grpcUpsert(postData)).pipe(
             catchError((error) => {
               return of({ hasError: true, error });
             }),

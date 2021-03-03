@@ -170,29 +170,59 @@ func (store *Store) UpsertRoleDetail(ctx context.Context, req *pt.UpsertRoleDeta
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
 
-	menuOrg := models.MenuOrg{}
-	if err := store.q.ReadWithParam(&menuOrg, map[string]interface{}{"menu_id": req.MenuId, "dep_id": req.DepId}); err != nil {
-		return err
-	}
-
-	roleDetail := models.RoleDetail{Id: req.Id}
-	if req.Id > 0 {
-		if err := store.q.Read(&roleDetail); err != nil {
+	for _, rd := range req.UpsertRoleDetailItems {
+		var menuOrg models.MenuOrg
+		if err := store.q.ReadWithParam(&menuOrg, map[string]interface{}{"menu_id": rd.MenuId, "dep_id": rd.DepId}); err != nil {
 			return err
 		}
-	} 
+		fmt.Printf("rd.MenuId,  rd.DepId, menuOrg.Id: %v %v %v\n", rd.MenuId,  rd.DepId, menuOrg.Id)
+		roleDetail := models.RoleDetail{Id: rd.Id}
+		if rd.Id > 0 {
+			if err := store.q.Read(&roleDetail); err != nil {
+				return err
+			}
+		} 
 
-	roleDetail.MenuOrgId = &menuOrg.Id
-	roleDetail.RoleId = &req.RoleId
-	roleDetail.IsPrivate =  &req.IsPrivate
-	roleDetail.DataLevel = &req.DataLevel
-	roleDetail.Approve = &req.Approve
+		roleDetail.MenuOrgId = &menuOrg.Id
+		roleDetail.RoleId = &rd.RoleId
+		roleDetail.IsPrivate =  &rd.IsPrivate
+		roleDetail.DataLevel = &rd.DataLevel
+		roleDetail.Approve = &rd.Approve
 
-	out, err := store.q.ContextUpsertWithID(ctx, &roleDetail, "disabled", "version")
-	if err != nil {
-		return err
+		out, err := store.q.ContextUpsertWithID(ctx, &roleDetail, "disabled", "version")
+		if err != nil {
+			return err
+		}
+
+		roleDetailID := rd.Id
+		if roleDetailID == 0 {
+			roleDetailID = out.(*models.RoleDetail).Id
+		}
+		
+		for _, rc := range rd.RoleControlItems {
+			roleControl := models.RoleControl{Id: rc.Id}
+			if rc.Id > 0 {
+				if err := store.q.Read(&roleControl); err != nil {
+					return err
+				}
+			} 
+
+			var menuControl models.MenuControl
+
+			store.q.ReadWithParam(&menuControl, map[string]interface{}{"menu_id": rd.MenuId, "control_id": rc.ControlId})
+			fmt.Printf("rd.MenuId,  rc.ControlId, menuControl.Id: %v %v %v\n", rd.MenuId,  rc.ControlId, menuControl.Id)
+			roleControl.MenuControlId = &menuControl.Id
+			roleControl.RoleDetailId =  &roleDetailID
+			roleControl.RenderControl = &rc.RenderControl
+			roleControl.DisableControl = &rc.DisableControl
+			roleControl.Confirm = &rc.Confirm
+			roleControl.RequirePassword = &rc.RequirePassword
+
+			_, err := store.q.ContextUpsertWithID(ctx, &roleControl, "disabled", "version")
+			if err != nil {
+				return err
+			}
+		}
 	}
-
-	fmt.Println(out)
 	return nil
 }
