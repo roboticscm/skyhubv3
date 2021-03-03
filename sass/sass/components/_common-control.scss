@@ -127,6 +127,10 @@
   width: 100%;
 }
 
+.h-100 {
+  height: 100%;
+}
+
 .progress-bar-wrapper {
   position: fixed;
   z-index: $modal-wrapper-z-index;
@@ -391,4 +395,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.in-box {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

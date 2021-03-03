@@ -1,7 +1,9 @@
 package role
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"sync"
 
 	"suntech.com.vn/skygroup/models"
@@ -35,6 +37,7 @@ type RoleStore interface {
 	Find(filterText string, page, pageSize int32) ([]*pt.Role, int32, error)
 	FindRoleControlDetail(roleDetailID, menuID int64) ([]*pt.FindRoleControlDetailItem, error)
 	GetRoleDetail(roleID, depID, menuID int64) (*pt.GetRoleDetailResponse, error)
+	UpsertRoleDetail(ctx context.Context, req *pt.UpsertRoleDetailRequest) error
 }
 
 //Upsert function: save or update data into table and return saved/updated record
@@ -160,4 +163,36 @@ func (store *Store) GetRoleDetail(roleID, depID, menuID int64) (*pt.GetRoleDetai
 	}
 
 	return &item, nil
+}
+
+//UpsertRoleDetail function
+func (store *Store) UpsertRoleDetail(ctx context.Context, req *pt.UpsertRoleDetailRequest) error {
+	store.mutex.Lock()
+	defer store.mutex.Unlock()
+
+	menuOrg := models.MenuOrg{}
+	if err := store.q.ReadWithParam(&menuOrg, map[string]interface{}{"menu_id": req.MenuId, "dep_id": req.DepId}); err != nil {
+		return err
+	}
+
+	roleDetail := models.RoleDetail{Id: req.Id}
+	if req.Id > 0 {
+		if err := store.q.Read(&roleDetail); err != nil {
+			return err
+		}
+	} 
+
+	roleDetail.MenuOrgId = &menuOrg.Id
+	roleDetail.RoleId = &req.RoleId
+	roleDetail.IsPrivate =  &req.IsPrivate
+	roleDetail.DataLevel = &req.DataLevel
+	roleDetail.Approve = &req.Approve
+
+	out, err := store.q.ContextUpsertWithID(ctx, &roleDetail, "disabled", "version")
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(out)
+	return nil
 }

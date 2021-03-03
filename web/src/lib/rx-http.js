@@ -16,6 +16,7 @@ export class RxHttp {
       fullUrl = baseUrl ? `${baseUrl}/${url}` : url;
     }
 
+    console.log(fullUrl)
     return Axios.request({
       url: fullUrl,
       method,

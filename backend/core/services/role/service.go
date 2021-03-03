@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"google.golang.org/protobuf/types/known/emptypb"
 	"suntech.com.vn/skygroup/models"
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skylib/skyutl.git/skyutl"
@@ -117,4 +118,12 @@ func (service *Service) GetRoleDetailHandler(ctx context.Context, req *pt.GetRol
 	}
 
 	return item, nil
+}
+
+//UpsertRoleDetailHandler function
+func (service *Service) UpsertRoleDetailHandler(ctx context.Context, req *pt.UpsertRoleDetailRequest) (*emptypb.Empty, error) {
+	if err := service.Store.UpsertRoleDetail(ctx, req); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
 }

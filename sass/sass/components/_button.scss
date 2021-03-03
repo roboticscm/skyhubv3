@@ -2,6 +2,10 @@
   @include create-flat-button();
 }
 
+.iot-button {
+  @include create-iot-button();
+}
+
 .btn-small-round-flat {
   @include create-flat-button();
   border-radius: 50%;
@@ -63,4 +67,8 @@
 
 button:disabled {
   color: gray;
+}
+
+.iot-on-button {
+  background-color: var(--bg-success);
 }

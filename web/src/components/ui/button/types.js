@@ -32,6 +32,7 @@ export class ButtonType {
   static back = 'back';
   static next = 'next';
   static copy = 'copy';
+  static controlA = 'controlA';
 }
 
 export class ButtonPressed {
@@ -66,4 +67,5 @@ export class ButtonId {
   static next = 'btnNext';
   static back = 'btnBack';
   static copy = 'btnCopy';
+  static controlA = 'btnControlA';
 }

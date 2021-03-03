@@ -1,0 +1,52 @@
+.gates {
+    padding: $default-padding;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    &__content {
+        display: flex;
+        padding: $default-padding;
+    }
+    &__left {
+        padding-right: $default-padding;
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        &__entrance {
+            display: flex;
+            flex-direction: column;
+            border: $default-border;
+            &__bottom {
+                display: flex;
+                justify-content: space-between;
+            }
+        }
+
+        &__bottom {
+            
+            margin-top: $default-padding;
+            display: flex;
+            justify-content: space-between;
+            &__main {
+                border: $default-border;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+        }
+    }
+
+    &__right {
+        
+        border: $default-border;
+        width: 20%;
+        display: flex;
+        flex-direction: column;
+        &__bottom {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+    }
+}

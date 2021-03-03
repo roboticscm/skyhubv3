@@ -20,8 +20,10 @@
   export let action = undefined;
   export let showIcon = true;
   export let showText = true;
+  export let showIconOnly = false;
   export let dropdownList = [];
   export let uppercase = true;
+  export let isOn = false;
 
   // export let dropdownList: ButtonDropdown[] = [
   //   { id: 'ITEM1', name: 'Demo Item1', useFontIcon: true, fontIcon: '<i class="fab fa-skyatlas"></i>' },
@@ -145,12 +147,18 @@
         preset(ButtonId.back, 'BACK', '<i class="fa fa-arrow-left"></i>', 'btn-flat');
         break;
 
-      case ButtonType.next:    
+      case ButtonType.next:
         preset(ButtonId.next, 'NEXT', '<i class="fa fa-arrow-right"></i>', 'btn-flat');
         break;
 
-      case ButtonType.copy:    
+      case ButtonType.copy:
         preset(ButtonId.copy, 'COPY', '<i class="fas fa-copy"></i>', 'btn-flat');
+        break;
+      case ButtonType.controlA:
+        preset(ButtonId.controlA, undefined, "<i class='fas fa-align-justify'></i>");
+        showText = false;
+        showIconOnly = true;
+        className = 'iot-button';
         break;
 
       default:
@@ -193,6 +201,10 @@
   };
 
   const onResizeContainer = (e) => {
+    if (showIconOnly) {
+      return;
+    }
+
     const container = e[0].target;
     const containerWidth = window['$'](container).width();
     const childrenCount = container.childElementCount;
@@ -201,10 +213,13 @@
   };
 
   onMount(() => {
-    if (window.isSmartPhone) {
-      btnRef.style.minWidth = '50px';
-    } else {
-      btnRef.style.minWidth = `${BUTTON_MIN_WITH}px`;
+    console.log('2', showIconOnly)
+    if (!showIconOnly) {
+      if (window.isSmartPhone) {
+        btnRef.style.minWidth = '50px';
+      } else {
+        btnRef.style.minWidth = `${BUTTON_MIN_WITH}px`;
+      }
     }
 
     let resizeObserver;
@@ -226,8 +241,12 @@
   bind:this={btnRef}
   {id}
   {type}
-  class="{className} {uppercase ? 'uppercase' : ''} {disabled ? 'text-disabled' : ''} "
-  disabled = {disabled || running}
+  class="{className}
+  {uppercase ? 'uppercase' : ''}
+  {disabled ? 'text-disabled' : ''}
+  {isOn ? 'iot-on-button': ''}
+  "
+  disabled={disabled || running}
   on:click|stopPropagation>
   {#if running}
     <i class="fa fa-spinner fa-spin" />

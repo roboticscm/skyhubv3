@@ -91,8 +91,8 @@ export class Authentication {
   };
 
   static setHeader = (token) => {
-    axios.defaults.headers['Content-Type'] = 'application/json';
-    axios.defaults.headers['Authorization'] = `Bearer ${token}`;
+    // axios.defaults.headers['Content-Type'] = 'application/json';
+    // axios.defaults.headers['Authorization'] = `Bearer ${token}`;
 
     defaultHeader = {
       authorization: 'Bearer ' + token,

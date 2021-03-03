@@ -12,7 +12,7 @@
   import TreeView from 'src/components/ui/tree-view';
   import Form from 'src/lib/grpc-form/form';
   import RoleControlList from './components/role-control-list.svelte';
-  import { BehaviorSubject, from } from 'rxjs';
+  import { BehaviorSubject } from 'rxjs';
   import { validation } from './validation';
   import Error from 'src/components/ui/error';
   import { SObject } from 'src/lib/sobject';

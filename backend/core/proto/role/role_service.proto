@@ -5,29 +5,17 @@ package role;
 option go_package = ".;pt";
 import "google/api/annotations.proto";
 import "proto/role/role_message.proto";
-
-// message UpsertRoleRequest {
-//     int64 id = 1 [jstype=JS_STRING];
-//     string code = 2;
-//     string name = 3;
-//     int32 sort = 4;
-//     int64 org_id = 5 [jstype=JS_STRING];
-// }
-
-// message UpsertRoleResponse {
-//     Role data = 1;
-// }
-
+import "google/protobuf/empty.proto";
 
 message FindRoleControlRequest {
-  int64 dep_id = 1 [jstype=JS_STRING];
+  int64 dep_id = 1 [ jstype = JS_STRING ];
   string menu_path = 2;
 }
 
 message FindRoleControlResponseItem {
   bool full_control = 1;
-  int64 control_id = 2 [jstype=JS_STRING];
-  string control_code  = 3;
+  int64 control_id = 2 [ jstype = JS_STRING ];
+  string control_code = 3;
   bool render_control = 4;
   bool disable_control = 5;
   bool confirm = 6;
@@ -50,13 +38,13 @@ message FindRoleResponse {
 }
 
 message FindRoleControlDetailRequest {
-  int64 role_detail_id = 1 [ jstype = JS_STRING];
-  int64 menu_id = 2 [ jstype = JS_STRING];
+  int64 role_detail_id = 1 [ jstype = JS_STRING ];
+  int64 menu_id = 2 [ jstype = JS_STRING ];
 }
 
 message FindRoleControlDetailItem {
   bool found = 1;
-  int64 control_id = 2 [ jstype = JS_STRING];
+  int64 control_id = 2 [ jstype = JS_STRING ];
   string control_name = 3;
   bool render_control = 4;
   bool disable_control = 5;
@@ -69,18 +57,37 @@ message FindRoleControlDetailResponse {
 }
 
 message GetRoleDetailRequest {
-  int64 role_id = 1 [ jstype = JS_STRING];
-  int64 dep_id = 2 [ jstype = JS_STRING];
-  int64 menu_id = 3 [ jstype = JS_STRING];
+  int64 role_id = 1 [ jstype = JS_STRING ];
+  int64 dep_id = 2 [ jstype = JS_STRING ];
+  int64 menu_id = 3 [ jstype = JS_STRING ];
 }
 
 message GetRoleDetailResponse {
-  int64 id = 1 [ jstype = JS_STRING];
+  int64 id = 1 [ jstype = JS_STRING ];
   bool is_private = 2;
   int32 data_level = 3;
   bool approve = 4;
 }
 
+message RoleControlItem {
+  int64 it = 1 [ jstype = JS_STRING ];
+  int64 control_id = 2 [ jstype = JS_STRING ];
+  bool render_control = 3;
+  bool disable_control = 4;
+  bool confirm = 5;
+  bool require_password = 6;
+}
+
+message UpsertRoleDetailRequest {
+  int64 id = 1 [ jstype = JS_STRING ];
+  int64 role_id = 2 [ jstype = JS_STRING ];
+  int64 dep_id = 3 [ jstype = JS_STRING ];
+  int64 menu_id = 4 [ jstype = JS_STRING ];
+  bool is_private = 5;
+  int32 data_level = 6;
+  bool approve = 7;
+  repeated RoleControlItem roleControls = 8;
+}
 service RoleService {
   rpc UpsertHandler(Role) returns (Role) {
     option (google.api.http) = {
@@ -90,19 +97,37 @@ service RoleService {
   };
 
   rpc FindHandler(FindRoleRequest) returns (FindRoleResponse) {
-    option (google.api.http) = { get: "/role"  };
+    option (google.api.http) = {
+      get : "/role"
+    };
   }
 
-  rpc FindRoleControlHandler(FindRoleControlRequest) returns (FindRoleControlResponse) {
-    option (google.api.http) = { get: "/role/control" };
+  rpc FindRoleControlHandler(FindRoleControlRequest)
+      returns (FindRoleControlResponse) {
+    option (google.api.http) = {
+      get : "/role/control"
+    };
   }
 
-  rpc FindRoleControlDetailHandler(FindRoleControlDetailRequest) returns (FindRoleControlDetailResponse) {
-    option (google.api.http) = { get: "/role/control/detail" };
+  rpc FindRoleControlDetailHandler(FindRoleControlDetailRequest)
+      returns (FindRoleControlDetailResponse) {
+    option (google.api.http) = {
+      get : "/role/control/detail"
+    };
   }
 
-  rpc GetRoleDetailHandler(GetRoleDetailRequest) returns (GetRoleDetailResponse) {
-    option (google.api.http) = { get: "/role/detail" };
+  rpc GetRoleDetailHandler(GetRoleDetailRequest)
+      returns (GetRoleDetailResponse) {
+    option (google.api.http) = {
+      get : "/role/detail"
+    };
+  }
+
+  rpc UpsertRoleDetailHandler(UpsertRoleDetailRequest)
+      returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post : "/role/detail",
+      body: "*"
+    };
   }
 }
-

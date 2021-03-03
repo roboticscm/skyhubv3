@@ -8,6 +8,7 @@ const GRPC_DEFAULT_HOST = 'localhost';
 export class BaseUrl {
   static SYSTEM = `${SCHEME}://${HOST}:${PORT}`;
   static GRPC_CORE = `${SCHEME}://${GRPC_DEFAULT_HOST}:${GRPC_DEFAULT_PORT}`;
+  static CONTROL = `http://172.16.50.253`;
 }
 
 export class App {

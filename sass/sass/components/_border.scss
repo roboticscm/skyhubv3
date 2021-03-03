@@ -2,8 +2,11 @@
   border: $default-border;
 }
 
-
 .default-rounded-border {
   border: $default-border;
   border-radius: $default-border-radius;
+}
+
+.bottom-border {
+  border-bottom: $default-border;
 }

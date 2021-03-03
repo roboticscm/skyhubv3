@@ -22,7 +22,7 @@ const TYPE_GROUPS = [
   'TAB',
   'MENU',
   'MSG',
-  'COLOR',
+  'COLOR'
 ];
 
 export const IMG = {};
@@ -65,6 +65,11 @@ TYPE_GROUPS.map((item) => {
   TASK[item] = {};
 });
 
+export const IOT = {};
+TYPE_GROUPS.map((item) => {
+  IOT[item] = {};
+});
+
 const CATEGORIES_MAP = new Map([
   ['IMG', IMG],
   ['EMR', EMR],
@@ -74,6 +79,7 @@ const CATEGORIES_MAP = new Map([
   ['COMMON', COMMON],
   ['QTT', QTT],
   ['TASK', TASK],
+  ['IOT', IOT],
 ]);
 
 export const convertLocaleResource = () => {
