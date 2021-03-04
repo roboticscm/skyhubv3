@@ -19,8 +19,8 @@ import 'package:skyone_mobile/util/global_var.dart';
 
 class RoleFormController extends GetxController with BaseController {
   final orgTree$ = <FindBranchResponseItem>[].obs;
-  final isInitializing$ = false.obs;
-  final isReadOnlyMode$ = false.obs;
+  bool isInitializing = false;
+  bool isReadOnlyMode = false;
   final isUpsertLoading$ = false.obs;
   final code$ = FormItemString(value: "").obs;
   final name$ = FormItemString(value: "").obs;
@@ -41,11 +41,11 @@ class RoleFormController extends GetxController with BaseController {
   }
 
   Future init({int depId, String menuPath}) async {
-    isInitializing$.value = true;
+    isInitializing = true;
     update(['loading']);
     await findBranchTree();
     await findRoleControl(depId, menuPath);
-    isInitializing$.value = false;
+    isInitializing = false;
     update(['loading']);
     return true;
   }
@@ -53,10 +53,10 @@ class RoleFormController extends GetxController with BaseController {
   Future findBranchTree() async {
     final channel = createChannel(ServiceURL.core);
     final client = OrgServiceClient(channel);
-    final request = FindBranchRequest(fromOrgType: 1, toOrgType: 10, includeDisabled: false, includeDeleted: false);
+    final request = FindBranchRequest(fromOrgType: 1, toOrgType: 1000, includeDisabled: false, includeDeleted: false);
     try {
       final res = await authCall(client.findBranchHandler, request) as FindBranchResponse;
-      orgTree$.value = res.data;
+      orgTree$.assignAll(res.data);
     } catch (e) {
       log(e);
     } finally {
@@ -71,11 +71,12 @@ class RoleFormController extends GetxController with BaseController {
     }
   }
 
+  ///TODO
   void _realtimeValidation() async {
     debounce(name$, (FormItemString value) async {
       if (name$.value.error == null && (name$.value?.value ?? '').isNotEmpty) {
         if (name$.value.value == "abc") {
-          await Future.delayed(Duration(milliseconds: 300));
+          await Future.delayed(const Duration(milliseconds: 300));
           name$.value = FormItemString(value: value.value, error: "abcccccc");
         }
       }
@@ -134,13 +135,12 @@ class RoleFormController extends GetxController with BaseController {
   }
 
   void toggleEditMode() {
-    isReadOnlyMode$.value = !isReadOnlyMode$.value;
+    isReadOnlyMode = !isReadOnlyMode;
     update(['isReadOnlyMode']);
   }
 
   void setOrgId(int orgId) {
     selectedOrgId$.value = FormItemInt(value: orgId);
-    update(['orgId']);
   }
 
   @override

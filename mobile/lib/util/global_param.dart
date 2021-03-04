@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:skyone_mobile/modules/notify_listener/controller.dart';
+import 'package:skyone_mobile/features/notify_listener/controller.dart';
 import 'package:skyone_mobile/util/app.dart';
 import 'package:skyone_mobile/util/server.dart';
 

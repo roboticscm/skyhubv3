@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skyone_mobile/main.dart';
-import 'package:skyone_mobile/modules/home/locale_resource/repo.dart';
+import 'package:skyone_mobile/features/home/locale_resource/repo.dart';
 import 'package:skyone_mobile/util/global_var.dart';
 import 'package:skyone_mobile/util/server.dart';
 import 'package:fixnum/fixnum.dart' as $fixnum;

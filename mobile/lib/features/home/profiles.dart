@@ -1,7 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:skyone_mobile/modules/login/repo.dart';
+import 'package:skyone_mobile/features/login/repo.dart';
 import 'package:skyone_mobile/util/locale_resource.dart';
 import 'package:skyone_mobile/extension/string.dart';
 

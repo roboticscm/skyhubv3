@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:skyone_mobile/modules/notify_listener/controller.dart';
-import 'package:skyone_mobile/modules/pages/role/form/index.dart';
-import 'package:skyone_mobile/modules/pages/role/list/controller.dart';
+import 'package:skyone_mobile/features/notify_listener/controller.dart';
+import 'package:skyone_mobile/features/pages/role/form/index.dart';
+import 'package:skyone_mobile/features/pages/role/list/controller.dart';
 import 'package:skyone_mobile/pt/proto/role/role_message.pb.dart';
 import 'package:skyone_mobile/theme/theme_controller.dart';
 import 'package:skyone_mobile/util/global_var.dart';

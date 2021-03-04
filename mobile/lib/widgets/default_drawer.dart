@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:skyone_mobile/modules/home/settings.dart';
+import 'package:skyone_mobile/features/home/settings.dart';
 import 'package:skyone_mobile/the_app.dart';
 import 'package:skyone_mobile/extension/string.dart';
 

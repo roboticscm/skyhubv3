@@ -2,7 +2,7 @@ import 'dart:convert';
 
 
 import 'package:get/get.dart';
-import 'package:skyone_mobile/modules/home/locale_resource/repo.dart';
+import 'package:skyone_mobile/features/home/locale_resource/repo.dart';
 import 'package:skyone_mobile/pt/google/protobuf/empty.pb.dart';
 import 'package:skyone_mobile/util/global_functions.dart';
 import 'package:skyone_mobile/util/global_param.dart';

@@ -6,9 +6,9 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:grpc/grpc.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:skyone_mobile/modules/home/index.dart';
-import 'package:skyone_mobile/modules/login/repo.dart';
-import 'package:skyone_mobile/modules/login/validation.dart';
+import 'package:skyone_mobile/features/home/index.dart';
+import 'package:skyone_mobile/features/login/repo.dart';
+import 'package:skyone_mobile/features/login/validation.dart';
 import 'package:skyone_mobile/pt/proto/auth/auth_service.pb.dart';
 import 'package:skyone_mobile/the_app_controller.dart';
 import 'package:skyone_mobile/theme/theme_controller.dart';
@@ -25,7 +25,7 @@ import 'package:async/async.dart';
 import 'package:skyone_mobile/extension/string.dart';
 import 'package:skyone_mobile/widgets/sflat_button.dart';
 import 'package:http/http.dart' as http;
-import 'package:skyone_mobile/modules/entry/index.dart';
+import 'package:skyone_mobile/features/entry/index.dart';
 
 class LoginPage extends StatefulWidget {
   final int companyId;

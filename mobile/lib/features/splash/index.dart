@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:skyone_mobile/modules/entry/index.dart';
+import 'package:skyone_mobile/features/entry/index.dart';
 import 'package:skyone_mobile/the_app_controller.dart';
 import 'package:skyone_mobile/util/global_functions.dart';
 import 'package:skyone_mobile/widgets/scircular_progress_indicator.dart';

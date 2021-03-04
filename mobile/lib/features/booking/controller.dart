@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:skyone_mobile/modules/booking/model.dart';
+import 'package:skyone_mobile/features/booking/model.dart';
 
 class BookingController extends GetxController {
   RxList rxServices = RxList();

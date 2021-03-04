@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_treeview/tree_view.dart' as tree;
 import 'package:get/get.dart';
-import 'package:skyone_mobile/modules/pages/role/form/controller.dart';
+import 'package:skyone_mobile/features/pages/role/form/controller.dart';
 import 'package:skyone_mobile/pt/proto/org/org_service.pb.dart';
 import 'package:skyone_mobile/pt/proto/role/role_message.pb.dart';
 import 'package:skyone_mobile/extension/string.dart';
@@ -25,17 +25,24 @@ class RoleForm extends StatelessWidget {
   final bool isUpdateMode;
   final _roleFormController = Get.put(RoleFormController());
 
-  RoleForm({this.module, this.selectedData, this.isUpdateMode, this.depId, this.menuPath}) {
+  RoleForm(
+      {this.module,
+      this.selectedData,
+      this.isUpdateMode,
+      this.depId,
+      this.menuPath}) {
     _roleFormController.init(depId: depId, menuPath: menuPath).then((value) {
       if (isUpdateMode) {
-        _roleFormController.isReadOnlyMode$.value = true;
+        _roleFormController.isReadOnlyMode = true;
       } else {
-        _roleFormController.isReadOnlyMode$.value = false;
+        _roleFormController.isReadOnlyMode = false;
         selectedData = null;
       }
 
-      _roleFormController.disabled$.value = FormItemBool(value: selectedData?.disabled ?? false);
-      _roleFormController.selectedOrgId$.value = FormItemInt(value: selectedData?.orgId?.toInt());
+      _roleFormController.disabled$.value =
+          FormItemBool(value: selectedData?.disabled ?? false);
+      _roleFormController.selectedOrgId$.value =
+          FormItemInt(value: selectedData?.orgId?.toInt());
     });
   }
 
@@ -44,15 +51,18 @@ class RoleForm extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(isUpdateMode ? "${'SYS.LABEL.UPDATE'.t()} $module" : "${'SYS.LABEL.ADD_NEW'.t()} $module"),
+          title: Text(isUpdateMode
+              ? "${'SYS.LABEL.UPDATE'.t()} $module"
+              : "${'SYS.LABEL.ADD_NEW'.t()} $module"),
         ),
         body: Builder(
           builder: (BuildContext ctx) => Padding(
             padding: defaultPadding,
             child: GetBuilder(
               builder: (RoleFormController roleFormController) {
-                if (roleFormController.isInitializing$.value) {
-                  return Center(child: SCircularProgressIndicator.buildSmallCenter());
+                if (roleFormController.isInitializing) {
+                  return Center(
+                      child: SCircularProgressIndicator.buildSmallCenter());
                 } else {
                   return _buildForm(ctx);
                 }
@@ -74,9 +84,10 @@ class RoleForm extends StatelessWidget {
             child: GetBuilder(
               id: 'isReadOnlyMode',
               builder: (RoleFormController roleFormController) => IgnorePointer(
-                ignoring: roleFormController.isReadOnlyMode$.value,
+                ignoring: roleFormController.isReadOnlyMode,
                 child: Opacity(
-                  opacity: roleFormController.isReadOnlyMode$.value ? disableOpacity : 1,
+                  opacity:
+                      roleFormController.isReadOnlyMode ? disableOpacity : 1,
                   child: Column(
                     children: [
                       STextFormField(
@@ -101,10 +112,7 @@ class RoleForm extends StatelessWidget {
                           },
                           checked: _roleFormController.disabled$.value.value,
                           text: 'SYS.LABEL.DISABLED'.t()),
-                      GetBuilder(
-                        id: 'orgId',
-                        builder: (RoleFormController controller) => _buildOrgTree(context, controller),
-                      ),
+                      Obx(() => _buildOrgTree())
                     ],
                   ),
                 ),
@@ -117,31 +125,37 @@ class RoleForm extends StatelessWidget {
   }
 
   Widget _buildButtons(BuildContext context) {
-    return Obx(() => Row(children: [
-          if (_roleFormController.isRendered(
-              controlCode: "btnEdit", isRendered: _roleFormController.isReadOnlyMode$.value))
-            EditButton(
-              onPressed: () {
-                _roleFormController.toggleEditMode();
-              },
-            ),
-          if (_roleFormController.isRendered(
-              controlCode: "btnUpdate", isRendered: !_roleFormController.isReadOnlyMode$.value))
-            UpsertButton(
-                isUpdateMode: isUpdateMode,
-                isLoading: _roleFormController.isUpsertLoading$,
-                onPressed: !_roleFormController.formValid
-                    ? null
-                    : () => _roleFormController.upsertHandler(
-                        context: context, selectedData: selectedData, isUpdateMode: isUpdateMode)),
-          Expanded(child: Container()),
-          GestureDetector(
-            onTapDown: (TapDownDetails details) {
-              _showPopupMenu(context, details.globalPosition);
-            },
-            child: const Icon(Icons.more_vert),
-          ),
-        ]));
+    return GetBuilder(
+        id: 'isReadOnlyMode',
+        builder: (RoleFormController roleFormController) => Row(children: [
+              if (roleFormController.isRendered(
+                  controlCode: "btnEdit",
+                  isRendered: roleFormController.isReadOnlyMode))
+                EditButton(
+                  onPressed: () {
+                    roleFormController.toggleEditMode();
+                  },
+                ),
+              if (roleFormController.isRendered(
+                  controlCode: "btnUpdate",
+                  isRendered: !roleFormController.isReadOnlyMode))
+                UpsertButton(
+                    isUpdateMode: isUpdateMode,
+                    isLoading: _roleFormController.isUpsertLoading$,
+                    onPressed: !_roleFormController.formValid
+                        ? null
+                        : () => _roleFormController.upsertHandler(
+                            context: context,
+                            selectedData: selectedData,
+                            isUpdateMode: isUpdateMode)),
+              Expanded(child: Container()),
+              GestureDetector(
+                onTapDown: (TapDownDetails details) {
+                  _showPopupMenu(context, details.globalPosition);
+                },
+                child: const Icon(Icons.more_vert),
+              ),
+            ]));
   }
 
   void _showPopupMenu(BuildContext context, Offset position) async {
@@ -151,7 +165,9 @@ class RoleForm extends StatelessWidget {
       items: [
         if (_roleFormController.isRendered(controlCode: "btnDelete"))
           PopupMenuItem(
-            enabled: !_roleFormController.isDisabled(controlCode: "btnDelete", isDisabled: _roleFormController.isReadOnlyMode$.value),
+            enabled: !_roleFormController.isDisabled(
+                controlCode: "btnDelete",
+                isDisabled: _roleFormController.isReadOnlyMode),
             value: "btnDelete",
             child: Text("SYS.BUTTON.DELETE".t()),
           ),
@@ -198,7 +214,7 @@ class RoleForm extends StatelessWidget {
     return nodes;
   }
 
-  Widget _buildOrgTree(BuildContext context, RoleFormController controller) {
+  Widget _buildOrgTree() {
     final nodes = _createNodes(0);
     final _treeViewController = tree.TreeViewController(children: nodes);
     return tree.TreeView(
@@ -207,9 +223,7 @@ class RoleForm extends StatelessWidget {
         shrinkWrap: true,
         onNodeTap: (key) {
           final split = key.split(":");
-          if (int.tryParse(split[1]) == 10) {
-            controller.setOrgId(int.tryParse(split[0]));
-          }
+          _roleFormController.setOrgId(int.tryParse(split[0]));
         });
   }
 }

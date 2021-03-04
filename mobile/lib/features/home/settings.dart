@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:skyone_mobile/modules/home/language.dart';
-import 'package:skyone_mobile/modules/home/profiles.dart';
-import 'package:skyone_mobile/modules/home/theme.dart';
+import 'package:skyone_mobile/features/home/language.dart';
+import 'package:skyone_mobile/features/home/profiles.dart';
+import 'package:skyone_mobile/features/home/theme.dart';
 import 'package:skyone_mobile/theme/theme_controller.dart';
 import 'package:skyone_mobile/util/app.dart';
 import 'package:skyone_mobile/util/locale_resource.dart';

@@ -4,7 +4,7 @@ import 'package:skyone_mobile/extension/string.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:skyone_mobile/modules/entry/model.dart';
+import 'package:skyone_mobile/features/entry/model.dart';
 import 'package:skyone_mobile/the_app_controller.dart';
 import 'package:skyone_mobile/theme/theme_controller.dart';
 import 'package:skyone_mobile/util/global_param.dart';

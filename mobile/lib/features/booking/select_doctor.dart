@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skyone_mobile/extension/string.dart';
-import 'package:skyone_mobile/modules/booking/controller.dart';
-import 'package:skyone_mobile/modules/booking/select_date.dart';
+import 'package:skyone_mobile/features/booking/controller.dart';
+import 'package:skyone_mobile/features/booking/select_date.dart';
 import 'package:skyone_mobile/theme/theme_controller.dart';
 import 'package:skyone_mobile/util/global_var.dart';
 import 'package:skyone_mobile/widgets/filter_field.dart';

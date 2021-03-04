@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:skyone_mobile/modules/menu/controller.dart';
-import 'package:skyone_mobile/modules/pages/role/list/index.dart';
+import 'package:skyone_mobile/features/menu/controller.dart';
+import 'package:skyone_mobile/features/pages/role/list/index.dart';
 import 'package:skyone_mobile/pt/proto/menu/menu_message.pb.dart';
 import 'package:skyone_mobile/theme/theme_controller.dart';
 import 'package:skyone_mobile/util/global_functions.dart';
