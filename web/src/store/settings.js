@@ -8,6 +8,8 @@ import { defaultHeader } from 'src/lib/authentication';
 import { UpsertUserSettingsRequest, FindUserSettingsRequest } from 'src/pt/proto/user_settings/user_settings_service_pb';
 import { App } from 'src/lib/constants';
 const protobuf = require('google-protobuf/google/protobuf/empty_pb');
+import { Authentication } from 'src/lib/authentication';
+
 
 export class SettingsStore {
   static saveUserSettings(obj, useBranch = true) {
@@ -47,7 +49,7 @@ export class SettingsStore {
           res = res.toObject();
           
           if (res.companyId == '0') {
-            reject('SYS.MSG.YOU_HAVE_NO_ROLE')
+            reject({type: 'AUTH_ERROR', message: 'SYS.MSG.YOU_HAVE_NO_ROLE'})
           } 
           LoginInfo.companyId$.next(res.companyId);
           LoginInfo.companyName$.next(res.companyName);
@@ -71,6 +73,13 @@ export class SettingsStore {
             LoginInfo.locale$.next(locale);
             findLanguage(LoginInfo.companyId$.value, locale).then(() => resolve());
           }).catch((err) => reject(err));
+        }).catch((e) => {
+          // log.error(e)
+          // setTimeout(() => {
+          //   Authentication.forceLogout();
+          // }, 5000);
+          reject({type: 'UNKNOWN_ERROR', message: e.message})
+          
         });
       })
     });

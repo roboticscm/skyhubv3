@@ -1,4 +1,4 @@
-package authentication
+package auth
 
 import (
 	"crypto/subtle"
@@ -38,6 +38,7 @@ type AuthStore interface {
 	ChangePassword(userID int64, currentPassword string, newPassword string) error
 	Logout(userID int64) error
 	RefreshToken(refreshToken string) (string, error)
+	GetQrCode() (int64, error)
 }
 
 //Login return Account if username and password are correct
@@ -207,4 +208,15 @@ func (store *Store) RefreshToken(refreshToken string) (string, error) {
 	}
 
 	return newToken, nil
+}
+
+//GetQrCode function
+func (store *Store) GetQrCode() (int64, error) {
+	var input models.AuthToken
+	out, err := store.q.Insert(&input)
+	if err != nil {
+		return 0, err
+	}
+
+	return out.(*models.AuthToken).Id, nil
 }

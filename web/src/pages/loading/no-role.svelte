@@ -10,7 +10,12 @@
     timer = setInterval(() => {
       if (counter === 0) {
         clearInterval(timer);
-        Authentication.logout();
+        try {
+          Authentication.logout();
+        } finally {
+          Authentication.forceLogout();
+        }
+        
       } else {
         counter--;
       }
@@ -25,7 +30,11 @@
 <div class="w-100 h-100 center-box">
   <div>
     <span>
-      {@html `${message} (${counter})`}
+      {#if message.type === 'AUTH_ERROR'}
+        {@html `${message.message.t()} (${counter})`}
+      {:else}
+        {@html `${'SYS.MSG.UNKNOWN_ERROR'.t()}: ${message.message.t()} (${counter})`}
+      {/if}
     </span>
   </div>
 

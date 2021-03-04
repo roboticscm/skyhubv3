@@ -15,7 +15,7 @@ import (
 	"suntech.com.vn/skygroup/config"
 	"suntech.com.vn/skygroup/keys"
 	"suntech.com.vn/skygroup/pt"
-	"suntech.com.vn/skygroup/services/authentication"
+	"suntech.com.vn/skygroup/services/auth"
 	"suntech.com.vn/skygroup/services/language"
 	"suntech.com.vn/skygroup/services/locale_resource"
 	"suntech.com.vn/skygroup/services/menu"
@@ -94,7 +94,7 @@ func init() {
 	skyutl.JwtManagerInstance = skyutl.NewJwtManager(keys.SignKey, keys.VerifyKey)
 
 	//Begin add more service to register
-	mapFunc["authentication.Service"] = map[string]interface{}{"grpc": pt.RegisterAuthServiceServer, "rest": pt.RegisterAuthServiceHandlerFromEndpoint, "instance": authentication.DefaultService(skyutl.JwtManagerInstance)}
+	mapFunc["auth.Service"] = map[string]interface{}{"grpc": pt.RegisterAuthServiceServer, "rest": pt.RegisterAuthServiceHandlerFromEndpoint, "instance": auth.DefaultService(skyutl.JwtManagerInstance)}
 	mapFunc["locale_resource.Service"] = map[string]interface{}{"grpc": pt.RegisterLocaleResourceServiceServer, "rest": pt.RegisterLocaleResourceServiceHandlerFromEndpoint, "instance": locale_resource.DefaultService()}
 	mapFunc["role.Service"] = map[string]interface{}{"grpc": pt.RegisterRoleServiceServer, "rest": pt.RegisterRoleServiceHandlerFromEndpoint, "instance": role.DefaultService()}
 	mapFunc["user_settings.Service"] = map[string]interface{}{"grpc": pt.RegisterUserSettingsServiceServer, "rest": pt.RegisterUserSettingsServiceHandlerFromEndpoint, "instance": user_settings.DefaultService()}

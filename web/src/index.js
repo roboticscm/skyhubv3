@@ -13,4 +13,4 @@ init().then((res) => {
   new App({
     target: document.body,
   });
-});
+}).catch((e) => log.error(e));

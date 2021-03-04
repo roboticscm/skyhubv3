@@ -5,22 +5,51 @@
   import QRCode from 'qrcode';
   import { App } from 'src/lib/constants';
   import { of } from 'rxjs';
+  import { callGRPC, grpcAuthClient } from 'src/lib/grpc';
+  import { NotifyListener } from 'src/store/notify-listener';
+  import { Authentication } from 'src/lib/authentication';
+
+  const empty = require('google-protobuf/google/protobuf/empty_pb');
 
   const dataList$ = of([]);
 
   let qrcodeRef;
-
+  let timer;
+  let qrCodeValue;
   onMount(() => {
-    QRCode.toCanvas(qrcodeRef, App.NAME, { margin: 0, version: 1 }, function(error) {
-      if (error) {
-        log.error(error);
+    NotifyListener.payload$.subscribe((res) => {
+      if (res.table === "auth_token" && res.data.id === qrCodeValue && res.data.accessToken && res.data.refreshToken && res.data.accountId) {
+        Authentication.login(res.data.accessToken, res.data.refreshToken, res.data.accountId);
+        window.location.reload();
       }
     });
+
+    generateQrCode();
+    timer = setInterval(generateQrCode, App.REFRESH_QR_CODE_TIMEOUT);
+    return () => {
+      clearInterval(timer);
+    };
   });
+
+  const generateQrCode = () => {
+    callGRPC(() => {
+      const req = new empty.Empty();
+      return grpcAuthClient.getQrCodeHandler(req);
+    }).then((res) => {
+      qrCodeValue = res.toObject().qrCode
+      QRCode.toCanvas(qrcodeRef, qrCodeValue, { margin: 0, version: 1 }, function(error) {
+        if (error) {
+          log.error(error);
+        }
+      });
+    });
+  };
 
   const onRegister = () => {
     log.info('register');
   };
+
+  
 </script>
 
 <svelte:head>

@@ -1,4 +1,4 @@
-package authentication
+package auth
 
 import (
 	"context"
@@ -98,3 +98,18 @@ func (service *Service) ChangePasswordHandler(ctx context.Context, req *pt.Chang
 	}
 	return &emptypb.Empty{}, service.Store.ChangePassword(userID, req.CurrentPassword, req.NewPassword)
 }
+
+//GetQrCodeHandler function
+func (service *Service) GetQrCodeHandler(ctx context.Context, req *emptypb.Empty) (*pt.GetQrCodeResponse, error) {
+	res, err := service.Store.GetQrCode()
+	if err != nil {
+		return nil, err
+	}
+	return &pt.GetQrCodeResponse{QrCode: res}, nil
+}
+
+//GetQrCodeHandler function
+func (service *Service) UpdateAuthTokenHandler(ctx context.Context, req *pt.UpdateAuthTokenRequest) (*emptypb.Empty, error) {
+	return nil, nil
+}
+

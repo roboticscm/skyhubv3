@@ -13,14 +13,14 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"suntech.com.vn/skygroup/config"
-	"suntech.com.vn/skygroup/services/authentication"
+	"suntech.com.vn/skygroup/services/auth"
 	"suntech.com.vn/skylib/skylog.git/skylog"
 	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
 //StartGRPCServer function
 func StartGRPCServer(listener net.Listener, jwtManager *skyutl.JwtManager, mapFunc map[string]map[string]interface{}, services ...interface{}) {
-	interceptor := authentication.NewAuthInterceptor(jwtManager)
+	interceptor := auth.NewAuthInterceptor(jwtManager)
 	var grpcServer *grpc.Server
 	if config.GlobalConfig.Authenticate {
 		grpcServer = grpc.NewServer(

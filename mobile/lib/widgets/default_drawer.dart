@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skyone_mobile/modules/home/settings.dart';
 import 'package:skyone_mobile/the_app.dart';
-import 'package:skyone_mobile/util/locale_resource.dart';
+import 'package:skyone_mobile/extension/string.dart';
 
 class DefaultDrawer extends StatelessWidget {
   @override
@@ -26,10 +26,9 @@ class DefaultDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.settings),
-            title: Text(LR.l10n('COMMON.LABEL.SETTINGS')),
+            title: Text('COMMON.LABEL.SETTINGS'.t()),
             onTap: () {
               Navigator.pop(context);
-
               showDialog(
                   context: context,
                   barrierDismissible: false,
@@ -40,8 +39,15 @@ class DefaultDrawer extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.qr_code),
+            title: Text('SYS.BUTTON.QR_CODE'.t()),
+            onTap: () {
+              TheApp.logout(context);
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.exit_to_app),
-            title: Text(LR.l10n('PORTAL.BUTTON.LOGOUT')),
+            title: Text('SYS.BUTTON.LOGOUT'.t()),
             onTap: () {
               TheApp.logout(context);
             },

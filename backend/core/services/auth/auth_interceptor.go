@@ -1,4 +1,4 @@
-package authentication
+package auth
 
 import (
 	"context"
@@ -10,8 +10,10 @@ import (
 
 var (
 	publicMethods = map[string]bool{
-		"/authentication.AuthService/LoginHandler":           true,
-		"/authentication.AuthService/RefreshTokenHandler":    true,
+		"/notify.NotifyService/DatabaseListenerHandler":      true,
+		"/auth.AuthService/LoginHandler":                     true,
+		"/auth.AuthService/GetQrCodeHandler":                 true,
+		"/auth.AuthService/RefreshTokenHandler":              true,
 		"/locale_resource.LocaleResourceService/FindHandler": true,
 	}
 )

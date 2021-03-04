@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package authentication;
+package auth;
 
 option go_package = ".;pt";
 import "google/api/annotations.proto";
@@ -33,6 +33,19 @@ message ChangePasswordRequest {
   string new_password = 2;
 }
 
+message GetQrCodeResponse {
+  int64 qr_code = 1 [ jstype = JS_STRING ];
+}
+
+
+message UpdateAuthTokenRequest {
+  int64 id = 1 [ jstype = JS_STRING];
+  string access_token = 3;
+  string refresh_token = 4;
+  int64 company_id = 5 [ jstype = JS_STRING];
+  string last_locale_language = 6;
+}
+
 service AuthService {
   rpc LoginHandler(LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
@@ -60,4 +73,17 @@ service AuthService {
       body : "*"
     };
   };
+
+  rpc GetQrCodeHandler(google.protobuf.Empty) returns (GetQrCodeResponse) {
+    option (google.api.http) = {
+      get : "/auth/get-qr-code"
+    };
+  }
+
+  rpc UpdateAuthTokenHandler(UpdateAuthTokenRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put : "/auth/update-auth-token"
+      body: "*"
+    };
+  }
 }

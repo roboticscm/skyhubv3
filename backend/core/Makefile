@@ -153,7 +153,7 @@ rest-server:
 	reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9091 -mode rest -endpoint 0.0.0.0:9090"
 
 test-auth:
-	go test -v -cover -race ./features/authentication
+	go test -v -cover -race ./features/auth
 
 test-locale-resource:
 	go test -v -cover -race ./features/locale_resource

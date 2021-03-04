@@ -1,5 +1,4 @@
 <script>
-  import { NotifyListener } from 'src/store/notify-listener';
   import { AppStore } from 'src/store/app';
   import RouterView from 'src/components/ui/router-view/index.svelte';
   import MainLayout from 'src/components/layout/main-layout';
@@ -11,28 +10,9 @@
   import Notification from 'src/components/layout/notification/index.svelte';
   import UserProfiles from 'src/components/layout/user-profiles/index.svelte';
   import WaterMark from 'src/components/layout/water-mark/index.svelte';
-  import { SObject } from 'src/lib/sobject';
-  import { SJSON } from 'src/lib/sjson';
-  import { callGRPC, grpcNotifyClient } from 'src/lib/grpc';
-  import { defaultHeader } from 'src/lib/authentication';
-  const protobuf = require('google-protobuf/google/protobuf/empty_pb');
-
   const { isDetailPage$ } = AppStore;
-
   const windowWidth = window.innerWidth;
   const SMALL_SCREEN_WIDTH = 768;
-
-  callGRPC(() => {
-    return new Promise((resolve, reject) => {
-      const stream = grpcNotifyClient.databaseListenerHandler(new protobuf.Empty(), defaultHeader);
-      stream.on('data', function(res) {
-        let json = SJSON.parse(res.array[0]);
-        json = SObject.convertFieldsToCamelCase(json);
-        NotifyListener.payload$.next(json);
-      });
-      resolve(true);
-    });
-  });
 </script>
 
 {#if windowWidth >= SMALL_SCREEN_WIDTH}

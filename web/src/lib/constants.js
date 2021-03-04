@@ -1,9 +1,9 @@
 const SCHEME = 'http';
 const PORT = 8888;
-const HOST = '172.16.50.18';
+const HOST = 'localhost';
 
 const GRPC_DEFAULT_PORT = 8080;
-const GRPC_DEFAULT_HOST = '172.16.50.18';
+const GRPC_DEFAULT_HOST = 'localhost';
 
 export class BaseUrl {
   static SYSTEM = `${SCHEME}://${HOST}:${PORT}`;
@@ -24,4 +24,5 @@ export class App {
   static PROGRESS_BAR = '<i class="fa fa-spinner fa-spin" />';
   static DEFAULT_END_TIME_FILTER_OFFSET = 30 * 24 * 60 * 60 * 1000;
   static SAVE_USER_SETTINGS = true;
+  static REFRESH_QR_CODE_TIMEOUT = 1000*60*5;
 }

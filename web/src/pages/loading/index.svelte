@@ -8,7 +8,6 @@
   import { BehaviorSubject } from 'rxjs';
   import NoRole from './no-role.svelte';
 
-
   let loading$ = new BehaviorSubject(true);
   let isValid = false;
   let message;
@@ -27,7 +26,15 @@
         false,
       ).then(() => {
         // load last usersettings
-        SettingsStore.getLastUserSettings().then(() => loading$.next(false));
+        SettingsStore.getLastUserSettings()
+          .then(() => {
+            loading$.next(false);
+            isValid = true;
+          })
+          .catch((err) => {
+            loading$.next(false);
+            message = err;
+          });
       });
     } else {
       // load last usersettings
@@ -38,12 +45,11 @@
         })
         .catch((err) => {
           loading$.next(false);
-          message = err.toString().t();
+          message = err;
         });
     }
   });
 </script>
-
 
 {#if $loading$}
   <ProgressBar {loading$} />
@@ -51,6 +57,6 @@
   <HomePage />
 {/if}
 
-{#if message !== undefined }
-  <NoRole {message}></NoRole>
+{#if message !== undefined}
+  <NoRole {message} />
 {/if}
