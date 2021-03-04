@@ -92,8 +92,7 @@ func (service *Service) FindOrgTreeHandler(ctx context.Context, req *pt.FindOrgT
 
 // FindOrgMenuTreeHandler function
 func (service *Service) FindOrgMenuTreeHandler(ctx context.Context, req *pt.FindOrgMenuTreeRequest) (*pt.FindOrgMenuTreeResponse, error) {
-	items, err := service.Store.FindOrgMenuTree(req.OrgIds, req.IncludeDeleted, req.IncludeDisabled)
-
+	items, err := service.Store.FindOrgMenuTree(req.RoleId, req.OrgIds, req.IncludeDeleted, req.IncludeDisabled)
 	if err != nil {
 		return nil, err
 	}

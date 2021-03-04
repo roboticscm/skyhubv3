@@ -16,7 +16,7 @@
   import { validation } from './validation';
   import Error from 'src/components/ui/error';
   import { SObject } from 'src/lib/sobject';
-
+  import SC from 'src/components/set-common';
   // Props
   export let showTitle = true;
   export let menuPath;
@@ -39,6 +39,7 @@
     orgRoleTreeRef,
     filterOrgTreeRef,
     orgMenuTreeRef,
+    scRef,
     next$ = new BehaviorSubject(undefined);
 
   let nexting = false,
@@ -87,23 +88,37 @@
       nexting = true;
       store.roleDetails = [];
       store.roleControlDetails = [];
-      store.beforeRoleControlDetails = [];
       for (let i = 0; i < form.checkedRoleOrgMenu.length; i++) {
-        const rd = await store.getRoleDetail(
-          form.role.id,
-          form.checkedRoleOrgMenu[i].parentId,
-          form.checkedRoleOrgMenu[i].menuId,
-        );
+        let rd;
+        try {
+          rd = await store.getRoleDetail(
+            form.role.id,
+            form.checkedRoleOrgMenu[i].parentId,
+            form.checkedRoleOrgMenu[i].menuId,
+          );
+        } catch (e) {
+          nexting = false;
+          log.error(e.message);
+          scRef.snackbarRef().showUnknownError(e.message);
+          return;
+        }
 
-        if (rd.id !== "0") {
+        if (rd.id !== '0') {
           store.roleDetails.push({ ...rd, found: true });
         } else {
-          store.roleDetails.push({ ...rd, found: false, dataLevel: 1000 });
+          store.roleDetails.push({ ...rd, found: false, dataLevel: 10000 });
         }
-        const rcd = await store.findRoleControlDetail(rd.id || 0, form.checkedRoleOrgMenu[i].menuId);
-        store.roleControlDetails.push(rcd.toObject().dataList);
+        try {
+          const rcd = await store.findRoleControlDetail(rd.id || 0, form.checkedRoleOrgMenu[i].menuId);
+          store.roleControlDetails.push(rcd.toObject().dataList);
+        } catch (e) {
+          nexting = false;
+          log.error(e.message);
+          scRef.snackbarRef().showUnknownError(e.message);
+          return;
+        }
       }
-      
+
       store.roleDetails = [...store.roleDetails];
       store.roleControlDetails = [...store.roleControlDetails];
       store.beforeRoleDetails = SObject.clone(store.roleDetails);
@@ -165,7 +180,7 @@
     form.role = undefined;
     form.checkedRoleOrgMenu = [];
 
-    if (treeNode.isParent) {
+    if (treeNode.isParent || !`${treeNode.id}`.startsWith('role')) {
       return;
     }
     const orgId = extractOrgId(treeNode);
@@ -209,7 +224,7 @@
     form.checkedRoleOrgMenu = [];
     if (form.filterOrgIds.length > 0) {
       loadingOrgMenu = true;
-      store.findOrgMenuTree(form.filterOrgIds.join(',')).then(() => (loadingOrgMenu = false));
+      store.findOrgMenuTree(form.role.id, form.filterOrgIds.join(',')).then(() => (loadingOrgMenu = false));
     }
   };
 
@@ -271,6 +286,9 @@
   // ============================== // HELPER ==========================
 </script>
 
+<!--Invisible Element-->
+<SC bind:this={scRef} {view} {menuPath} />
+<!--//Invisible Element-->
 <ViewWrapperModal
   menuInfo={modalContentViewRef && modalContentViewRef.getMenuInfo$()}
   title={modalContentViewRef && modalContentViewRef.getViewTitle()}

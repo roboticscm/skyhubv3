@@ -27,7 +27,7 @@
   const checkSelectedBranch = () => {
     return new Promise((resolve, reject) => {
       const nodes = treeRef.getCheckedNodes();
-      if (nodes && (nodes.length !== 1 || nodes[0].type != 10)) {
+      if (nodes && (nodes.length !== 1 || nodes[0].type != 100)) {
         snackbarRef.show(T('SYS.MSG.PLEASE_SELECT_BRANCH'));
         resolve(false);
       } else {

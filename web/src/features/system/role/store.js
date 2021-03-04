@@ -19,7 +19,7 @@ export class Store {
   }
 
   findOrgTree() {
-    OrgStore.findBranches(false, 1, 100).then((res) => {
+    OrgStore.findBranches(false, 1, 1000).then((res) => {
       this.dataList$.next(res);
     });
   }

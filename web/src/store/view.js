@@ -50,9 +50,9 @@ export class ViewStore {
   constructor(menuPath) {
     this.menuPath = menuPath;
     MenuStore.get(menuPath)
-    .then((res) => {
-      this.menuInfo$.next(res.toObject().data);
-    });
+      .then((res) => {
+        this.menuInfo$.next(res.toObject().data);
+      });
   }
 
   completeLoading$ = forkJoin([
@@ -535,7 +535,7 @@ export class ViewStore {
         scRef
           .viewLogModalRef()
           .show(data)
-          .then((buttonPressed) => {});
+          .then((buttonPressed) => { });
       });
     });
   };
@@ -562,11 +562,11 @@ export class ViewStore {
     TableUtilStore.findDeletedRecords(this.tableName, this.trashRestoreColumns, onlyMe).then((res) => {
       const newData = res
         ? res.map((item, index) => {
-            item.restore = false;
-            item.foreverDelete = false;
-            item.deletedDate = SDate.convertMillisecondToDateTimeString(item.deletedDate);
-            return item;
-          })
+          item.restore = false;
+          item.foreverDelete = false;
+          item.deletedDate = SDate.convertMillisecondToDateTimeString(item.deletedDate);
+          return item;
+        })
         : [];
 
       trashRestoreModalRef.show(newData).then((buttonPressed) => {
@@ -673,7 +673,6 @@ export class ViewStore {
   };
 
   loadModalComponent = (menuPath) => {
-    console.log('xxxx ', LoginInfo.departmentId$.value, menuPath);
     return new Promise((resolve, reject) => {
       RoleControlStore
         .findRoleControls(LoginInfo.departmentId$.value, menuPath)

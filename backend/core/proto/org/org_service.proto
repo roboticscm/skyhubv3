@@ -86,9 +86,10 @@ message FindOrgTreeResponse {
 
 
 message FindOrgMenuTreeRequest {
-    string org_ids = 1;
-    bool include_deleted = 2;
-    bool include_disabled = 3;
+    int64 role_id = 1 [ jstype = JS_STRING];
+    string org_ids = 2;
+    bool include_deleted = 3;
+    bool include_disabled = 4;
 }
 
 message FindOrgMenuTreeResponseItem {

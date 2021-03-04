@@ -9,11 +9,11 @@
   export let roleDetail;
 
   const dataLevels = [
-      {id: 0, name: 'SYS.LABEL.CORPORATION'.t()},
-      {id: 1, name: 'SYS.LABEL.COMPANY'.t()},
-      {id: 10, name: 'SYS.LABEL.BRANCH'.t()},
-      {id: 100, name: 'SYS.LABEL.DEPARTMENT'.t()},
-      {id: 1000, name: 'SYS.LABEL.DEFAULT'.t()},
+      {id: 1, name: 'SYS.LABEL.CORPORATION'.t()},
+      {id: 10, name: 'SYS.LABEL.COMPANY'.t()},
+      {id: 100, name: 'SYS.LABEL.BRANCH'.t()},
+      {id: 1000, name: 'SYS.LABEL.DEPARTMENT'.t()},
+      {id: 10000, name: 'SYS.LABEL.DEFAULT'.t()},
   ];
 </script>
 
@@ -26,7 +26,7 @@
 <div class="default-padding default-rounded-border">
   <div style="display: flex; justify-content: space-between; flex-wrap: nowrap">
     <div style="display: flex; flex-wrap: nowrap">
-      {`${role.name}${orgMenu.grandParentName2 ? ' - ' + orgMenu.grandParentName2 : ''}${orgMenu.grandParentName ? ' \\ ' + orgMenu.grandParentName : ''}${orgMenu.parentName ? ' \\ ' + orgMenu.parentName : ''}`}
+      {`${role.name}${orgMenu.grandParentName2 ? ' - ' + orgMenu.grandParentName2 : ''}${orgMenu.grandParentName ? ' \\ ' + orgMenu.grandParentName : ''}${orgMenu.parentName ? ' \\ ' + orgMenu.parentName : ''} - ${orgMenu.menuName}`}
     </div>
 
     <div style="white-space: nowrap; text-align: right">

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
-
+	"github.com/elliotchance/orderedmap"
 	"github.com/lib/pq"
 	"suntech.com.vn/skygroup/models"
 	"suntech.com.vn/skygroup/pt"
@@ -123,13 +123,14 @@ func (store *Store) Upsert(userID int64, req *pt.UpsertUserSettingsRequest, keys
 		if userSetting.ElementId != nil {
 			filterElementID = *userSetting.ElementId
 		}
-		_, err := store.q.Upsert(&userSetting, map[string]interface{}{
-			"account_id": userID,
-			"branch_id":  filterBranchID,
-			"menu_path":  filterMenuPath,
-			"element_id": filterElementID,
-			"key":        key,
-		})
+
+		cond := orderedmap.NewOrderedMap()
+		cond.Set("account_id", userID)
+		cond.Set("branch_id",  filterBranchID)
+		cond.Set("menu_path",  filterMenuPath)
+		cond.Set("element_id", filterElementID)
+		cond.Set("key",       key)
+		_, err := store.q.Upsert(&userSetting, cond)
 
 		if err != nil {
 			return err

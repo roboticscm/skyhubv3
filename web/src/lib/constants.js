@@ -1,9 +1,9 @@
 const SCHEME = 'http';
 const PORT = 8888;
-const HOST = 'localhost';
+const HOST = '172.16.50.18';
 
 const GRPC_DEFAULT_PORT = 8080;
-const GRPC_DEFAULT_HOST = 'localhost';
+const GRPC_DEFAULT_HOST = '172.16.50.18';
 
 export class BaseUrl {
   static SYSTEM = `${SCHEME}://${HOST}:${PORT}`;

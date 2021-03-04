@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
-
+	"github.com/elliotchance/orderedmap"
 	"suntech.com.vn/skygroup/models"
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skylib/skydba.git/skydba"
@@ -60,7 +60,7 @@ func (store *Store) Upsert(userID int64, input models.Role) (*models.Role, error
 		}
 
 		role := models.Role{Id: input.Id}
-		err := store.q.Read(&role)
+		err := store.q.ReadWithID(&role)
 		if err != nil {
 			return nil, err
 		}
@@ -141,7 +141,7 @@ type jsonWithPagination struct {
 func (store *Store) FindRoleControlDetail(roleDetailID, menuID int64) ([]*pt.FindRoleControlDetailItem, error) {
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
-	const sql = `SELECT * FROM find_role_control_detail($1, $2)`
+	const sql = `SELECT * FROM find_role_control_detail($1, $2) `
 
 	var items []*pt.FindRoleControlDetailItem
 	if err := store.q.Query(sql, []interface{}{roleDetailID, menuID}, &items); err != nil {
@@ -172,13 +172,16 @@ func (store *Store) UpsertRoleDetail(ctx context.Context, req *pt.UpsertRoleDeta
 
 	for _, rd := range req.UpsertRoleDetailItems {
 		var menuOrg models.MenuOrg
-		if err := store.q.ReadWithParam(&menuOrg, map[string]interface{}{"menu_id": rd.MenuId, "dep_id": rd.DepId}); err != nil {
+		cond := orderedmap.NewOrderedMap()
+		cond.Set("menu_id", rd.MenuId)
+		cond.Set("dep_id", rd.DepId)
+		if err := store.q.Read(&menuOrg, cond); err != nil {
 			return err
 		}
 		fmt.Printf("rd.MenuId,  rd.DepId, menuOrg.Id: %v %v %v\n", rd.MenuId,  rd.DepId, menuOrg.Id)
 		roleDetail := models.RoleDetail{Id: rd.Id}
 		if rd.Id > 0 {
-			if err := store.q.Read(&roleDetail); err != nil {
+			if err := store.q.ReadWithID(&roleDetail); err != nil {
 				return err
 			}
 		} 
@@ -202,14 +205,16 @@ func (store *Store) UpsertRoleDetail(ctx context.Context, req *pt.UpsertRoleDeta
 		for _, rc := range rd.RoleControlItems {
 			roleControl := models.RoleControl{Id: rc.Id}
 			if rc.Id > 0 {
-				if err := store.q.Read(&roleControl); err != nil {
+				if err := store.q.ReadWithID(&roleControl); err != nil {
 					return err
 				}
 			} 
 
 			var menuControl models.MenuControl
-
-			store.q.ReadWithParam(&menuControl, map[string]interface{}{"menu_id": rd.MenuId, "control_id": rc.ControlId})
+			cond := orderedmap.NewOrderedMap()
+			cond.Set("menu_id", rd.MenuId)
+			cond.Set("control_id", rc.ControlId)
+			store.q.Read(&menuControl, cond)
 			fmt.Printf("rd.MenuId,  rc.ControlId, menuControl.Id: %v %v %v\n", rd.MenuId,  rc.ControlId, menuControl.Id)
 			roleControl.MenuControlId = &menuControl.Id
 			roleControl.RoleDetailId =  &roleDetailID

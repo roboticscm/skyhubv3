@@ -45,6 +45,10 @@ export class SettingsStore {
         const req = new protobuf.Empty();
         return grpcUserSettingsClient.findInitialHandler(req, defaultHeader).then((res) => {
           res = res.toObject();
+          
+          if (res.companyId == '0') {
+            reject('SYS.MSG.YOU_HAVE_NO_ROLE')
+          } 
           LoginInfo.companyId$.next(res.companyId);
           LoginInfo.companyName$.next(res.companyName);
           LoginInfo.branchId$.next(`${res.branchId}`);

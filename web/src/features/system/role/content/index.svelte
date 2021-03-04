@@ -33,7 +33,15 @@
   const dispatch = createEventDispatcher();
 
   // Observable
-  const { selectedData$, hasAnyDeletedRecord$, deleteRunning$, saveRunning$, copying$, isReadOnlyMode$, isUpdateMode$ } = view;
+  const {
+    selectedData$,
+    hasAnyDeletedRecord$,
+    deleteRunning$,
+    saveRunning$,
+    copying$,
+    isReadOnlyMode$,
+    isUpdateMode$,
+  } = view;
 
   const { dataList$ } = store;
 
@@ -107,7 +115,7 @@
    * @param {event} Mouse click event.
    * @return {void}.
    */
-   const onCopy = (event) => {
+  const onCopy = (event) => {
     // verify permission
     view.verifyCopyAction(event.currentTarget.id, scRef, $selectedData$.name).then((_) => {
       // if everything is OK, call the action
@@ -264,7 +272,7 @@
 
   const doSelect = (selectedData) => {
     if (selectedData) {
-      selectedData.id=`${selectedData.id}`
+      selectedData.id = `${selectedData.id}`;
       isReadOnlyMode$.next(true);
       isUpdateMode$.next(true);
       form = new Form({
@@ -300,7 +308,7 @@
     .subscribe(async (res) => {
       view.doNotifyConflictData(form, res.data, selectedData$.value.id, $isReadOnlyMode$, scRef);
     });
-    $: doSelect($selectedData$)
+  $: doSelect($selectedData$);
   // ============================== //REACTIVE ==========================
 
   // ============================== HELPER ==========================
@@ -345,9 +353,7 @@
    * @param {none}
    * @return {void}.
    */
-  onDestroy(() => {
-
-  });
+  onDestroy(() => {});
 
   /**
    * Use save or update action directive. Register click event for Save / Update button

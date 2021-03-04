@@ -18,6 +18,7 @@
   import { Browser } from 'src/lib/browser';
   import CloseIcon from 'src/icons/cancel-submit.svelte';
   import Error from 'src/components/ui/error';
+  import { Authentication } from 'src/lib/authentication';
 
   const dispatch = createEventDispatcher();
 
@@ -67,9 +68,9 @@
   }
 
   let form = new Form({
-    // username: appStore.user && appStore.user.username,
-    // password: '',
-    // inputNumber: 1,
+    username: Authentication.getUsername(),
+    password: '',
+    inputNumber: 1,
   });
 
   const onMouseUp = (event) => {
@@ -88,9 +89,9 @@
       useModal.state.resolve = resolve;
       form.reset();
       form = new Form({
-        // username: appStore.user.username,
-        // password: '',
-        // inputNumber: defaultValue || 1,
+        username: Authentication.getUsername(),
+        password: '',
+        inputNumber: defaultValue || 1,
       });
 
       setTimeout(() => {
@@ -142,24 +143,14 @@
     if (passwordRef) {
       form.password = passwordRef && passwordRef.getPassword();
 
-      form
-        .post(`sys/auth/${StringUtil.toSnackCase('loginWithoutGenToken')}`)
-        .pipe(
-          catchError((error) => {
-            return of(error);
-          }),
-        )
-        .subscribe((res) => {
-          if (res.response && res.response.data) {
-            // error
-            form.errors.errors = form.recordErrors(res.response.data);
-          } else {
-            if (useModal.state.resolve) {
+      Authentication.verifyPassword(form.password).then(() => {
+        if (useModal.state.resolve) {
               modalWrapperRef.classList.remove('show-modal');
-              useModal.state.resolve(ButtonPressed.OK);
+              useModal.state.resolve(ButtonPressed.ok);
             }
-          }
-        });
+      }).catch((e) => {
+        form.errors.errors = form.recordErrors(e);
+      })
     }
 
     if (inputNumberRef) {
@@ -269,7 +260,7 @@
       <div class={contentClass}>
         {@html useModal.state.content}
 
-        {#if modalType === ModalType.ConfirmPassword}
+        {#if modalType === ModalType.confirmPassword}
           <div class="row">
             <div style="text-align: right;" class="label col-6">{T('SYS.LABEL.USERNAME')}:</div>
             <div class="col-18">

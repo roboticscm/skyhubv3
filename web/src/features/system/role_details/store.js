@@ -27,13 +27,7 @@ export class Store {
 
   findOrgRoleTree(incudeDeleted = false, includeDisabled = false) {
     OrgStore.findOrgRoleTree(incudeDeleted, includeDisabled).then((res) => {
-      this.roles$.next(res.toObject().dataList.map((it) => {
-        if (it.name === "Admin") {
-          it.select = true;
-        }
-
-        return it;
-      }));
+      this.roles$.next(res.toObject().dataList);
     });
   }
 
@@ -47,9 +41,9 @@ export class Store {
     })
   }
 
-  findOrgMenuTree(orgIds, incudeDeleted = false, includeDisabled = false) {
+  findOrgMenuTree(roleId, orgIds, incudeDeleted = false, includeDisabled = false) {
     return new Promise((resolve, reject) => {
-      OrgStore.findOrgMenuTree(orgIds, incudeDeleted, includeDisabled).then((res) => {
+      OrgStore.findOrgMenuTree(roleId, orgIds, incudeDeleted, includeDisabled).then((res) => {
         const data= res.toObject().dataList.map((it) => {
           if (it.id.startsWith("menu")) {
             it.name = `SYS.MENU.${it.name.toUpperCase()}`.t()
@@ -82,7 +76,6 @@ export class Store {
 
   grpcUpsert(data) {
     return callGRPC(() => {
-      console.log({upsertRoleDetailItems: data})
       const req = protoFromObject(new UpsertRoleDetailRequest(), {upsertRoleDetailItems: data}, "role/role_service_pb");
       return grpcRoleClient.upsertRoleDetailHandler(req, defaultHeader);
     });

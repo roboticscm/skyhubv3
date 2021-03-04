@@ -3,7 +3,7 @@ package menu
 import (
 	"fmt"
 	"sync"
-
+	"github.com/elliotchance/orderedmap"
 	"suntech.com.vn/skygroup/models"
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skylib/skydba.git/skydba"
@@ -54,8 +54,9 @@ func (store *Store) Find(userID, departmentID int64) ([]*pt.Menu, error) {
 //Get function
 func (store *Store) Get(menuPath string) (*pt.Menu, error) {
 	var item pt.Menu
-
-	if err := store.q.ReadWithParam(&item, map[string]interface{}{"path": menuPath}); err != nil {
+	cond := orderedmap.NewOrderedMap()
+	cond.Set("path", menuPath)
+	if err := store.q.Read(&item, cond); err != nil {
 		return nil, err
 	}
 
@@ -73,11 +74,10 @@ func (store *Store) UpsertMenuHistory(userID, menuID, depID int64) error {
 	}
 
 	skydba.MakeInsertWithID(userID, &menuHistory)
-	cond := map[string]interface{}{
-		"account_id": userID,
-		"menu_id":    menuID,
-		"dep_id":     depID,
-	}
+	cond := orderedmap.NewOrderedMap()
+	cond.Set("account_id", userID)
+	cond.Set("menu_id", menuID)
+	cond.Set("dep_id", depID)
 
 	if _, err := store.q.Upsert(&menuHistory, cond); err != nil {
 		return err

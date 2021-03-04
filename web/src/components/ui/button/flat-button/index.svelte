@@ -213,7 +213,6 @@
   };
 
   onMount(() => {
-    console.log('2', showIconOnly)
     if (!showIconOnly) {
       if (window.isSmartPhone) {
         btnRef.style.minWidth = '50px';

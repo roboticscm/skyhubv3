@@ -44,7 +44,6 @@ export const protoFromObject = (protoObj, plainObj, path) => {
               subClassName = subClassName.substr(0, subClassName.length-1);
             }
 
-            console.log('sub: ', subClassName)
             for (const row of fieldValue) {
               const newValue = new service[subClassName]();
               const subProtoObj = protoFromObject(newValue, row, path);

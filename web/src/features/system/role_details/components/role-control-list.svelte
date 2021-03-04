@@ -7,6 +7,7 @@
   import { catchError, concatMap, switchMap, filter } from 'rxjs/operators';
   import { fromEvent, of } from 'rxjs';
   import { fromPromise } from 'rxjs/internal-compatibility';
+  import { SObject } from 'src/lib/sobject';
 
   export let view;
   export let next$;
@@ -18,7 +19,7 @@
   let scRef, saveOrUpdateSub;
   let changedRoleDetails, changedRoleControlDetails;
   let postData;
-  const { saveRunning$, isReadOnlyMode$, isUpdateMode$ } = view;
+  const { saveRunning$, isReadOnlyMode$, isUpdateMode$, loading$ } = view;
 
   isUpdateMode$.next(true);
 
@@ -38,15 +39,9 @@
       changedRoleDetails = [];
       changedRoleControlDetails = [];
       for (let i = 0; i < store.roleDetails.length; i++) {
-        changedRoleDetails.push(
-          view.checkObjectChange(store.beforeRoleDetails[i], store.roleDetails[i]),
-        );
+        changedRoleDetails.push(view.checkObjectChange(store.beforeRoleDetails[i], store.roleDetails[i]));
         changedRoleControlDetails.push(
-          view.checkObjectArrayChange(
-            store.beforeRoleControlDetails[i],
-            store.roleControlDetails[i],
-            
-          ),
+          view.checkObjectArrayChange(store.beforeRoleControlDetails[i], store.roleControlDetails[i]),
         );
       }
 
@@ -60,14 +55,14 @@
     }
 
     postData = [];
-    for (let i = 0 ; i < store.roleDetails.length ; i++) {
+    for (let i = 0; i < store.roleDetails.length; i++) {
       if (changedRoleDetails[i] || changedRoleControlDetails[i]) {
         postData.push({
           ...store.roleDetails[i],
           menuId: orgMenuList[i].menuId,
           roleId: role.id,
           depId: orgMenuList[i].parentId,
-          roleControlItems: changedRoleControlDetails[i]
+          roleControlItems: changedRoleControlDetails[i],
         });
       }
     }
@@ -128,6 +123,7 @@
           }
 
           saveRunning$.next(false);
+          reload();
         },
         error: (error) => {
           log.errorSection('Role Detail form', error);
@@ -155,6 +151,48 @@
   onDestroy(() => {
     saveOrUpdateSub && saveOrUpdateSub.unsubscribe();
   });
+
+  const reload = async () => {
+    loading$.next(true);
+    const roleDetails = [];
+    const roleControlDetails = [];
+    
+    for (let i = 0; i < orgMenuList.length; i++) {
+      let rd;
+      try {
+        rd = await store.getRoleDetail(
+          role.id,
+          orgMenuList[i].parentId,
+          orgMenuList[i].menuId,
+        );
+      } catch (e) {
+        loading$.next(false);
+        log.error(e.message);
+        scRef.snackbarRef().showUnknownError(e.message);
+        return;
+      }
+
+      roleDetails.push({...rd});
+
+      try {
+        const rcd = await store.findRoleControlDetail(rd.id || 0, orgMenuList[i].menuId);
+        roleControlDetails.push(rcd.toObject().dataList);
+      } catch (e) {
+        loading$.next(false);
+        log.error(e.message);
+        scRef.snackbarRef().showUnknownError(e.message);
+        return;
+      }
+    }
+
+    
+    store.roleDetails = [...roleDetails];
+    store.roleControlDetails = [...roleControlDetails];
+    store.beforeRoleDetails = SObject.clone(store.roleDetails);
+    store.beforeRoleControlDetails = SObject.clone(store.roleControlDetails);
+    loading$.next(false);
+    
+  };
 </script>
 
 <!--Invisible Element-->

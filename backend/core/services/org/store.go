@@ -32,7 +32,7 @@ type OrgStore interface {
 	FindLastDepartment(branchID, userID int64) (*pt.FindLastDepartmentResponse, error)
 	FindOrgRoleTree(includeDisabled, includeDeleted bool) ([]*pt.FindOrgRoleTreeResponseItem, error)
 	FindOrgTree(parentID int64, includeDisabled, includeDeleted bool) ([]*pt.FindOrgTreeResponseItem, error)
-	FindOrgMenuTree(orgIds string, includeDisabled, includeDeleted bool) ([]*pt.FindOrgMenuTreeResponseItem, error)
+	FindOrgMenuTree(roleID int64, orgIds string, includeDisabled, includeDeleted bool) ([]*pt.FindOrgMenuTreeResponseItem, error)
 }
 
 //FindBranch function
@@ -123,17 +123,17 @@ func (store *Store) FindOrgTree(parentID int64, includeDisabled, includeDeleted 
 }
 
 //FindOrgMenuTree function
-func (store *Store) FindOrgMenuTree(orgIds string, includeDisabled, includeDeleted bool) ([]*pt.FindOrgMenuTreeResponseItem, error) {
+func (store *Store) FindOrgMenuTree(roleID int64, orgIds string, includeDisabled, includeDeleted bool) ([]*pt.FindOrgMenuTreeResponseItem, error) {
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
-	const sql = `SELECT * FROM find_org_menu_tree($1, $2, $3) as "json"`
+	const sql = `SELECT * FROM find_org_menu_tree($1, $2, $3, $4) as "json"`
 
 	var jsonOut string
 	var _orgIds interface{}
 	if orgIds != "" {
 		_orgIds = orgIds
 	}
-	if err := store.q.Query(sql, []interface{}{_orgIds, includeDeleted, includeDisabled}, &jsonOut); err != nil {
+	if err := store.q.Query(sql, []interface{}{_orgIds, roleID, includeDeleted, includeDisabled}, &jsonOut); err != nil {
 		return nil, err
 	}
 

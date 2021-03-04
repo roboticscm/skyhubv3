@@ -10,7 +10,7 @@ export class OrgStore {
   static findBranches(
     pickData = true,
     fromOrgType = 1,
-    toOrgType = 10,
+    toOrgType = 100,
     includeDeleted = false,
     includeDisabled = false,
   ) {
@@ -60,9 +60,9 @@ export class OrgStore {
     });
   }
 
-  static findOrgMenuTree(orgIds, includeDeleted = false, includeDisabled = false) {
+  static findOrgMenuTree(roleId, orgIds, includeDeleted = false, includeDisabled = false) {
     return callGRPC(() => {
-      const req = protoFromObject(new FindOrgMenuTreeRequest(), {orgIds, includeDeleted, includeDisabled});
+      const req = protoFromObject(new FindOrgMenuTreeRequest(), {roleId, orgIds, includeDeleted, includeDisabled});
       return grpcOrgClient.findOrgMenuTreeHandler(req, defaultHeader);
     });
   }
