@@ -23,5 +23,6 @@ class GlobalParam {
 }
 
 class LoginInfoController extends GetX {
-  RxInt branchId = RxInt();
+  final RxInt branchId = RxInt();
+  final RxInt companyId =RxInt();
 }

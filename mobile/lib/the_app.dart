@@ -5,14 +5,17 @@ import 'package:get/get.dart';
 import 'package:skyone_mobile/features/calendar/index.dart';
 import 'package:skyone_mobile/features/entry/index.dart';
 import 'package:skyone_mobile/features/home/index.dart';
+import 'package:skyone_mobile/features/home/language.dart';
 import 'package:skyone_mobile/features/login/index.dart';
 import 'package:skyone_mobile/features/message/index.dart';
 import 'package:skyone_mobile/features/profile/index.dart';
 import 'package:skyone_mobile/features/menu/index.dart';
 import 'package:skyone_mobile/features/splash/index.dart';
+import 'package:skyone_mobile/main.dart';
 import 'package:skyone_mobile/the_app_controller.dart';
 import 'package:skyone_mobile/theme/theme_controller.dart';
 import 'package:skyone_mobile/util/app.dart';
+import 'package:skyone_mobile/util/global_param.dart';
 import 'package:skyone_mobile/util/global_var.dart';
 import 'package:skyone_mobile/extension/string.dart';
 import 'package:skyone_mobile/widgets/default_drawer.dart';
@@ -22,10 +25,13 @@ import 'package:skyone_mobile/pt/proto/auth/auth_service.pbgrpc.dart';
 import 'package:skyone_mobile/grpc//helper.dart';
 import 'package:skyone_mobile/grpc//service_url.dart';
 import 'package:skyone_mobile/pt/google/protobuf/empty.pb.dart' as protobuf;
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 class TheApp extends StatelessWidget {
-  final TheAppController _theAppController = Get.put(TheAppController());
+  static final TheAppController _theAppController = Get.put(TheAppController());
   final ThemeController _themeController = Get.find();
+  static final LocaleController _localeController = Get.find();
+  static final LoginInfoController _loginInfoController = Get.find();
   static final NotifyController _notifyController = Get.put(NotifyController());
   static final RxInt _selectedIndex$ = RxInt(0);
 
@@ -111,10 +117,19 @@ class TheApp extends StatelessWidget {
         ),
         TabBarItem(
           index: 4,
-          iconData: FontAwesomeIcons.user,
-          title: 'HOME.TAB.PROFILE'.t(),
+          iconData: FontAwesomeIcons.qrcode,
+          title: 'HOME.TAB.BARCODE'.t(),
           notifyNumber$: _notifyController.scheduleNotify$,
           selectedIndex$: _selectedIndex$,
+          onPressed:  () async {
+            final qrCodeValue = await FlutterBarcodeScanner.scanBarcode(
+                '#ff6666',
+                'SYS.BUTTON.CANCEL'.t(),
+                true,
+                ScanMode.QR);
+
+            _theAppController.updateAuthToken(companyId: _loginInfoController.companyId.value, id: int.tryParse(qrCodeValue), accessToken: GlobalParam.accessToken, refreshToken: GlobalParam.refreshToken, lastLocaleLanguage: _localeController.locale.value.languageCode);
+          },
         ),
       ],
     );
@@ -205,7 +220,7 @@ class TheApp extends StatelessWidget {
           ],
         ),
       ),
-      title: Text(title),
+      label: title,
     );
   }
 }

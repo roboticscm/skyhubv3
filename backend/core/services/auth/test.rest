@@ -35,3 +35,17 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZ
     "currentPassword": "2020",
     "newPassword": "2019"
 }
+
+###
+
+PUT http://localhost:9091/auth/update-auth-token
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoicm9vdCIsImZ1bGxOYW1lIjoiVE9ETy4uLiJ9.rJIQW81EeQTsYBBZbEuUKmu_oLsbn02W-ebDJJ-SoDXJU6H0qKQ58G_jWwS0vnnAbwZ9w59gVb3fmwb1ZbcNN9SRNXHw_oS3IcQ-Vm8oBeX-AZ6BGGWr-0iEROWrlIYgSLrlPh6BRUZCTEIWgGISSwxRQQzi4cDnRT7qIvZixtM
+
+{
+    "id": "2522377401049025224",
+    "accessToken": "xxxxx",
+    "refreshToken": "xxxxxyyyy",
+    "companyId": "12222",
+    "lastLocaleLanguage": "vi"
+}

@@ -39,13 +39,6 @@ class DefaultDrawer extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.qr_code),
-            title: Text('SYS.BUTTON.QR_CODE'.t()),
-            onTap: () {
-              TheApp.logout(context);
-            },
-          ),
-          ListTile(
             leading: const Icon(Icons.exit_to_app),
             title: Text('SYS.BUTTON.LOGOUT'.t()),
             onTap: () {

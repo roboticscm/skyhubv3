@@ -39,6 +39,7 @@ type AuthStore interface {
 	Logout(userID int64) error
 	RefreshToken(refreshToken string) (string, error)
 	GetQrCode() (int64, error)
+	UpdateAuthToken(companyID, userID, recordID int64, accessToken, refreshToken, lastLocaleLanguage string) error
 }
 
 //Login return Account if username and password are correct
@@ -219,4 +220,23 @@ func (store *Store) GetQrCode() (int64, error) {
 	}
 
 	return out.(*models.AuthToken).Id, nil
+}
+
+//UpdateAuthToken function
+func (store *Store) UpdateAuthToken(companyID, userID, recordID int64, accessToken, refreshToken, lastLocaleLanguage string) error {
+	authToken := models.AuthToken{
+		Id:                 recordID,
+		AccessToken:        &accessToken,
+		RefreshToken:       &refreshToken,
+		AccountId:          &userID,
+		LastLocaleLanguage: &lastLocaleLanguage,
+		CompanyId:          &companyID,
+	}
+
+	_, err := store.q.UpdateWithID(&authToken, "disabled", "version")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

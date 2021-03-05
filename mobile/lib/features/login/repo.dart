@@ -39,6 +39,8 @@ class LoginRepo {
     try{
       final initialUserSettings = await authCall(client.findInitialHandler, Empty()) as FindInitialUserSettingsResponse;
       loginInfoController.branchId.value = initialUserSettings.branchId.toInt();
+      loginInfoController.companyId.value = initialUserSettings.companyId.toInt();
+
       await LocaleResourceRepo.findLocaleResource(initialUserSettings.companyId.toInt(), initialUserSettings.locale);
     }finally {
       channel.shutdown();

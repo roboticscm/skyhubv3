@@ -1,4 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:skyone_mobile/grpc/helper.dart';
+import 'package:skyone_mobile/grpc/service_url.dart';
+import 'package:skyone_mobile/pt/proto/auth/auth_service.pbgrpc.dart';
+import 'package:fixnum/fixnum.dart' as $fixnum;
+import 'package:skyone_mobile/util/global_functions.dart';
 
 class AppStatus {}
 
@@ -31,5 +37,21 @@ class TheAppController extends GetxController {
 
     showAppBar.value = newAppStatus is LoggedInStatus;
   }
+
+
+  Future updateAuthToken({@required int companyId, @required  int id, @required  String accessToken, @required  String refreshToken, @required String lastLocaleLanguage}) async {
+    final channel = createChannel(ServiceURL.core);
+    final client = AuthServiceClient(channel);
+    final request = UpdateAuthTokenRequest(id: $fixnum.Int64(id), companyId: $fixnum.Int64(companyId), accessToken: accessToken, refreshToken: refreshToken, lastLocaleLanguage: lastLocaleLanguage);
+    try {
+      await authCall(client.updateAuthTokenHandler, request);
+    } catch (e) {
+      log(e);
+    } finally {
+      channel.shutdown();
+    }
+    return true;
+  }
+
 }
 
