@@ -40,10 +40,12 @@ message GetQrCodeResponse {
 
 message UpdateAuthTokenRequest {
   int64 id = 1 [ jstype = JS_STRING];
-  string access_token = 3;
-  string refresh_token = 4;
-  int64 company_id = 5 [ jstype = JS_STRING];
+  string access_token = 2;
+  string refresh_token = 3;
+  int64 company_id = 4 [ jstype = JS_STRING];
+  int64 branch_id = 5 [ jstype = JS_STRING];
   string last_locale_language = 6;
+  string username = 7;
 }
 
 service AuthService {

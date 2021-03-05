@@ -11,7 +11,7 @@ SOURCE_PROTO_DIR=proto
 BUILD_DIR=build
 CONFIG_DIR=config
 KEYS_DIR=keys
-
+HOME_PATH=C:${HOMEPATH}
 install:
 	go clean -modcache
 	rm -Rf ~/go/bin
@@ -34,18 +34,18 @@ winstall:
 	npm install -g nodemon
 	npm install -g yarn
 	Set-ExecutionPolicy Unrestricted
-	if exist  C:${HOMEPATH}\go\bin rd /q /s  C:${HOMEPATH}\go\bin
-	mkdir C:${HOMEPATH}\go\bin
-	curl -L -o C:${HOMEPATH}\go\bin\protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.15.3/protoc-3.15.3-win64.zip 
-	cd /d C:${HOMEPATH}\go\bin && tar -xf protoc.zip
-	copy C:${HOMEPATH}\go\bin\bin\protoc.exe C:${HOMEPATH}\go\bin
+	if exist  ${HOME_PATH}\go\bin rd /q /s  ${HOME_PATH}\go\bin
+	mkdir ${HOME_PATH}\go\bin
+	curl -L -o ${HOME_PATH}\go\bin\protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.15.3/protoc-3.15.3-win64.zip 
+	cd /d ${HOME_PATH}\go\bin && tar -xf protoc.zip
+	copy ${HOME_PATH}\go\bin\bin\protoc.exe ${HOME_PATH}\go\bin
 	
-	del /f  C:${HOMEPATH}\go\bin\protoc.zip
+	del /f  ${HOME_PATH}\go\bin\protoc.zip
 	go get google.golang.org/protobuf/cmd/protoc-gen-go
 	go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
 	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
 	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
-	curl -L -o C:${HOMEPATH}\go\bin\protoc-gen-grpc-web.exe https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-windows-x86_64.exe 
+	curl -L -o ${HOME_PATH}\go\bin\protoc-gen-grpc-web.exe https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-windows-x86_64.exe 
 	go get github.com/ktr0731/evans
 	
 gen-go:

@@ -53,6 +53,6 @@
   </div>
   <div class="layout-horizontal-gutter" />
   <div class="layout-content">
-    <slot>Content Section</slot>
+    <slot name="content">Content Section</slot>
   </div>
 </div>

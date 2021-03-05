@@ -8,4 +8,6 @@ type AuthToken struct {
 	AccountId          *int64  `json:"accountId" orm:"null"`
 	LastLocaleLanguage *string `json:"lastLocaleLanguage" orm:"null"`
 	CompanyId          *int64  `json:"companyId" orm:"null"`
+	BranchId           *int64  `json:"branchId" orm:"null"`
+	Username           *string `json:"username" orm:"null"`
 }

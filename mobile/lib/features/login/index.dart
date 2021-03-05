@@ -132,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
       _loginCompleter.operation.value.then((res) {
         if (res.item1 != null) {
           final loginResponse = res.item1 as LoginResponse;
-          _saveLoggedState(loginResponse.userId.toInt(), loginResponse.accessToken.toString(), loginResponse.refreshToken.toString() );
+          _saveLoggedState(loginResponse.userId.toInt(), username, loginResponse.accessToken.toString(), loginResponse.refreshToken.toString() );
         } else if (res.item2 != null) {
           final grpcError = res.item2 as GrpcError;
           Scaffold.of(context).showSnackBar(SnackBar(
@@ -156,8 +156,8 @@ class _LoginPageState extends State<LoginPage> {
     _isCanceled = !_isCanceled;
   }
 
-  void _saveLoggedState(int userId, String accessToken, String refreshToken) {
-    _saveToken(userId, accessToken, refreshToken);
+  void _saveLoggedState(int userId, String username, String accessToken, String refreshToken) {
+    _saveToken(userId, username, accessToken, refreshToken);
     if (_rememberLogin) {
       _saveRememberingLogin();
     }
@@ -302,10 +302,11 @@ class _LoginPageState extends State<LoginPage> {
     await App.storage.remove('REMEMBER_LOGIN');
   }
 
-  void _saveToken(int userId, String accessToken, String refreshToken) async {
+  void _saveToken(int userId, String username, String accessToken, String refreshToken) async {
     GlobalParam.accessToken = accessToken;
     GlobalParam.refreshToken = refreshToken;
     GlobalParam.userId = userId;
+    GlobalParam.username = username;
     await App.storage.setInt('USER_ID', userId);
     await App.storage.setString('ACCESS_TOKEN', accessToken);
     await App.storage.setString('REFRESH_TOKEN', refreshToken);

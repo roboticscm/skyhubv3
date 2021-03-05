@@ -5,11 +5,10 @@ import 'package:get/get.dart';
 import 'package:skyone_mobile/features/calendar/index.dart';
 import 'package:skyone_mobile/features/entry/index.dart';
 import 'package:skyone_mobile/features/home/index.dart';
-import 'package:skyone_mobile/features/home/language.dart';
 import 'package:skyone_mobile/features/login/index.dart';
 import 'package:skyone_mobile/features/message/index.dart';
-import 'package:skyone_mobile/features/profile/index.dart';
 import 'package:skyone_mobile/features/menu/index.dart';
+import 'package:skyone_mobile/features/qr_code/index.dart';
 import 'package:skyone_mobile/features/splash/index.dart';
 import 'package:skyone_mobile/main.dart';
 import 'package:skyone_mobile/the_app_controller.dart';
@@ -39,7 +38,7 @@ class TheApp extends StatelessWidget {
   MenuPage _menuPage;
   CalendarPage _calendarPage;
   MessagePage _messagePage;
-  ProfilePage _profilePage;
+  QrCodePage _qrCodePage;
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +117,7 @@ class TheApp extends StatelessWidget {
         TabBarItem(
           index: 4,
           iconData: FontAwesomeIcons.qrcode,
-          title: 'HOME.TAB.BARCODE'.t(),
+          title: 'HOME.TAB.QR_CODE'.t(),
           notifyNumber$: _notifyController.scheduleNotify$,
           selectedIndex$: _selectedIndex$,
           onPressed:  () async {
@@ -149,20 +148,20 @@ class TheApp extends StatelessWidget {
       );
     } else {
       if (_selectedIndex$.value == 0) {
-        _theAppController.showAppBar.value = true;
+
         return _homePage ??= HomePage();
       } else if (_selectedIndex$.value == 1) {
-        _theAppController.showAppBar.value = false;
+//        _theAppController.showAppBar.value = false;
         return _menuPage ??= MenuPage();
       } else if (_selectedIndex$.value == 2) {
-        _theAppController.showAppBar.value = true;
+//        _theAppController.showAppBar.value = true;
         return _calendarPage ??= CalendarPage();
       } else if (_selectedIndex$.value == 3) {
-        _theAppController.showAppBar.value = true;
+//        _theAppController.showAppBar.value = true;
         return _messagePage ??= MessagePage();
       } else if (_selectedIndex$.value == 4) {
-        _theAppController.showAppBar.value = true;
-        return _profilePage ??= ProfilePage();
+//        _theAppController.showAppBar.value = true;
+        return _qrCodePage ??= QrCodePage();
       }
     }
   }

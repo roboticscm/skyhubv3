@@ -111,7 +111,7 @@ func (service *Service) GetQrCodeHandler(ctx context.Context, req *emptypb.Empty
 //UpdateAuthTokenHandler function
 func (service *Service) UpdateAuthTokenHandler(ctx context.Context, req *pt.UpdateAuthTokenRequest) (*emptypb.Empty, error) {
 	userID, _ := skyutl.GetUserID(ctx)
-	if err := service.Store.UpdateAuthToken(req.CompanyId, userID, req.Id, req.AccessToken, req.RefreshToken, req.LastLocaleLanguage); err != nil {
+	if err := service.Store.UpdateAuthToken(req.CompanyId, req.BranchId, userID, req.Id, req.Username, req.AccessToken, req.RefreshToken, req.LastLocaleLanguage); err != nil {
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil
