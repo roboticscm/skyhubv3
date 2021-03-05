@@ -12,6 +12,7 @@ BUILD_DIR=build
 CONFIG_DIR=config
 KEYS_DIR=keys
 HOME_PATH=C:${HOMEPATH}
+
 install:
 	go clean -modcache
 	rm -Rf ~/go/bin
@@ -33,7 +34,6 @@ winstall:
 	go clean -modcache
 	npm install -g nodemon
 	npm install -g yarn
-	Set-ExecutionPolicy Unrestricted
 	if exist  ${HOME_PATH}\go\bin rd /q /s  ${HOME_PATH}\go\bin
 	mkdir ${HOME_PATH}\go\bin
 	curl -L -o ${HOME_PATH}\go\bin\protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.15.3/protoc-3.15.3-win64.zip 
