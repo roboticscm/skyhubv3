@@ -32,6 +32,8 @@ install:
 winstall:
 	go clean -modcache
 	npm install -g nodemon
+	npm install -g yarn
+	Set-ExecutionPolicy Unrestricted
 	if exist  C:${HOMEPATH}\go\bin rd /q /s  C:${HOMEPATH}\go\bin
 	mkdir C:${HOMEPATH}\go\bin
 	curl -L -o C:${HOMEPATH}\go\bin\protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.15.3/protoc-3.15.3-win64.zip 
