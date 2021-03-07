@@ -11,7 +11,7 @@ const useCache = process.env.CACHE || 'true';
 const magicImporter = require('node-sass-magic-importer');
 const sveltePreprocess = require('svelte-preprocess');
 const CopyPlugin = require('copy-webpack-plugin');
-const onwarn = (warning, onwarn) => warning.code === 'css-unused-selector' || onwarn(warning);
+const onwarn = (warning, onwarn) => warning.code === 'css-unused-selector' || warning.code === 'missing-declaration' || onwarn(warning);
 
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 
@@ -21,6 +21,7 @@ const alias = {
       svelte: path.resolve('node_modules', 'svelte'),
       'src': path.resolve(__dirname, 'src'),
       'log': path.resolve(__dirname, 'src/lib/log'),
+      'T': path.resolve(__dirname, 'src/lib/locale'),
       // 'bignumber.js$': 'bignumber.js/bignumber.js',
     };
 const  HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -171,7 +172,8 @@ module.exports = smp.wrap({
     new webpack.ProvidePlugin({
       j: 'jquery',
       jQuery: 'jquery',
-      'log': 'log'
+      'log': 'log',
+      'T': 'T'
     }),
 
     new HtmlWebpackPlugin({
@@ -191,7 +193,8 @@ module.exports = smp.wrap({
     new webpack.ProvidePlugin({
       j: 'jquery',
       jQuery: 'jquery',
-      'log': 'log'
+      'log': 'log',
+      'T': 'T'
     }),
 
     new HtmlWebpackPlugin({

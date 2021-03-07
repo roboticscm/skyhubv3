@@ -1,7 +1,7 @@
 <script>
   import { onMount, tick } from 'svelte';
   import { take } from 'rxjs/operators';
-  import { ViewStore } from 'src/store/view';
+  import { BaseView } from 'src/view/base';
   import { ButtonType, ButtonId } from 'src/components/ui/button/types';
   import Button from 'src/components/ui/button/flat-button';
   import ProgressBar from 'src/components/ui/progress-bar';
@@ -39,7 +39,7 @@
     loadingFilterOrg = false,
     loadingOrgMenu = false;
   // Init view
-  const view = new ViewStore(menuPath);
+  const view = new BaseView(menuPath);
   view.fullControl = fullControl;
   view.roleControls = roleControls;
   export const getView = () => view;

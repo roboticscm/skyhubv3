@@ -70,7 +70,7 @@
   </div>
   <div style="padding: 10px;">
     <!-- svelte-ignore a11y-invalid-attribute -->
-    <a href="#" on:click={onRegister}>{'SYS.LABEL.REGISTER_NOW'.t()}</a>
+    <a href="#" on:click={onRegister}>{T.SYS.LABEL.REGISTER_NOW}</a>
   </div>
   <div class="news">
     {#if $dataList$ && $dataList$.length > 0}

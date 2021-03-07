@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { take } from 'rxjs/operators';
-  import { ViewStore } from 'src/store/view';
+  import { BaseView } from 'src/view/base';
 
   import TwoColumnView from 'src/components/ui/two-column-modal-view';
   import WorkList from './work-list/index.svelte';
@@ -23,7 +23,7 @@
   searchFields;
 
   // Init view
-  const view = new ViewStore(menuPath);
+  const view = new BaseView(menuPath);
   export const getMenuInfo$ = () => view.menuInfo$;
   export const getViewTitle = () => view.getViewTitle();
 

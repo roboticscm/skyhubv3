@@ -139,21 +139,11 @@
     }
   });
 
-  function loginWithoutGenToken() {
+  function onSubmit() {
     if (passwordRef) {
       form.password = passwordRef && passwordRef.getPassword();
-
-      Authentication.verifyPassword(form.password).then(() => {
-        if (useModal.state.resolve) {
-              modalWrapperRef.classList.remove('show-modal');
-              useModal.state.resolve(ButtonPressed.ok);
-            }
-      }).catch((e) => {
-        form.errors.errors = form.recordErrors(e);
-      })
-    }
-
-    if (inputNumberRef) {
+      onOK();
+    } else if (inputNumberRef) {
       onOK();
     }
   }
@@ -225,15 +215,25 @@
     return form.inputNumber;
   };
 
-  export const raiseError = (err) => {
+  export const getPassword = () => {
+    return form.password;
+  };
+
+  export const raiseInputError = (err) => {
     form.errors.errors = form.recordErrors({
       inputNumber: err,
+    });
+  };
+
+  export const raisePasswordError = (err) => {
+    form.errors.errors = form.recordErrors({
+      password: err,
     });
   };
 </script>
 
 <div bind:this={modalWrapperRef} class="modal-wrapper {wrapperClass} {transparent ? '' : 'modal-wrapper-background'}">
-  <form on:submit|preventDefault={loginWithoutGenToken} on:keydown={(e) => form.errors.clear(e.currentTarget.name)}>
+  <form on:submit|preventDefault={onSubmit} on:keydown={(e) => form.errors.clear(e.currentTarget.name)}>
     <div bind:this={modalRef} {id} class="modal" on:mouseup={onMouseUp}>
       <div id={id + 'header'} class="modal-header">
         <div class="modal-title">

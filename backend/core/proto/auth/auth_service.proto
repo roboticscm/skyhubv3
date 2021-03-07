@@ -56,6 +56,13 @@ service AuthService {
     };
   };
 
+  rpc VerifyPasswordHandler(LoginRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post : "/auth/verify-password"
+      body : "*"
+    };
+  };
+
   rpc RefreshTokenHandler(RefreshTokenRequest) returns (RefreshTokenResponse) {
     option (google.api.http) = {
       post : "/auth/refresh-token"

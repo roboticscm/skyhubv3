@@ -8,9 +8,17 @@ window.jquery = jquery;
 window.jQuery = jquery;
 window['$'] = jquery;
 import 'src/lib/vendor/jquery.ztree.all';
+import ServerErrorPage from 'src/pages/error/server';
 
 init().then((res) => {
   new App({
     target: document.body,
   });
-}).catch((e) => log.error(e));
+}).catch((e) => {
+  new ServerErrorPage({
+    target: document.body,
+    props: {
+      message: e.message === 'Http response at 400 or 500 level' ? 'Can not connect to Envoy Proxy!' : e.message
+    }
+  });
+});

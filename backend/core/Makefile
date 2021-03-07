@@ -47,7 +47,10 @@ winstall:
 	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 	curl -L -o ${HOME_PATH}\go\bin\protoc-gen-grpc-web.exe https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-windows-x86_64.exe 
 	go get github.com/ktr0731/evans
-	
+
+install-dart-plugin:
+	flutter pub global activate protoc_plugin
+
 gen-go:
 	rm -Rf  ${OUT_DIR}
 	rm -Rf ${ROOT_DOC_DIR}

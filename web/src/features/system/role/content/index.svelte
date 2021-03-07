@@ -65,6 +65,34 @@
   };
   let form = resetForm();
   let beforeForm;
+  //Reactive
+  $: doSelect($selectedData$);
+  $: isRenderedAddNew = view.isRendered(ButtonId.addNew);
+  $: isDisabledAddNew = view.isDisabled(ButtonId.addNew);
+
+  $: isRenderedSave = view.isRendered(ButtonId.save, !$isUpdateMode$);
+  $: isDisabledSave = view.isDisabled(ButtonId.save, form.errors.any());
+
+  $: isRenderedEdit = view.isRendered(ButtonId.edit, $isReadOnlyMode$ && $isUpdateMode$);
+  $: isDisabledEdit = view.isDisabled(ButtonId.edit);
+
+  $: isRenderedUpdate = view.isRendered(ButtonId.update, !$isReadOnlyMode$ && $isUpdateMode$);
+  $: isDisabledUpdate = view.isDisabled(ButtonId.update, form.errors.any());
+
+  $: isRenderedCopy = view.isRendered(ButtonId.copy, $isUpdateMode$);
+  $: isDisabledCopy = view.isDisabled(ButtonId.copy);
+
+  $: isRenderedDelete = view.isRendered(ButtonId.delete, $isUpdateMode$);
+  $: isDisabledDelete = view.isDisabled(ButtonId.delete, $isReadOnlyMode$);
+
+  $: isRenderedConfig = view.isRendered(ButtonId.config);
+  $: isDisabledConfig = view.isDisabled(ButtonId.config);
+
+  $: isRenderedTrashRestore = view.isRendered(ButtonId.trashRestore, $hasAnyDeletedRecord$);
+  $: isDisabledTrashRestore = view.isDisabled(ButtonId.trashRestore);
+
+  $: isRenderedTrashViewLog = view.isRendered(ButtonId.viewLog);
+  $: isDisabledTrashViewLog = view.isDisabled(ButtonId.viewLog);
 
   // ============================== EVENT HANDLE ==========================
   /**
@@ -308,7 +336,7 @@
     .subscribe(async (res) => {
       view.doNotifyConflictData(form, res.data, selectedData$.value.id, $isReadOnlyMode$, scRef);
     });
-  $: doSelect($selectedData$);
+
   // ============================== //REACTIVE ==========================
 
   // ============================== HELPER ==========================
@@ -392,63 +420,59 @@
 <!--Form controller-->
 <section class="view-content-controller">
   <div style="width: 50%; display: flex; flex-wrap: nowrap">
-    {#if view.isRendered(ButtonId.addNew)}
-      <Button btnType={ButtonType.addNew} on:click={onAddNew} disabled={view.isDisabled(ButtonId.addNew)} />
+    {#if isRenderedAddNew}
+      <Button btnType={ButtonType.addNew} on:click={onAddNew} disabled={isDisabledAddNew} />
     {/if}
 
-    {#if view.isRendered(ButtonId.save, !$isUpdateMode$)}
+    {#if isRenderedSave}
       <Button
         action={useSaveOrUpdateAction}
         bind:this={btnSaveRef}
         btnType={ButtonType.save}
-        disabled={view.isDisabled(ButtonId.save, form.errors.any())}
+        disabled={isDisabledSave}
         running={$saveRunning$} />
     {/if}
 
-    {#if view.isRendered(ButtonId.edit, $isReadOnlyMode$ && $isUpdateMode$)}
-      <Button btnType={ButtonType.edit} on:click={onEdit} disabled={view.isDisabled(ButtonId.edit)} />
+    {#if isRenderedEdit}
+      <Button btnType={ButtonType.edit} on:click={onEdit} disabled={isDisabledEdit} />
     {/if}
 
-    {#if view.isRendered(ButtonId.update, !$isReadOnlyMode$ && $isUpdateMode$)}
+    {#if isRenderedUpdate}
       <Button
         action={useSaveOrUpdateAction}
         bind:this={btnUpdateRef}
         btnType={ButtonType.update}
-        disabled={view.isDisabled(ButtonId.update, form.errors.any())}
+        disabled={isDisabledUpdate}
         running={$saveRunning$} />
     {/if}
 
-    {#if view.isRendered(ButtonId.copy, $isUpdateMode$)}
+    {#if isRenderedCopy}
       <Button
         btnType={ButtonType.copy}
         on:click={onCopy}
-        disabled={view.isDisabled(ButtonId.copy)}
+        disabled={isDisabledCopy}
         running={$copying$} />
     {/if}
   </div>
   <div style="width: 50%; white-space: nowrap; text-align: right">
 
-    {#if view.isRendered(ButtonId.delete, $isUpdateMode$)}
-      <Button
-        btnType={ButtonType.delete}
-        on:click={onDelete}
-        disabled={view.isDisabled(ButtonId.delete, $isReadOnlyMode$)}
-        running={$deleteRunning$} />
+    {#if isRenderedDelete}
+      <Button btnType={ButtonType.delete} on:click={onDelete} disabled={isDisabledDelete} running={$deleteRunning$} />
     {/if}
 
-    {#if view.isRendered(ButtonId.config)}
-      <Button btnType={ButtonType.config} on:click={onViewConfig} disabled={view.isDisabled(ButtonId.config)} />
+    {#if isRenderedConfig}
+      <Button btnType={ButtonType.config} on:click={onViewConfig} disabled={isDisabledConfig} />
     {/if}
 
-    {#if view.isRendered(ButtonId.trashRestore, $hasAnyDeletedRecord$)}
+    {#if isRenderedTrashRestore}
       <Button
         btnType={ButtonType.trashRestore}
         on:click={onTrashRestore}
-        disabled={view.isDisabled(ButtonId.trashRestore)} />
+        disabled={isDisabledTrashRestore} />
     {/if}
 
-    {#if view.isRendered(ButtonId.viewLog)}
-      <Button btnType={ButtonType.viewLog} on:click={onViewLog} disabled={view.isDisabled(ButtonId.viewLog)} />
+    {#if isRenderedTrashViewLog}
+      <Button btnType={ButtonType.viewLog} on:click={onViewLog} disabled={isDisabledTrashViewLog} />
     {/if}
   </div>
 </section>

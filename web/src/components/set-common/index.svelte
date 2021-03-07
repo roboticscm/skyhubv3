@@ -1,5 +1,6 @@
 <script>
-  import { T } from 'src/lib/locale';
+  import { CommonValidation } from 'src/lib/common-validation';
+  import { StringUtil } from 'src/lib/string-util';
   import { ModalType } from 'src/components/ui/modal/types';
 
   import ConfirmModal from 'src/components/ui/modal/base';
@@ -10,7 +11,7 @@
   import ViewLogModal from 'src/components/ui/modal/view-log';
   import TrashRestoreModal from 'src/components/ui/modal/trash-restore';
   import Snackbar from 'src/components/ui/snackbar';
-
+  import { Authentication } from 'src/lib/authentication';
   // Props
   export let view;
   export let menuPath;
@@ -56,6 +57,28 @@
   export const confirmConflictDataModalRef = () => {
     return _confirmConflictDataModalRef;
   };
+
+  const validatePassword = () => {
+    return new Promise((resolve, reject) => {
+      if (StringUtil.isEmpty(_confirmPasswordModalRef.getPassword())) {
+        _confirmPasswordModalRef.raisePasswordError(CommonValidation.REQUIRED_VALUE.t());
+        reject(false);
+      } else {
+         Authentication.verifyPassword(Authentication.getUsername(), _confirmPasswordModalRef.getPassword())
+        .then(() => {
+          resolve(true);
+        })
+        .catch((e) => {
+          console.log(e.message)
+          _confirmPasswordModalRef.raisePasswordError(e.message.t());
+          reject(false);
+        });
+        
+      }
+    });
+  };
+
+  
 </script>
 
 <!--Invisible Element-->
@@ -67,11 +90,11 @@
 <ConfirmModal id={'confirm' + view.getViewName() + 'Modal'} modalType={ModalType.confirm} {menuPath} bind:this={_confirmModalRef} />
 <ConfirmDeleteModal
   id="mdConfirmDeleteModal"
-  title={T('SYS.LABEL.DELETE')}
+  title={'SYS.LABEL.DELETE'.t()}
   modalType={ModalType.confirm}
   {menuPath}
   bind:this={_confirmDeleteModalRef} />
-<ConfirmPasswordModal id={'confirmPassword' + view.getViewName() + 'Modal'} modalType={ModalType.confirmPassword} {menuPath} bind:this={_confirmPasswordModalRef} />
+<ConfirmPasswordModal beforeOK={validatePassword} id={'confirmPassword' + view.getViewName() + 'Modal'} modalType={ModalType.confirmPassword} {menuPath} bind:this={_confirmPasswordModalRef} />
 <ConfigModal
   {menuPath}
   subTitle={view.getViewTitle()}

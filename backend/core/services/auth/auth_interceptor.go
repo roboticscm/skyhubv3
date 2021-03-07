@@ -2,9 +2,9 @@ package auth
 
 import (
 	"context"
-	"fmt"
 
 	"google.golang.org/grpc"
+	"suntech.com.vn/skylib/skylog.git/skylog"
 	"suntech.com.vn/skylib/skyutl.git/skyutl"
 )
 
@@ -51,7 +51,7 @@ func (interceptor *AuthInterceptor) Stream() grpc.StreamServerInterceptor {
 }
 
 func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string) error {
-	fmt.Println(method)
+	skylog.Info(method)
 	if publicMethods[method] {
 		return nil
 	}

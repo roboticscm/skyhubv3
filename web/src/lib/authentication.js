@@ -81,12 +81,11 @@ export class Authentication {
     return grpcAuthClient.loginHandler(req);
   };
 
-  static verifyPassword  = (password) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(true);
-      })
-    })
+  static verifyPassword  = (username, password) => {
+    const req = new LoginRequest();
+    req.setUsername(username);
+    req.setPassword(password);
+    return grpcAuthClient.verifyPasswordHandler(req, defaultHeader);
   }
 
 

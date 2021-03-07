@@ -66,6 +66,16 @@ func (service *Service) LoginHandler(ctx context.Context, req *pt.LoginRequest) 
 	}, nil
 }
 
+//VerifyPasswordHandler function return *LoginResponse
+func (service *Service) VerifyPasswordHandler(ctx context.Context, req *pt.LoginRequest) (*emptypb.Empty, error) {
+	_, err := service.Store.Login(req.Username, req.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
 //RefreshTokenHandler function return new Token
 func (service *Service) RefreshTokenHandler(ctx context.Context, req *pt.RefreshTokenRequest) (*pt.RefreshTokenResponse, error) {
 	accessToken, err := service.Store.RefreshToken(req.RefreshToken)

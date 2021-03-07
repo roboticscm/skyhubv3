@@ -15,7 +15,7 @@ import { RoleControlStore } from 'src/store/role-control';
 import { LoginInfo } from 'src/store/login-info';
 import { MenuStore } from 'src/features/system/menu/store';
 
-export class ViewStore {
+export class BaseView {
   tableName = undefined;
   columns = ['name'];
   orderBy = ['sort nulls last,name'];
@@ -62,6 +62,7 @@ export class ViewStore {
       first(),
     ),
   ]);
+
 
   getMenuNameFromPath = () => {
     return getMenuNameFromPath(this.menuPath);
