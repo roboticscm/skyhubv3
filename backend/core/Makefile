@@ -30,6 +30,23 @@ install:
 	chmod +x ~/go/bin/protoc-gen-grpc-web
 	go get github.com/ktr0731/evans
 
+linstall:
+	go clean -modcache
+	rm -Rf ~/go/bin
+	mkdir ~/go/bin
+	go get github.com/cespare/reflex
+	curl -L -o ~/go/bin/protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.15.5/protoc-3.15.5-linux-x86_64.zip
+	cd ~/go/bin && unzip protoc.zip
+	cp ~/go/bin/bin/protoc ~/go/bin
+	rm -f  ~/go/bin/protoc.zip
+	go get google.golang.org/protobuf/cmd/protoc-gen-go
+	go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
+	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
+	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
+	curl -L -o ~/go/bin/protoc-gen-grpc-web https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-linux-x86_64 
+	chmod +x ~/go/bin/protoc-gen-grpc-web
+	go get github.com/ktr0731/evans
+
 winstall:
 	go clean -modcache
 	npm install -g nodemon
@@ -211,9 +228,11 @@ wbuild-linux: wgen-go
 	go build -o ${BUILD_DIR}\linux_runner cmd\server\main.go 
 
 docker: 
+	docker rm -f skycore
+	#docker network rm skyplus-network
+	#docker network create -d bridge skplus-network
 	docker image rm -f skycore
 	docker build -t skycore -f Dockerfile.multistage .
-	docker rm -f skycore
 	docker run -d --rm  -p 9090:7070 -p 9091:7071 --network skyplus-network --name skycore  skycore
 
 start-prod:
