@@ -35,11 +35,26 @@ mobile/.buildlog/
 mobile/.history
 mobile/.svn/
 
+mobile2/*.class
+mobile2/*.log
+mobile2/*.pyc
+mobile2/*.swp
+mobile2/.DS_Store
+mobile2/.atom/
+mobile2/.buildlog/
+mobile2/.history
+mobile2/.svn/
+
 # IntelliJ related
 mobile/*.iml
 mobile/*.ipr
 mobile/*.iws
 mobile/.idea/
+
+mobile2/*.iml
+mobile2/*.ipr
+mobile2/*.iws
+mobile2/.idea/
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
@@ -55,21 +70,37 @@ mobile/.flutter-plugins-dependencies
 mobile/.packages
 mobile/.pub-cache/
 mobile/.pub/
-mobile//build/
+mobile/build/
 
+mobile2/**/doc/api/
+mobile2/**/ios/Flutter/.last_build_id
+mobile2/.dart_tool/
+mobile2/.flutter-plugins
+mobile2/.flutter-plugins-dependencies
+mobile2/.packages
+mobile2/.pub-cache/
+mobile2/.pub/
+mobile2/build/
 # Web related
 mobile/lib/generated_plugin_registrant.dart
+mobile2/lib/generated_plugin_registrant.dart
 
 # Symbolication related
 mobile/app.*.symbols
-
+mobile2/app.*.symbols
 # Obfuscation related
 mobile/app.*.map.json
-
+mobile2/app.*.map.json
 # Exceptions to above rules.
 mobile/!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+mobile2/!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 mobile/pubspec.lock
 mobile/.metadata
 mobile/.packages
 mobile/lib/pt
+
+mobile2/pubspec.lock
+mobile2/.metadata
+mobile2/.packages
+mobile2/lib/pt

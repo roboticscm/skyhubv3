@@ -1,0 +1,22 @@
+import 'package:flutter/material.dart';
+
+const APP_NAME = "Skyone";
+const DEFAULT_PADDING_VALUE = 8.0;
+const DEFAULT_PADDING = EdgeInsets.all(DEFAULT_PADDING_VALUE);
+const DEFAULT_BORDER_COLOR =  Color.fromRGBO(0, 0, 0, 0.1);
+const DEFAULT_BORDER_RADIUS = 10.0;
+const PAGE_SIZE = 15;
+const DISABLE_OPACITY = 0.3;
+const DELAY_TYPING = 300;//millisecond
+const CONNECTION_TIMEOUT = 5;//second
+
+const KEY_REMEMBER_LOGIN = "REMEMBER_LOGIN";
+const KEY_USERNAME = "USERNAME";
+const KEY_USER_ID = "USER_ID";
+const KEY_FULL_NAME = "FULL_NAME";
+const KEY_ACCESS_TOKEN = "ACCESS_TOKEN";
+const KEY_REFRESH_TOKEN = "REFRESH_TOKEN";
+const KEY_COMPANY_ID = "COMPANY_ID";
+const KEY_BRANCH_ID = "BRANCH_ID";
+const KEY_THEME_INDEX = "THEME_INDEX";
+const KEY_LOCALE = "LOCALE";
