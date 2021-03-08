@@ -1,7 +1,9 @@
 JS_OUT_DIR=../../web/src/pt
 WJS_OUT_DIR=..\..\web\src\pt
 DART_OUT_DIR=../../mobile/lib/pt
+DART_OUT_DIR2=../../mobile2/lib/pt
 WDART_OUT_DIR=..\..\mobile\lib\pt
+WDART_OUT_DIR2=..\..\mobile2\lib\pt
 
 OUT_DIR=pt
 ROOT_DOC_DIR=doc
@@ -19,7 +21,7 @@ install:
 	mkdir ~/go/bin
 	go get github.com/cespare/reflex
 	curl -L -o ~/go/bin/protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.15.3/protoc-3.15.3-osx-x86_64.zip
-	cd ~/go/bin && tar -xf protoc.zip
+	cd ~/go/bin && unzip protoc.zip
 	cp ~/go/bin/bin/protoc ~/go/bin
 	rm -f  ~/go/bin/protoc.zip
 	go get google.golang.org/protobuf/cmd/protoc-gen-go
@@ -30,22 +32,6 @@ install:
 	chmod +x ~/go/bin/protoc-gen-grpc-web
 	go get github.com/ktr0731/evans
 
-linstall:
-	go clean -modcache
-	rm -Rf ~/go/bin
-	mkdir ~/go/bin
-	go get github.com/cespare/reflex
-	curl -L -o ~/go/bin/protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.15.5/protoc-3.15.5-linux-x86_64.zip
-	cd ~/go/bin && unzip protoc.zip
-	cp ~/go/bin/bin/protoc ~/go/bin
-	rm -f  ~/go/bin/protoc.zip
-	go get google.golang.org/protobuf/cmd/protoc-gen-go
-	go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
-	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
-	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
-	curl -L -o ~/go/bin/protoc-gen-grpc-web https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-linux-x86_64 
-	chmod +x ~/go/bin/protoc-gen-grpc-web
-	go get github.com/ktr0731/evans
 
 winstall:
 	go clean -modcache
@@ -121,7 +107,9 @@ wgen-web:
 		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:${JS_OUT_DIR}
 gen-dart:
 	rm -Rf  ${DART_OUT_DIR}
+	rm -Rf  ${DART_OUT_DIR2}
 	mkdir -p ${DART_OUT_DIR}
+	mkdir -p ${DART_OUT_DIR2}
 	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_message.proto) \
 		-I. \
 		--dart_out=grpc:${DART_OUT_DIR} 
@@ -129,6 +117,14 @@ gen-dart:
 		-I. \
 		--proto_path=${SOURCE_PROTO_DIR} \
 		--dart_out=grpc:${DART_OUT_DIR} 
+
+	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_message.proto) \
+		-I. \
+		--dart_out=grpc:${DART_OUT_DIR2} 
+	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_service.proto) google/api/annotations.proto google/api/http.proto google/protobuf/empty.proto \
+		-I. \
+		--proto_path=${SOURCE_PROTO_DIR} \
+		--dart_out=grpc:${DART_OUT_DIR2} 
 
 wgen-dart:
 	if exist ${WDART_OUT_DIR} rd /q /s ${WDART_OUT_DIR}
