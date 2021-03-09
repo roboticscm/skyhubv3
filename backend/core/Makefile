@@ -243,7 +243,10 @@ wclient:
 	go run cmd/client/main.go -server 0.0.0.0:9090
 
 client:
-	reflex -r '\.go' -s -- sh -c "go run cmd/client/main.go -server 127.0.0.1:9090"	
+	reflex -r '\.go' -s -- sh -c "go run cmd/client/main.go -server 127.0.0.1:9090"
+
+once-dev: install gen-all grpc-server
+
 
 .PHONY: client gen-dart wbuild  build start-prod winstall wboth-server
  

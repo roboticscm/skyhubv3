@@ -73,7 +73,7 @@ class LayoutPage extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(right: 15),
+                      padding: const EdgeInsets.only(right: 41),
                       child: FloatingActionButton(
                         child: Opacity(
                           opacity: _layoutController.selectedBottomTabIndex == QRCODE_INDEX ? 1 : 0.8,
@@ -163,7 +163,7 @@ class LayoutPage extends StatelessWidget {
               rightChildren: [
                 TabBarItem(
                   index: 5,
-                  width: 30,
+//                  width: 30,
                   iconData: Icons.more_vert,
                 ),
               ],

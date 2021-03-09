@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:skyone/global/const.dart';
+import 'package:skyone/global/param.dart';
 import 'package:skyone/global/variable.dart';
 import 'package:skyone/pt/proto/auth/auth_service.pbgrpc.dart';
 import 'package:skyone/system/grpc/helper.dart';
@@ -23,6 +24,13 @@ class TheApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var locale = Get.deviceLocale;
+    if (AppInfo.locale != null) {
+      var split = AppInfo.locale.split("-");
+      if (split.length > 1) {
+        locale = Locale(AppInfo.locale.split("-")[0], AppInfo.locale.split("-")[1]);
+      }
+    }
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: APP_NAME,
@@ -33,6 +41,7 @@ class TheApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate
       ],
       supportedLocales: const [Locale('vi', 'VN'), Locale('en', 'US')],
+      locale: locale,
       home: GetBuilder(
         init: _theAppController,
         id: 'appStatus',
@@ -49,7 +58,9 @@ class TheApp extends StatelessWidget {
             return LoadingErrorPage();
           }
 
-          return CircularProgress.smallCenter();
+          return Scaffold(
+            body: CircularProgress.smallCenter(),
+          );
         },
       ),
       getPages: [],

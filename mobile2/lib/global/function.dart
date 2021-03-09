@@ -56,3 +56,11 @@ T newController<T>(T controller, {String tag}) {
     return Get.put(controller, tag: tag);
   }
 }
+
+double getTextWidth (String text, TextStyle style) {
+  TextSpan span = TextSpan(style: style, text: text);
+  TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
+  tp.ellipsis = "......";
+  tp.layout();
+  return tp.width;
+}

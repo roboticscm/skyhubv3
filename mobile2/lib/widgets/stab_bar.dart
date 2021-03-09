@@ -21,7 +21,7 @@ class STabBar extends StatelessWidget {
           if (leftChildren != null)
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(left: 80, right:50),
+              padding: const EdgeInsets.only(left: 80, right:75),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [...leftChildren],

@@ -10,9 +10,9 @@ class TheAppController extends GetxController {
   final _service = Get.put(TheAppService());
   AppStatus appStatus = AppStatus.init;
 
-  Future findLocaleResource({@required String locale, int companyId}) {
+  Future findLocaleResource({@required String locale, int companyId}) async {
     try {
-      return _service.findLocaleResource(locale: locale, companyId: companyId);
+      return await _service.findLocaleResource(locale: locale, companyId: companyId);
     } catch (e) {
       rethrow;
     }

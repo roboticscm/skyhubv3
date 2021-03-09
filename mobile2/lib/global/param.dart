@@ -10,4 +10,6 @@ class AppInfo {
   static String refreshToken;
   static String fullName;
   static String locale;
+  static String companyName;
+  static String branchName;
 }

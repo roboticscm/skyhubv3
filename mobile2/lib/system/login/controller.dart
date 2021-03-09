@@ -59,7 +59,7 @@ class LoginController extends GetxController {
     return e.message.t;
   }
 
-  Future<void> _saveLoginInfo(LoginResponse res) async {
+  Future<void> _saveLoginInfoToStorage(LoginResponse res) async {
     AppInfo.username = res.username;
     AppInfo.refreshToken = res.refreshToken;
     AppInfo.accessToken = res.accessToken;
@@ -67,7 +67,8 @@ class LoginController extends GetxController {
     AppInfo.userId = res.userId.toInt();
     AppInfo.username = res.username;
 
-    await storage.setBool(KEY_REMEMBER_LOGIN, rememberLogin);
+    await storage.setBool(KEY_REMEMBER_LOGIN, rememberLogin ?? false);
+
     await storage.setString(KEY_USERNAME, res.username);
     await storage.setString(KEY_REFRESH_TOKEN, res.refreshToken);
     await storage.setString(KEY_ACCESS_TOKEN, res.accessToken);
@@ -82,7 +83,7 @@ class LoginController extends GetxController {
     final password = rxPassword.value$.value;
     try {
       final res = await _authService.login(username: username, password: password);
-      await _saveLoginInfo(res);
+      await _saveLoginInfoToStorage(res);
     } on GrpcError catch (e) {
       return _serverValidation(e);
     } catch (e) {

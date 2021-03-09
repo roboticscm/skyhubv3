@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:skyone/global/const.dart';
-import 'package:skyone/global/variable.dart';
+import 'package:skyone/global/param.dart';
 import 'package:skyone/system/theme/data.dart';
 
 class ThemeController extends GetxController {
-  final themeIndex = (storage.getInt(KEY_THEME_INDEX) ?? 0).obs;
-  final themeData = appThemeData[AppTheme.values[storage.getInt(KEY_THEME_INDEX) ?? 0]].obs;
+  final themeIndex = AppInfo.themeIndex.obs;
+  final themeData = appThemeData[AppTheme.values[AppInfo.themeIndex]].obs;
 
   @override
   void onInit() async {

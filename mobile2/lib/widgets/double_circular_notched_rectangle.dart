@@ -50,7 +50,7 @@ class DoubleCircularNotchedRectangle extends NotchedShape {
     py[5] = Offset(-1.0 * py[0].dx, py[0].dy);
 
     for (int i = 0; i < py.length; i += 1)
-      py[i] += Offset(host.width - (notchRadius + 12) - 14, 0); //Cut-out 2 positions
+      py[i] += Offset(host.width - (notchRadius + 12) - 40, 0); //Cut-out 2 positions
 
     return Path()
       ..moveTo(host.left, host.top)
