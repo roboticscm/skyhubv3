@@ -1,4 +1,4 @@
-SHELL := /bin/bash
+
 
 JS_OUT_DIR=../../web/src/pt
 WJS_OUT_DIR=..\..\web\src\pt
@@ -19,6 +19,8 @@ HOME_PATH=C:${HOMEPATH}
 
 install:
 	go clean -modcache
+	rm go.mod
+	go mod init suntech.com.vn/skygroup
 	rm -Rf ~/go/bin
 	mkdir ~/go/bin
 	go get github.com/cespare/reflex
@@ -36,6 +38,9 @@ install:
 
 winstall:
 	go clean -modcache
+	del /f go.mod
+	go mod init suntech.com.vn/skygroup
+	npm uninstall -g nodemon
 	npm install -g nodemon
 	npm install -g yarn
 	if exist  ${HOME_PATH}\go\bin rd /q /s  ${HOME_PATH}\go\bin
@@ -78,14 +83,13 @@ install-flutter:
 	source ~/.bashrc
 	flutter pub global activate protoc_plugin
 
-	
 winstall-flutter:
+	setx /M path "${PATH};${HOME_PATH}\flutter\bin;${HOME_PATH}\flutter\.pub-cache\bin;${HOME_PATH}\flutter\bin\cache\dart-sdk\bin"
 	if exist  ${HOME_PATH}\flutter rd /q /s  ${HOME_PATH}\flutter
 	mkdir ${HOME_PATH}\flutter
 	curl -L -o ${HOME_PATH}\flutter\flutter.zip https://storage.googleapis.com/flutter_infra/releases/stable/windows/flutter_windows_2.0.1-stable.zip
 	cd /d ${HOME_PATH} &&  tar -xf ${HOME_PATH}\flutter\flutter.zip
 	del /f  ${HOME_PATH}\flutter\flutter.zip
-	setx /M path "${PATH};${HOME_PATH}\flutter\bin;${HOME_PATH}\flutter\.pub-cache\bin"
 	${HOME_PATH}\flutter\bin\flutter pub global activate protoc_plugin
 
 gen-go:
@@ -281,7 +285,7 @@ client:
 
 lonce-dev: install linstall-flutter gen-all grpc-server
 once-dev: install install-flutter gen-all grpc-server
-wonce-dev: winstall winstall-flutter wgen-all wgrpc-server
+wonce-dev: winstall wgen-all wgrpc-server
 
 .PHONY: client gen-dart wbuild  build start-prod winstall wboth-server
  
