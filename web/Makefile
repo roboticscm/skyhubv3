@@ -1,5 +1,3 @@
-SHELL := /bin/bash
-
 once-dev:
 	docker network create -d bridge skyplus-network || true
 	docker image rm -f suntech/envoy || true
