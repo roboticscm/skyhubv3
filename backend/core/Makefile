@@ -1,4 +1,4 @@
-
+SHELL:=bash
 
 JS_OUT_DIR=../../web/src/pt
 WJS_OUT_DIR=..\..\web\src\pt
@@ -61,11 +61,10 @@ linstall-flutter:
 	rm -Rf ~/flutter
 	mkdir -p ~/flutter
 	curl -L -o ~/flutter/flutter.tar.xz https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_2.0.1-stable.tar.xz
-	tar -xf ~/flutter/flutter.tar.xz -C ..
+	cd ~ && tar -xf ~/flutter/flutter.tar.xz 
 	rm -Rf ~/flutter/flutter.tar.xz
 	sudo chmod 777 ~/.bashrc
-	grep -F -- "export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin:"$$"PATH >> ~/.bashrc
-	echo export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin:"$$"PATH >> ~/.bashrc
+	grep -F -- "export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin:$$HOME/flutter/bin/cache/dark-sdk/bin"$$"PATH >> ~/.bashrc
 	source ~/.bashrc
 	flutter pub global activate protoc_plugin
 
