@@ -78,6 +78,17 @@ install-flutter:
 	source ~/.bashrc
 	flutter pub global activate protoc_plugin
 
+	
+winstall-flutter:
+	if exist  ${HOME_PATH}\flutter rd /q /s  ${HOME_PATH}\flutter
+	mkdir ${HOME_PATH}\flutter
+	curl -L -o ${HOME_PATH}\flutter\flutter.zip https://storage.googleapis.com/flutter_infra/releases/stable/windows/flutter_windows_2.0.1-stable.zip
+	cd ${HOME_PATH} &&  tar -xf ${HOME_PATH}\flutter\flutter.zip
+	del /f  ${HOME_PATH}\flutter\flutter.zip
+	setx /M path "${PATH};${HOME_PATH}\flutter\bin"
+	flutter pub global activate protoc_plugin
+
+
 gen-go:
 	rm -Rf  ${OUT_DIR}
 	rm -Rf ${ROOT_DOC_DIR}
