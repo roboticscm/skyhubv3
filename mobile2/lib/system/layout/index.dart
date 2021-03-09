@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:skyone/features/calendar/index.dart';
 import 'package:skyone/features/home/index.dart';
 import 'package:skyone/features/menu/index.dart';
 import 'package:skyone/features/message/index.dart';
 import 'package:skyone/features/qrcode/index.dart';
+import 'package:skyone/features/qrcode/viewer/index.dart';
 import 'package:skyone/system/layout/controller.dart';
 import 'package:skyone/system/local_notify/controller.dart';
+import 'package:skyone/system/login/controller.dart';
 import 'package:skyone/system/theme/controller.dart';
+import 'package:skyone/widgets/default_drawer.dart';
 import 'package:skyone/widgets/double_circular_notched_rectangle.dart';
 import 'package:skyone/widgets/stab_bar.dart';
 import 'package:skyone/widgets/tab_bar_item.dart';
@@ -24,6 +26,7 @@ class LayoutPage extends StatelessWidget {
 
   final _layoutController = Get.put(LayoutController());
   static final ThemeController _themeController = Get.find();
+  final LoginController _loginController = Get.find();
 
   static final _localNotifyListenerController =
       Get.put(LocalNotifyListenerController());
@@ -36,7 +39,8 @@ class LayoutPage extends StatelessWidget {
 
   LayoutPage() {
     //TODO Demo local notify
-    Future.delayed(Duration(seconds: 5)).then((value) => _localNotifyListenerController.changeNotify(MESSAGE_INDEX, 9));
+    Future.delayed(Duration(seconds: 5)).then((value) =>
+        _localNotifyListenerController.changeNotify(MESSAGE_INDEX, 9));
   }
   @override
   Widget build(BuildContext context) {
@@ -50,6 +54,7 @@ class LayoutPage extends StatelessWidget {
                         .showAppBar[layoutController.selectedBottomTabIndex]
                     ? buildDefaultAppBar()
                     : _emptyAppBar(),
+                drawer: DefaultDrawer(),
                 body: _buildLayoutBody(layoutController),
                 floatingActionButtonLocation:
                     FloatingActionButtonLocation.endDocked,
@@ -60,7 +65,8 @@ class LayoutPage extends StatelessWidget {
                       padding: EdgeInsets.only(left: 32),
                       child: FloatingActionButton(
                         child: Opacity(
-                          opacity: _layoutController.selectedBottomTabIndex == HOME_INDEX
+                          opacity: _layoutController.selectedBottomTabIndex ==
+                                  HOME_INDEX
                               ? 1
                               : 0.8,
                           child: Icon(
@@ -76,20 +82,16 @@ class LayoutPage extends StatelessWidget {
                       padding: const EdgeInsets.only(right: 41),
                       child: FloatingActionButton(
                         child: Opacity(
-                          opacity: _layoutController.selectedBottomTabIndex == QRCODE_INDEX ? 1 : 0.8,
+                          opacity: _layoutController.selectedBottomTabIndex ==
+                                  QRCODE_INDEX
+                              ? 1
+                              : 0.8,
                           child: Icon(
                             Icons.qr_code,
                           ),
                         ),
-                        onPressed: () {
-                          _layoutController.changeBottomTabIndex(QRCODE_INDEX);
-                          // final qrCodeValue = await FlutterBarcodeScanner.scanBarcode(
-                          //     '#ff6666',
-                          //     'SYS.BUTTON.CANCEL'.t(),
-                          //     true,
-                          //     ScanMode.QR);
-                          //
-                          // _theAppCon
+                        onPressed: () async {
+                          Get.to(QrCodeViewer());
                         },
                       ),
                     ),
@@ -126,7 +128,6 @@ class LayoutPage extends StatelessWidget {
         child: Text('SYS.LABEL.UNRECONSTRUCTED'.t),
       );
     }
-
   }
 
   static Widget buildBottomTab() {

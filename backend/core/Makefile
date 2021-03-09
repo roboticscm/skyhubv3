@@ -64,10 +64,13 @@ linstall-flutter:
 	cd ~ && tar -xf ~/flutter/flutter.tar.xz 
 	rm -Rf ~/flutter/flutter.tar.xz
 	sudo chmod 777 ~/.bashrc
-	grep -F -- "export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin:$$HOME/flutter/bin/cache/dark-sdk/bin"$$"PATH >> ~/.bashrc
+	grep -F -- "export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin:$$HOME/flutter/bin/cache/dark-sdk/bin:" $$"PATH >> ~/.bashrc
 	source ~/.bashrc
 	flutter pub global activate protoc_plugin
-
+	sudo apt-get update
+	sudo apt-get install openjdk-8-jdk
+	flutter doctor --android-licenses
+	
 install-flutter:
 	rm -Rf ~/flutter
 	mkdir -p ~/flutter
@@ -81,6 +84,7 @@ install-flutter:
 	grep -F -- "$$HOME/flutter/.pub-cache/bin" /etc/paths || echo $$HOME/flutter/.pub-cache/bin >> /etc/paths
 	source ~/.bashrc
 	flutter pub global activate protoc_plugin
+	flutter doctor --android-licenses
 
 winstall-flutter:
 	setx /M path "${PATH};${HOME_PATH}\flutter\bin;${HOME_PATH}\flutter\.pub-cache\bin;${HOME_PATH}\flutter\bin\cache\dart-sdk\bin"
@@ -90,6 +94,7 @@ winstall-flutter:
 	cd /d ${HOME_PATH} &&  tar -xf ${HOME_PATH}\flutter\flutter.zip
 	del /f  ${HOME_PATH}\flutter\flutter.zip
 	${HOME_PATH}\flutter\bin\flutter pub global activate protoc_plugin
+	${HOME_PATH}\flutter\bin\flutter doctor --android-licenses
 
 gen-go:
 	rm -Rf  ${OUT_DIR}

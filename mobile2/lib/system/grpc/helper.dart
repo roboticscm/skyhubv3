@@ -39,7 +39,7 @@ Future<dynamic> unAuthCall(Function func, dynamic requestParam) async {
 }
 
 Future<dynamic> authCall(Function func, dynamic requestParam) async {
-  final metadata = {'authorization': 'Bearer ${AppInfo.accessToken}'};
+  final metadata = {'authorization': 'Bearer ${LoginInfo.accessToken}'};
   try {
     final res = await func(requestParam,
         options: CallOptions(
@@ -60,17 +60,17 @@ Future<dynamic> authCall(Function func, dynamic requestParam) async {
 }
 
 Future<RefreshTokenResponse> refreshToken() async {
-  final request = RefreshTokenRequest()..refreshToken = AppInfo.refreshToken;
+  final request = RefreshTokenRequest()..refreshToken = LoginInfo.refreshToken;
   final clientChannel = createChannel(ServiceURL.core);
   final authService = AuthServiceClient(clientChannel);
   try {
     final res = await unAuthCall(authService.refreshTokenHandler, request)
         as RefreshTokenResponse;
     if (res.success) {
-      print('New token; ${AppInfo.accessToken}');
-      AppInfo.accessToken = res.accessToken;
+      print('New token; ${LoginInfo.accessToken}');
+      LoginInfo.accessToken = res.accessToken;
     } else {
-      AppInfo.accessToken = null;
+      LoginInfo.accessToken = null;
     }
     return res;
   } on GrpcError catch (e) {

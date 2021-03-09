@@ -36,8 +36,8 @@
       const req = new empty.Empty();
       return grpcAuthClient.getQrCodeHandler(req);
     }).then((res) => {
-      qrCodeValue = res.toObject().qrCode
-      QRCode.toCanvas(qrcodeRef, qrCodeValue, { margin: 0, version: 1 }, function(error) {
+      qrCodeValue = `[AUTH]${res.toObject().qrCode}`;
+      QRCode.toCanvas(qrcodeRef, qrCodeValue, { margin: 0, version: 2}, function(error) {
         if (error) {
           log.error(error);
         }

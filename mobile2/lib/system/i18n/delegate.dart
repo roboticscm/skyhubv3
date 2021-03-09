@@ -15,11 +15,11 @@ class I18nDelegate extends LocalizationsDelegate {
 
   @override
   Future<void> load(Locale locale) async {
-    if (AppInfo.companyId != null) {
+    if (LoginInfo.companyId != null) {
       try {
         await _theAppController.findLocaleResource(
             locale: '${locale.languageCode}-${locale.countryCode}',
-            companyId: AppInfo.companyId);
+            companyId: LoginInfo.companyId);
       } catch (e) {
         log(e);
       }

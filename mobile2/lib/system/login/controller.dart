@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:grpc/grpc.dart';
 import 'package:skyone/exception/error_message.dart';
@@ -60,12 +61,12 @@ class LoginController extends GetxController {
   }
 
   Future<void> _saveLoginInfoToStorage(LoginResponse res) async {
-    AppInfo.username = res.username;
-    AppInfo.refreshToken = res.refreshToken;
-    AppInfo.accessToken = res.accessToken;
-    AppInfo.fullName = res.fullName;
-    AppInfo.userId = res.userId.toInt();
-    AppInfo.username = res.username;
+    LoginInfo.username = res.username;
+    LoginInfo.refreshToken = res.refreshToken;
+    LoginInfo.accessToken = res.accessToken;
+    LoginInfo.fullName = res.fullName;
+    LoginInfo.userId = res.userId.toInt();
+    LoginInfo.username = res.username;
 
     await storage.setBool(KEY_REMEMBER_LOGIN, rememberLogin ?? false);
 
@@ -92,5 +93,10 @@ class LoginController extends GetxController {
 
     _theAppController.changeAppStatus(AppStatus.loading);
     return null;
+  }
+
+  Future<void> updateAuthToken(int recordId) async {
+    await _authService.updateAuthToken(companyId: LoginInfo.companyId, id: recordId, username: LoginInfo.username,
+        accessToken: LoginInfo.accessToken, refreshToken: LoginInfo.refreshToken, lastLocaleLanguage: LoginInfo.locale);
   }
 }

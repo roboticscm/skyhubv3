@@ -22,7 +22,7 @@ class TheAppController extends GetxController {
   void onInit() async {
     super.onInit();
     try {
-      await findLocaleResource(locale: AppInfo.locale);
+      await findLocaleResource(locale: LoginInfo.locale);
     } catch (e) {
       changeAppStatus(AppStatus.initError);
       log(e);

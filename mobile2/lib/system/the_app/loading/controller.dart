@@ -25,11 +25,11 @@ class LoadingController extends GetxController {
   }
 
   Future<void>_saveToStorage(FindInitialUserSettingsResponse res) async {
-    AppInfo.companyId = res.companyId?.toInt() ?? 0;
-    AppInfo.branchId = res.branchId?.toInt() ?? 0;
-    AppInfo.companyName = res.companyName;
-    AppInfo.branchName = res.branchName;
-    await storage.setInt(KEY_COMPANY_ID, AppInfo.companyId);
-    await storage.setInt(KEY_BRANCH_ID, AppInfo.branchId);
+    LoginInfo.companyId = res.companyId?.toInt() ?? 0;
+    LoginInfo.branchId = res.branchId?.toInt() ?? 0;
+    LoginInfo.companyName = res.companyName;
+    LoginInfo.branchName = res.branchName;
+    await storage.setInt(KEY_COMPANY_ID, LoginInfo.companyId);
+    await storage.setInt(KEY_BRANCH_ID, LoginInfo.branchId);
   }
 }

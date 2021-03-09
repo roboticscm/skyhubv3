@@ -25,15 +25,16 @@ class TheApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var locale = Get.deviceLocale;
-    if (AppInfo.locale != null) {
-      var split = AppInfo.locale.split("-");
+    if (LoginInfo.locale != null) {
+      var split = LoginInfo.locale.split("-");
       if (split.length > 1) {
-        locale = Locale(AppInfo.locale.split("-")[0], AppInfo.locale.split("-")[1]);
+        locale = Locale(LoginInfo.locale.split("-")[0], LoginInfo.locale.split("-")[1]);
       }
     }
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: APP_NAME,
+
       theme: _themeController.themeData.value,
       localizationsDelegates: [
         I18nDelegate(),

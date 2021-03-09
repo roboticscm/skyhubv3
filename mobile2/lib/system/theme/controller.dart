@@ -4,8 +4,8 @@ import 'package:skyone/global/param.dart';
 import 'package:skyone/system/theme/data.dart';
 
 class ThemeController extends GetxController {
-  final themeIndex = AppInfo.themeIndex.obs;
-  final themeData = appThemeData[AppTheme.values[AppInfo.themeIndex]].obs;
+  final themeIndex = LoginInfo.themeIndex.obs;
+  final themeData = appThemeData[AppTheme.values[LoginInfo.themeIndex]].obs;
 
   @override
   void onInit() async {

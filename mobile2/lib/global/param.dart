@@ -1,6 +1,6 @@
 
 
-class AppInfo {
+class LoginInfo {
   static int companyId = 1;
   static int branchId;
   static int themeIndex;
