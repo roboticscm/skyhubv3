@@ -6,7 +6,6 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/elliotchance/orderedmap v1.4.0
 	github.com/golang/mock v1.4.4
-	github.com/golang/protobuf v1.4.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.3.0
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lib/pq v1.10.0
