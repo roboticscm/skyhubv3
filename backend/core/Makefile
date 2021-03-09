@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 JS_OUT_DIR=../../web/src/pt
 WJS_OUT_DIR=..\..\web\src\pt
 DART_OUT_DIR=../../mobile/lib/pt
@@ -32,7 +34,6 @@ install:
 	chmod +x ~/go/bin/protoc-gen-grpc-web
 	go get github.com/ktr0731/evans
 
-
 winstall:
 	go clean -modcache
 	npm install -g nodemon
@@ -51,7 +52,14 @@ winstall:
 	curl -L -o ${HOME_PATH}\go\bin\protoc-gen-grpc-web.exe https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-windows-x86_64.exe 
 	go get github.com/ktr0731/evans
 
-install-dart-plugin:
+install-flutter:
+	rm -Rf ~/flutter
+	mkdir -p ~/flutter
+	curl -L -o ~/flutter/flutter.tar.xz https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_2.0.1-stable.tar.xz
+	tar -xf ~/flutter/flutter.tar.xz -C ..
+	rm -Rf ~/flutter/flutter.tar.xz
+	echo export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin:"$$"PATH > ~/.bashrc
+	source ~/.bashrc
 	flutter pub global activate protoc_plugin
 
 gen-go:
@@ -245,7 +253,7 @@ wclient:
 client:
 	reflex -r '\.go' -s -- sh -c "go run cmd/client/main.go -server 127.0.0.1:9090"
 
-once-dev: install gen-all grpc-server
+once-dev: install install-flutter gen-all grpc-server
 
 
 .PHONY: client gen-dart wbuild  build start-prod winstall wboth-server

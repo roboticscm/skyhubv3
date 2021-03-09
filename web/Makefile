@@ -5,4 +5,4 @@ once-dev:
 	docker rm -f suntech-envoy-proxy || true
 	docker run -d --restart unless-stopped -p 8080:8080 -p 9901:9901 --name suntech-envoy-proxy suntech/envoy
 	yarn
-	yarn dev
+	sudo yarn dev
