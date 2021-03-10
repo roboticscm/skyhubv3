@@ -34,6 +34,11 @@ install:
 	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 	curl -L -o ~/go/bin/protoc-gen-grpc-web https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-darwin-x86_64 
 	chmod +x ~/go/bin/protoc-gen-grpc-web
+	sudo chmod 777 ~/.bashrc
+	sudo chmod 777 /etc/paths
+	grep -F -- "$$HOME/go/bin" /etc/paths || echo $$HOME/go/bin >> /etc/paths
+	grep -F -- "export PATH=$$HOME/go/bin" ~/.bashrc || echo export PATH=$$HOME/go/bin:"$$"PATH >> ~/.bashrc
+	source ~/.bashrc
 	go get github.com/ktr0731/evans
 
 winstall:
@@ -169,8 +174,11 @@ gen-dart:
 		--dart_out=grpc:${DART_OUT_DIR2} 
 
 wgen-dart:
+	pub global activate protoc_plugin
 	if exist ${WDART_OUT_DIR} rd /q /s ${WDART_OUT_DIR}
 	mkdir ${WDART_OUT_DIR}
+	if exist ${WDART_OUT_DIR2} rd /q /s ${WDART_OUT_DIR2}
+	mkdir ${WDART_OUT_DIR2}
 	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_message.proto) \
 		-I. \
 		--dart_out=grpc:${WDART_OUT_DIR} 
@@ -178,6 +186,14 @@ wgen-dart:
 		-I. \
 		--proto_path=${SOURCE_PROTO_DIR} \
 		--dart_out=grpc:${WDART_OUT_DIR} 
+
+	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_message.proto) \
+		-I. \
+		--dart_out=grpc:${WDART_OUT_DIR2} 
+	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_service.proto) google/api/annotations.proto google/api/http.proto google/protobuf/empty.proto \
+		-I. \
+		--proto_path=${SOURCE_PROTO_DIR} \
+		--dart_out=grpc:${WDART_OUT_DIR2}	
 gen-all: gen-go gen-web gen-dart
 
 wgen-all: wgen-go wgen-web wgen-dart
