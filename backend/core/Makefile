@@ -43,6 +43,7 @@ install:
 
 winstall:
 	go clean -modcache
+	if exist  go.mod del /f go.mod
 	del /f go.mod
 	go mod init suntech.com.vn/skygroup
 	npm uninstall -g nodemon
