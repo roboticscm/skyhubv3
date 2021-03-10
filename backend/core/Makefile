@@ -16,6 +16,7 @@ BUILD_DIR=build
 CONFIG_DIR=config
 KEYS_DIR=keys
 HOME_PATH=${USERPROFILE}
+PROGRAM_FILES=C:\Program Files
 
 install:
 	go clean -modcache
@@ -41,7 +42,26 @@ install:
 	source ~/.bashrc
 	go get github.com/ktr0731/evans
 
+
 winstall:
+	if exist  "${HOME_PATH}\node" rd /q /s  "${HOME_PATH}\node"
+	mkdir "${HOME_PATH}\node"
+	if exist  "${HOME_PATH}\git" rd /q /s  "${HOME_PATH}\git"
+	mkdir "${HOME_PATH}\git"
+
+	if exist  "${HOME_PATH}\golang\" rd /q /s  "${HOME_PATH}\golang"
+	mkdir "${HOME_PATH}\golang"
+	curl -L -o "${HOME_PATH}\golang\go.zip"  https://golang.org/dl/go1.16.windows-amd64.zip
+	cd /d "${HOME_PATH}\golang" && tar -xf go.zip
+	del /f  "${HOME_PATH}\go.zip"
+
+	curl -L -o ${HOME_PATH}\node\node.zip https://nodejs.org/dist/v14.16.0/node-v14.16.0-win-x64.zip
+	cd /d ${HOME_PATH}\node && tar -xf node.zip
+	del /f  ${HOME_PATH}\node\node.zip
+	curl -L -o ${HOME_PATH}\git\git.exe https://github.com/git-for-windows/git/releases/download/v2.30.2.windows.1/PortableGit-2.30.2-64-bit.7z.exe
+	${HOME_PATH}\git\git.exe
+	del /f  ${HOME_PATH}\git\git.exe
+
 	go clean -modcache
 	if exist  go.mod del /f go.mod
 	del /f go.mod
@@ -305,7 +325,9 @@ client:
 
 lonce-dev: install linstall-flutter gen-all grpc-server
 once-dev: install install-flutter gen-all grpc-server
+	
 wonce-dev: winstall wgen-all wgrpc-server
+	echo Server side is Done!
 
 .PHONY: client gen-dart wbuild  build start-prod winstall wboth-server
  

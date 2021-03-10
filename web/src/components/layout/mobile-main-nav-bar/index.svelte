@@ -5,10 +5,16 @@
   import { SettingsStore } from 'src/store/settings';
   import { LoginInfo } from 'src/store/login-info';
   import { Dropdown } from 'src/lib/dropdown';
+  import { routerLinkStore } from 'src/components/ui/router-link/store';
 
   const { departmentId$ } = LoginInfo;
   const { isDetailPage$ } = AppStore;
   const { menu$ } = MenuStore;
+  $: if ($menu$) {
+    if ($menu$.length > 0) {
+      routerLinkStore.currentComponentUri$.next(`features/${$menu$[0].path}/index.svelte`);
+    }
+  }
 
   const onNavigate = (event) => {
     Dropdown.hide('mobileMainNavBarId');
@@ -28,7 +34,7 @@
   };
 
   const saveHistorySettings = (depId, menuId) => {
-    MenuStore.saveOrUpdateMenuHistory(depId, menuId).subscribe();
+    MenuStore.upsertMenuHistory(depId, menuId);
   };
 
   const onMouseover = () => {

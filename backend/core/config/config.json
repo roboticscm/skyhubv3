@@ -1,8 +1,8 @@
 {
     "debug": true,
     "authenticate": true,
-	"dbServer": "localhost",
-    "dbPort": 5432,
+	"dbServer": "172.16.22.17",
+    "dbPort": 5434,
     "dbName": "skyhubv3",
     "appName": "skyhubv3",
     "dbTimeOut": 3,

@@ -72,10 +72,10 @@ export const protoFromObject = (protoObj, plainObj, path) => {
         resolve(res);
       }).catch( async (err) => {
         log.error(err);
-        if (err.message === 'AUTH.MSG.VALIDATION_EXPIRED_ERROR') {
+        if (err.message === 'SYS.MSG.VALIDATION_EXPIRED_ERROR') {
           await Authentication.refreshAPI(Authentication.getRefreshToken());
           resolve(callGRPC(callBuilder))
-        } else if (err.message === 'AUTH.MSG.NEED_LOGIN_ERROR') {
+        } else if (err.message === 'SYS.MSG.NEED_LOGIN_ERROR') {
           Authentication.forceLogout();
         } else {
           reject(err);

@@ -26,6 +26,10 @@ const alias = {
     };
 const  HtmlWebpackPlugin = require('html-webpack-plugin');
 
+function getUserHome() {
+  return process.env.USERPROFILE ||  process.env.HOME;
+}
+
 module.exports = smp.wrap({
   entry: {
     bundle: ['./src/index.js'],
@@ -36,7 +40,7 @@ module.exports = smp.wrap({
     mainFields: ['svelte', 'browser', 'module', 'main'],
   },
   output: {
-    path: path.resolve(__dirname, '../www'),
+    path: path.resolve(__dirname, getUserHome()+"/www"),
     filename: '[name][hash].js',
     chunkFilename: '[name].[id][hash].js'
   },

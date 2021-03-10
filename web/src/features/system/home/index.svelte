@@ -37,8 +37,8 @@
       </nav>
     </section>
 
-    <WaterMark />
     <div slot="content" style="height: 100%; background: var(--bg-tertiary);">
+      <WaterMark />
       <RouterView />
     </div>
   </MainLayout>
@@ -94,8 +94,8 @@
         </div>
       {/if}
     </section>
-    <WaterMark />
     <div slot="content" style="height: 100%; background: var(--bg-tertiary);">
+      <WaterMark />
       <RouterView />
     </div>
   </MainLayout>
