@@ -15,7 +15,7 @@ SOURCE_PROTO_DIR=proto
 BUILD_DIR=build
 CONFIG_DIR=config
 KEYS_DIR=keys
-HOME_PATH=C:${HOMEPATH}
+HOME_PATH=${USERPROFILE}
 
 install:
 	go clean -modcache
@@ -92,14 +92,13 @@ install-flutter:
 	flutter doctor --android-licenses
 
 winstall-flutter:
-	setx /M path "${PATH};${HOME_PATH}\flutter\bin;${HOME_PATH}\flutter\.pub-cache\bin;${HOME_PATH}\flutter\bin\cache\dart-sdk\bin"
 	if exist  ${HOME_PATH}\flutter rd /q /s  ${HOME_PATH}\flutter
 	mkdir ${HOME_PATH}\flutter
 	curl -L -o ${HOME_PATH}\flutter\flutter.zip https://storage.googleapis.com/flutter_infra/releases/stable/windows/flutter_windows_2.0.1-stable.zip
 	cd /d ${HOME_PATH} &&  tar -xf ${HOME_PATH}\flutter\flutter.zip
 	del /f  ${HOME_PATH}\flutter\flutter.zip
-	${HOME_PATH}\flutter\bin\flutter pub global activate protoc_plugin
-	${HOME_PATH}\flutter\bin\flutter doctor --android-licenses
+	flutter\bin\flutter pub global activate protoc_plugin
+	flutter\bin\flutter doctor --android-licenses
 
 gen-go:
 	rm -Rf  ${OUT_DIR}
