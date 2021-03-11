@@ -90,7 +90,11 @@ class LayoutPage extends StatelessWidget {
                           ),
                         ),
                         onPressed: () async {
-                          Get.to(QrCodeViewer());
+                          Get.to(QrCodeViewer()).then((value) {
+                            if (value == true) {
+                              Get.snackbar('SYS.LABEL.AUTH'.t, 'SYS.MSG.AUTHENTICATED'.t, snackPosition: SnackPosition.BOTTOM);
+                            }
+                          });
                         },
                       ),
                     ),

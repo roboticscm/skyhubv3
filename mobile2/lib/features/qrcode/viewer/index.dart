@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:skyone/extensions/string.dart';
+import 'package:skyone/global/function.dart';
+import 'package:skyone/system/db_notify_listener/controller.dart';
 import 'package:skyone/system/login/controller.dart';
 import 'package:skyone/system/theme/controller.dart';
 import 'package:skyone/widgets/rx_button.dart';
@@ -18,9 +20,29 @@ class _QrCodeViewerState extends State<QrCodeViewer> {
   final ThemeController _themeController = Get.find();
   final LoginController _loginController = Get.find();
   final GlobalKey _qrKey = GlobalKey(debugLabel: 'QR');
+  final DbNotifyListenerController _dbNotifyListenerController = Get.find();
   Barcode _result;
   QRViewController _controller;
 
+  @override
+  void initState() {
+    super.initState();
+    try {
+      final stream = _dbNotifyListenerController.register();
+      if (stream != null) {
+        stream.listen((value) {
+          if ((value as NotifyListener).table == "auth_token") {
+            if((value as NotifyListener).data["authenticated"]) {
+              Get.back(result: true);
+            }
+          }
+        });
+      }
+    } catch (e) {
+      log(e);
+    }
+
+  }
   @override
   void reassemble() {
     super.reassemble();

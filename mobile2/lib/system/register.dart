@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:skyone/global/const.dart';
 import 'package:skyone/global/param.dart';
 import 'package:skyone/global/variable.dart';
+import 'package:skyone/system/db_notify_listener/controller.dart';
 import 'package:skyone/system/local_notify/controller.dart';
 import 'package:skyone/system/login/controller.dart';
 import 'package:skyone/system/the_app/controller.dart';
@@ -10,6 +11,7 @@ import 'package:skyone/system/theme/data.dart';
 
 void registerController () {
   Get.put(TheAppController());
+  Get.put(DbNotifyListenerController());
   Get.put(LocalNotifyListenerController());
   Get.put(ThemeController());
   Get.put(LoginController());

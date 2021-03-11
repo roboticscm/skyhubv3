@@ -3,7 +3,6 @@ package auth
 import (
 	"crypto/subtle"
 	"sync"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"suntech.com.vn/skygroup/config"
@@ -215,7 +214,7 @@ func (store *Store) RefreshToken(refreshToken string) (string, error) {
 //GetQrCode function
 func (store *Store) GetQrCode() (int64, error) {
 	var input models.AuthToken
-	out, err := store.q.Insert(&input)
+	out, err := store.q.Insert(&input, "disabled", "version", "authenticated")
 	if err != nil {
 		return 0, err
 	}
@@ -236,7 +235,7 @@ func (store *Store) UpdateAuthToken(companyID, branchID, userID, recordID int64,
 		Username:           &username,
 	}
 
-	_, err := store.q.UpdateWithID(&authToken, "disabled", "version")
+	_, err := store.q.UpdateWithID(&authToken, "disabled", "version", "authenticated")
 	if err != nil {
 		return err
 	}
@@ -255,7 +254,7 @@ func (store *Store) UpdateRemoteAuthenticated(recordID, userID int64) (bool, err
 		return false, err
 	}
 
-	*authToken.Authenticated = true
+	authToken.Authenticated = skyutl.AddrOfBool(true)
 	if _, err := store.q.UpdateWithID(&authToken, "enabled", "version"); err != nil {
 		return false, err
 	}

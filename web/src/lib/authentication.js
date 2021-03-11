@@ -2,7 +2,7 @@ import { grpcAuthClient, callGRPC } from 'src/lib/grpc';
 const empty = require('google-protobuf/google/protobuf/empty_pb');
 
 import {
-  LoginRequest, RefreshTokenRequest
+  LoginRequest, RefreshTokenRequest, UpdateRemoteAuthenticatedRequest
 } from "src/pt/proto/auth/auth_service_pb";
 
 
@@ -64,6 +64,7 @@ export class Authentication {
       sessionStorage.setItem('userId', userId);
       sessionStorage.setItem('username', username);
     }
+    Authentication.setHeader(accessToken);
     window.location.replace('/');
   };
 
@@ -98,10 +99,11 @@ export class Authentication {
     })
   };
 
-  static logoutAPI = () => {
-    const req = new empty.Empty();
+  static updateAuthenticated = (id) => {
+    const req =  new UpdateRemoteAuthenticatedRequest();
+    req.setRecordId(id);
     return callGRPC(() => {
-      return grpcAuthClient.logoutHandler(req, defaultHeader);
+      return grpcAuthClient.updateRemoteAuthenticatedHandler(req, defaultHeader);
     })
   };
   

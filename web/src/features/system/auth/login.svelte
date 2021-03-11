@@ -18,9 +18,9 @@
   let qrCodeValue;
   onMount(() => {
     NotifyListener.payload$.subscribe((res) => {
-      if (res.table === "auth_token" && qrCodeValue && res.data.id === qrCodeValue.replace("[AUTH]", "") && res.data.accessToken && res.data.refreshToken && res.data.accountId) {
+      if (res.table === "auth_token" && qrCodeValue && res.data.id === qrCodeValue.replace("[AUTH]", "") && res.data.accessToken && res.data.refreshToken && res.data.accountId && !res.data.authenticated) {
         Authentication.login(res.data.accessToken, res.data.refreshToken, res.data.accountId, res.data.username);
-        window.location.reload();
+        Authentication.updateAuthenticated(res.data.id);
       }
     });
 
