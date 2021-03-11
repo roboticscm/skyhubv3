@@ -126,3 +126,15 @@ func (service *Service) UpdateAuthTokenHandler(ctx context.Context, req *pt.Upda
 	}
 	return &emptypb.Empty{}, nil
 }
+
+
+//UpdateRemoteAuthenticatedHandler function
+func (service *Service) UpdateRemoteAuthenticatedHandler(ctx context.Context, req *pt.UpdateRemoteAuthenticatedRequest) (*pt.UpdateRemoteAuthenticatedResponse, error) {
+	userID, _ := skyutl.GetUserID(ctx)
+	authenticated, err := service.Store.UpdateRemoteAuthenticated(req.RecordId, userID)
+	if err != nil {
+		return nil, err
+	}
+	return &pt.UpdateRemoteAuthenticatedResponse{Authenticated: authenticated}, nil
+}
+

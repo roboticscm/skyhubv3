@@ -60,7 +60,6 @@
 
   onMount(() => {
     const componentSub = currentComponentUri$.subscribe((res) => {
-      console.log('xxx ', res);
       if (res) {
         menuPath = res.replace('features/', '').replace('/index.svelte', '');
         LoginInfo.menuPath$.next(menuPath);

@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/lib/pq"
-	_ "github.com/lib/pq"
 	"suntech.com.vn/skygroup/cmd/server/server_helper"
 	"suntech.com.vn/skygroup/config"
 	"suntech.com.vn/skygroup/keys"

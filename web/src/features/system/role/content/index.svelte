@@ -322,12 +322,13 @@
         if (!it) return EMPTY;
         return NotifyListener.payload$.pipe(
           filter((p) => {
+            console.log(p);
             return (
               p &&
               form.id &&
               p.table === view.tableName &&
               p.data.updatedBy != LoginInfo.getUserId() &&
-              p.data.id === it.id
+              p.data.id == it.id
             );
           }),
         );

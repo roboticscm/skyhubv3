@@ -48,6 +48,14 @@ message UpdateAuthTokenRequest {
   string username = 7;
 }
 
+message UpdateRemoteAuthenticatedResponse {
+  bool authenticated = 1;
+}
+
+message UpdateRemoteAuthenticatedRequest {
+  int64 record_id = 1 [ jstype = JS_STRING];
+}
+
 service AuthService {
   rpc LoginHandler(LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
@@ -92,6 +100,13 @@ service AuthService {
   rpc UpdateAuthTokenHandler(UpdateAuthTokenRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put : "/auth/update-auth-token"
+      body: "*"
+    };
+  }
+
+  rpc UpdateRemoteAuthenticatedHandler(UpdateRemoteAuthenticatedRequest) returns (UpdateRemoteAuthenticatedResponse) {
+    option (google.api.http) = {
+      put : "/auth/update-authenticated"
       body: "*"
     };
   }

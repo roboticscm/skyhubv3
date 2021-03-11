@@ -96,6 +96,7 @@ class LoginController extends GetxController {
   }
 
   Future<void> updateAuthToken(int recordId) async {
+    print(recordId);
     await _authService.updateAuthToken(companyId: LoginInfo.companyId, id: recordId, username: LoginInfo.username,
         accessToken: LoginInfo.accessToken, refreshToken: LoginInfo.refreshToken, lastLocaleLanguage: LoginInfo.locale);
   }

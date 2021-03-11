@@ -10,4 +10,5 @@ type AuthToken struct {
 	CompanyId          *int64  `json:"companyId" orm:"null"`
 	BranchId           *int64  `json:"branchId" orm:"null"`
 	Username           *string `json:"username" orm:"null"`
+	Authenticated *bool `json:"authenticated"`
 }

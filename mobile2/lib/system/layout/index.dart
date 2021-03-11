@@ -26,7 +26,6 @@ class LayoutPage extends StatelessWidget {
 
   final _layoutController = Get.put(LayoutController());
   static final ThemeController _themeController = Get.find();
-  final LoginController _loginController = Get.find();
 
   static final _localNotifyListenerController =
       Get.put(LocalNotifyListenerController());

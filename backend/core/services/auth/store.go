@@ -40,6 +40,7 @@ type AuthStore interface {
 	RefreshToken(refreshToken string) (string, error)
 	GetQrCode() (int64, error)
 	UpdateAuthToken(companyID, branchID, userID, recordID int64, username, accessToken, refreshToken, lastLocaleLanguage string) error
+	UpdateRemoteAuthenticated(recordID, userID int64) (bool, error)
 }
 
 //Login return Account if username and password are correct
@@ -241,4 +242,23 @@ func (store *Store) UpdateAuthToken(companyID, branchID, userID, recordID int64,
 	}
 
 	return nil
+}
+
+
+//UpdateRemoteAuthenticated function
+func (store *Store) UpdateRemoteAuthenticated(recordID, userID int64) (bool, error) {
+	authToken := models.AuthToken{
+		Id:                 recordID,
+	}
+
+	if err := store.q.ReadWithID(&authToken); err != nil {
+		return false, err
+	}
+
+	*authToken.Authenticated = true
+	if _, err := store.q.UpdateWithID(&authToken, "enabled", "version"); err != nil {
+		return false, err
+	}
+
+	return *authToken.Authenticated, nil
 }

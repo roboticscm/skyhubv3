@@ -23,7 +23,7 @@
   }
 
   $: if ($departmentId$) {
-    MenuStore.findRoledMenu($departmentId$).then(() => {
+    MenuStore.findRoledMenu($departmentId$).then((res) => {
       saveUserSettings();
     });
   }

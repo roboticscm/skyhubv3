@@ -52,15 +52,17 @@ export class Authentication {
     Authentication.setHeader(token);
   };
 
-  static login = (accessToken, refreshToken, userId) => {
+  static login = (accessToken, refreshToken, userId, username) => {
     if (localStorage.getItem('remember') === 'true') {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('userId', userId);
+      localStorage.setItem('username', username);
     } else {
       sessionStorage.setItem('accessToken', accessToken);
       sessionStorage.setItem('refreshToken', refreshToken);
       sessionStorage.setItem('userId', userId);
+      sessionStorage.setItem('username', username);
     }
     window.location.replace('/');
   };
@@ -96,6 +98,13 @@ export class Authentication {
     })
   };
 
+  static logoutAPI = () => {
+    const req = new empty.Empty();
+    return callGRPC(() => {
+      return grpcAuthClient.logoutHandler(req, defaultHeader);
+    })
+  };
+  
   static setHeader = (token) => {
     // axios.defaults.headers['Content-Type'] = 'application/json';
     // axios.defaults.headers['Authorization'] = `Bearer ${token}`;

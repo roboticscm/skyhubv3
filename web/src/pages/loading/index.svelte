@@ -14,31 +14,43 @@
 
   onMount(() => {
     AppStore.urlParam = location.href;
-    const urlDepartmentId = getUrlParam('d');
-    const urlMenuPath = getMenuPathFromUrlParam();
+    // const urlDepartmentId = getUrlParam('d');
+    // const urlMenuPath = getMenuPathFromUrlParam();
 
-    if (urlDepartmentId && urlMenuPath) {
-      SettingsStore.saveUserSettings(
-        {
-          keys: ['departmentId', 'menuPath'],
-          values: [`${urlDepartmentId}`, urlMenuPath],
-        },
-        false,
-      ).then(() => {
-        // load last usersettings
-        SettingsStore.getLastUserSettings()
-          .then(() => {
-            loading$.next(false);
-            isValid = true;
-          })
-          .catch((err) => {
-            loading$.next(false);
-            message = err;
-          });
-      });
-    } else {
-      // load last usersettings
-      SettingsStore.getLastUserSettings()
+    // if (urlDepartmentId && urlMenuPath) {
+    //   SettingsStore.saveUserSettings(
+    //     {
+    //       keys: ['departmentId', 'menuPath'],
+    //       values: [`${urlDepartmentId}`, urlMenuPath],
+    //     },
+    //     false,
+    //   ).then(() => {
+    //     // load last usersettings
+    //     SettingsStore.getLastUserSettings()
+    //       .then(() => {
+    //         loading$.next(false);
+    //         isValid = true;
+    //       })
+    //       .catch((err) => {
+    //         loading$.next(false);
+    //         message = err;
+    //       });
+    //   });
+    // } else {
+    //   // load last usersettings
+    //   SettingsStore.getLastUserSettings()
+    //     .then(() => {
+    //       loading$.next(false);
+    //       isValid = true;
+    //     })
+    //     .catch((err) => {
+    //       loading$.next(false);
+    //       message = err;
+    //     });
+    // }
+
+    // load last usersettings
+    SettingsStore.getLastUserSettings()
         .then(() => {
           loading$.next(false);
           isValid = true;
@@ -47,7 +59,6 @@
           loading$.next(false);
           message = err;
         });
-    }
   });
 </script>
 

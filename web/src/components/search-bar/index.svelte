@@ -43,12 +43,7 @@
       .then((res) => {
         res = res.toObject();
         if (res.accessToken) {
-          if (remember) {
-            localStorage.setItem('username', username);
-          } else {
-            sessionStorage.setItem('username', username);
-          }
-          didLogin(res);
+          didLogin(res, username);
           searching$.next(false);
         }
       })
@@ -59,7 +54,7 @@
       });
   };
 
-  const didLogin = (loginInfo) => {
+  const didLogin = (loginInfo, username) => {
     loginCount = 0;
     type = 'search';
     setTimeout(() => {
@@ -67,7 +62,7 @@
       inputRef.focus();
     }, 1000);
     localStorage.setItem('remember', remember);
-    Authentication.login(loginInfo.accessToken, loginInfo.refreshToken, loginInfo.userId);
+    Authentication.login(loginInfo.accessToken, loginInfo.refreshToken, loginInfo.userId, username);
   };
 
   const onLogin = (rawData) => {
