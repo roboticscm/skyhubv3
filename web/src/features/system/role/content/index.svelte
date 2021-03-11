@@ -1,12 +1,10 @@
 <script>
   import { tick, onMount, onDestroy, createEventDispatcher } from 'svelte';
-  import { catchError, concatMap, switchMap, filter } from 'rxjs/operators';
-  import { fromEvent, of, EMPTY } from 'rxjs';
-  import { fromPromise } from 'rxjs/internal-compatibility';
-  import { T } from 'src/lib/locale';
+  import { switchMap, filter } from 'rxjs/operators';
+  import { EMPTY } from 'rxjs';
   import Form from 'src/lib/grpc-form/form';
   import { SObject } from 'src/lib/sobject';
-
+  import { SJSON } from 'src/lib/sjson';
   import TreeView from 'src/components/ui/tree-view';
   import { validation } from './validation';
   import { ButtonType, ButtonId } from 'src/components/ui/button/types';
@@ -22,7 +20,8 @@
   import { NotifyListener } from 'src/store/notify-listener';
   import { SkyLogStore } from 'src/store/skylog';
   import { Role as PtRole } from 'src/pt/proto/role/role_message_pb';
-
+  import { RoleService } from '../service';
+  
   // Props
   export let view;
   export let menuPath;
@@ -49,8 +48,6 @@
   let codeRef;
   let scRef;
 
-  let btnSaveRef;
-  let btnUpdateRef;
   let orgTreeRef;
 
   // Other vars
@@ -122,6 +119,19 @@
         // the moving focus to the first element
         codeRef.focus();
       });
+    });
+  };
+
+  /**
+   * Event handle for Save/Update button.
+   * @param {event} Mouse click event.
+   * @return {void}.
+   */
+  const onUpsert = (event) => {
+    // verify permission
+    view.verifySaveAction(event.currentTarget.id, scRef).then((_) => {
+      // if everything is OK, call the action
+      doUpsert();
     });
   };
 
@@ -214,7 +224,7 @@
 
   // ============================== FUNCTIONAL ==========================
   /**
-   * Add new add. Called by onAddNew event handle
+   * Called by onAddNew event handler
    * @param {none}
    * @return {void}.
    */
@@ -233,68 +243,46 @@
     });
   };
 
-  /**
-   * Save or update form. Called by onSave and onUpdate event handle
-   * @param {ob$} Observable event of the button click or shortcut key(fromEvent)
+    /**
+   * Called by onUpsert event handler
+   * @param {none}
    * @return {void}.
    */
-  const doSaveOrUpdate = (ob$) => {
-    ob$
-      .pipe(
-        filter((_) => validate()) /* filter if form pass client validation */,
-        concatMap((_) =>
-          fromPromise(
-            /* verify permission*/
-            view.verifySaveAction($isUpdateMode$ ? ButtonId.update : ButtonId.save, scRef),
-          ).pipe(
-            catchError((error) => {
-              return of(error);
-            }),
-          ),
-        ),
-        filter((value) => value !== 'fail') /* filter if pass verify permission*/,
-        switchMap((_) => {
-          /*Call grpc on server*/
-          saveRunning$.next(true);
-          return fromPromise(store.grpcUpsert(PtRole, form.data())).pipe(
-            catchError((error) => {
-              return of({ hasError: true, error });
-            }),
-          );
-        }),
-      )
-      .subscribe({
-        /* do something after form submit*/
-        next: (res) => {
-          if (res.hasError) {
-            //error occured
-            form.errors.errors = form.recordErrors(res.error);
-          } else {
-            // success
-            setTimeout(() => {
-              dispatch('callback', res.toObject().id);
-            }, 2000);
+  const doUpsert = () => {
+    if (!validate()) {
+      return;
+    }
 
-            if ($isUpdateMode$) {
-              SkyLogStore.save($selectedData$.name, { action: 'EDIT', payload: dataChanged });
-              // update
-              scRef.snackbarRef().showUpdateSuccess();
-              if (!window.isSmartPhone) {
-                view.needSelectId$.next($selectedData$.id);
-              }
-            } else {
-              // save
-              scRef.snackbarRef().showSaveSuccess();
-              doAddNew();
-            }
+    saveRunning$.next(true);
+    RoleService.upsert(PtRole, form.data())
+      .then((res) => {
+        // success
+        setTimeout(() => {
+          dispatch('callback', res.toObject().id);
+        }, 2000);
+
+        if ($isUpdateMode$) {
+          SkyLogStore.save($selectedData$.name, { action: 'EDIT', payload: dataChanged });
+          // update
+          scRef.snackbarRef().showUpdateSuccess();
+          if (!window.isSmartPhone) {
+            view.needSelectId$.next($selectedData$.id);
           }
-
-          saveRunning$.next(false);
-        },
-        error: (error) => {
-          log.errorSection('Role form', error);
-          saveRunning$.next(false);
-        },
+        } else {
+          // save
+          scRef.snackbarRef().showSaveSuccess();
+          doAddNew();
+        }
+        saveRunning$.next(false);
+      })
+      .catch((err) => {
+        log.errorSection('Role form', err);
+        if (err.message && SJSON.isJson(err.message)) {
+          form.errors.errors = form.recordErrors(err);
+        } else {
+          scRef.snackbarRef().showUnknownError(err.message);
+        }
+        saveRunning$.next(false);
       });
   };
 
@@ -322,13 +310,12 @@
         if (!it) return EMPTY;
         return NotifyListener.payload$.pipe(
           filter((p) => {
-            console.log(p);
             return (
               p &&
               form.id &&
               p.table === view.tableName &&
               p.data.updatedBy != LoginInfo.getUserId() &&
-              p.data.id == it.id
+              p.data.id === it.id
             );
           }),
         );
@@ -349,6 +336,16 @@
       delete form.orgId;
     }
   };
+
+  const registerHotKeys = () => {
+    document.onkeydown = (e) => {
+      if (e.key.toLowerCase() === 'n' && (navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey)) {
+        e.preventDefault();
+        onUpsert({ currentTarget: { id: ButtonId.addNew } });
+      }
+    };
+  };
+
   // ============================== // HELPER ==========================
   // ============================== HOOK ==========================
   /**
@@ -359,22 +356,7 @@
   onMount(() => {
     // reset form
     doAddNew();
-    // Capture hot key (Ctrl - S) for save or update
-    const controlS$ = fromEvent(document, 'keydown').pipe(
-      filter((e) => {
-        if (e.keyCode == 83 && (navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey)) {
-          e.preventDefault();
-          if (!$isReadOnlyMode$) {
-            return true;
-          } else {
-            return false;
-          }
-        } else {
-          return false;
-        }
-      }),
-    );
-    doSaveOrUpdate(controlS$);
+    registerHotKeys();
   });
 
   /**
@@ -383,22 +365,8 @@
    * @return {void}.
    */
   onDestroy(() => {});
-
-  /**
-   * Use save or update action directive. Register click event for Save / Update button
-   * @param {none}
-   * @return {void}.
-   */
-  const useSaveOrUpdateAction = {
-    register(component, param) {
-      doSaveOrUpdate(fromEvent(component, 'click'));
-    },
-  };
   // ============================== //HOOK ==========================
 
-  const onClickTest = () => {
-    log.info('aaaa');
-  };
 </script>
 
 <!--Invisible Element-->
@@ -426,12 +394,7 @@
     {/if}
 
     {#if isRenderedSave}
-      <Button
-        action={useSaveOrUpdateAction}
-        bind:this={btnSaveRef}
-        btnType={ButtonType.save}
-        disabled={isDisabledSave}
-        running={$saveRunning$} />
+      <Button on:click={onUpsert} btnType={ButtonType.save} disabled={isDisabledSave} running={$saveRunning$} />
     {/if}
 
     {#if isRenderedEdit}
@@ -439,20 +402,11 @@
     {/if}
 
     {#if isRenderedUpdate}
-      <Button
-        action={useSaveOrUpdateAction}
-        bind:this={btnUpdateRef}
-        btnType={ButtonType.update}
-        disabled={isDisabledUpdate}
-        running={$saveRunning$} />
+      <Button on:click={onUpsert} btnType={ButtonType.update} disabled={isDisabledUpdate} running={$saveRunning$} />
     {/if}
 
     {#if isRenderedCopy}
-      <Button
-        btnType={ButtonType.copy}
-        on:click={onCopy}
-        disabled={isDisabledCopy}
-        running={$copying$} />
+      <Button btnType={ButtonType.copy} on:click={onCopy} disabled={isDisabledCopy} running={$copying$} />
     {/if}
   </div>
   <div style="width: 50%; white-space: nowrap; text-align: right">
@@ -466,10 +420,7 @@
     {/if}
 
     {#if isRenderedTrashRestore}
-      <Button
-        btnType={ButtonType.trashRestore}
-        on:click={onTrashRestore}
-        disabled={isDisabledTrashRestore} />
+      <Button btnType={ButtonType.trashRestore} on:click={onTrashRestore} disabled={isDisabledTrashRestore} />
     {/if}
 
     {#if isRenderedTrashViewLog}
@@ -488,7 +439,7 @@
         <div class="row" style="grid-column-gap:0">
           <div class="col-24">
             <FloatTextInput
-              placeholder={T('SYS.LABEL.CODE')}
+              placeholder={'SYS.LABEL.CODE'.t()}
               name="code"
               disabled={$isReadOnlyMode$}
               bind:value={form.code}
@@ -502,7 +453,7 @@
         <div class="row " style="grid-column-gap:0">
           <div class="col-24">
             <FloatTextInput
-              placeholder={T('SYS.LABEL.NAME')}
+              placeholder={'SYS.LABEL.NAME'.t()}
               name="name"
               disabled={$isReadOnlyMode$}
               bind:value={form.name} />
@@ -515,7 +466,7 @@
         <div class="row " style="grid-column-gap:0">
           <div class="col-24">
             <FloatNumberInput
-              placeholder={T('SYS.LABEL.SORT')}
+              placeholder={'SYS.LABEL.SORT'.t()}
               name="sort"
               disabled={$isReadOnlyMode$}
               bind:value={form.sort} />
@@ -528,7 +479,7 @@
         <div class="row " style="grid-column-gap:0">
           <div class="col-24">
             <CheckBox
-              text={T('SYS.LABEL.DISABLED')}
+              text={'SYS.LABEL.DISABLED'.t()}
               name="disabled"
               disabled={$isReadOnlyMode$}
               bind:checked={form.disabled} />
@@ -545,7 +496,7 @@
           data={$dataList$}
           disabled={$isReadOnlyMode$}
           radioType="all">
-          <div slot="label" class="label">{T('SYS.LABEL.ORG')}:</div>
+          <div slot="label" class="label">{'SYS.LABEL.ORG'.t()}:</div>
         </TreeView>
         <Error {form} field="orgId" />
       </div>

@@ -28,7 +28,7 @@
       .pipe(
         filter((_) => selectedId !== undefined),
         tap((_) => view.loading$.next(true)),
-        switchMap((_) => fromPromise(view.getOneById(selectedId))),
+        switchMap((_) => fromPromise(view.getOne(selectedId))),
       )
       .subscribe((res) => {
         if (window.isSmartPhone) {

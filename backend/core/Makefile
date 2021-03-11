@@ -1,5 +1,3 @@
-SHELL:=bash
-
 JS_OUT_DIR=../../web/src/pt
 WJS_OUT_DIR=..\..\web\src\pt
 DART_OUT_DIR=../../mobile/lib/pt
@@ -18,6 +16,7 @@ KEYS_DIR=keys
 HOME_PATH=${USERPROFILE}
 PROGRAM_FILES=C:\Program Files
 
+SHELL=bash
 install:
 	go clean -modcache
 	rm go.mod
@@ -42,7 +41,7 @@ install:
 	source ~/.bashrc
 	go get github.com/ktr0731/evans
 
-
+SHELL=cmd
 winstall:
 	if exist  "${HOME_PATH}\node" rd /q /s  "${HOME_PATH}\node"
 	mkdir "${HOME_PATH}\node"
@@ -83,6 +82,7 @@ winstall:
 	curl -L -o ${HOME_PATH}\go\bin\protoc-gen-grpc-web.exe https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-windows-x86_64.exe 
 	go get github.com/ktr0731/evans
 
+SHELL=bash
 linstall-flutter:
 	rm -Rf ~/flutter
 	mkdir -p ~/flutter
@@ -96,7 +96,8 @@ linstall-flutter:
 	sudo apt-get update
 	sudo apt-get install openjdk-8-jdk
 	flutter doctor --android-licenses
-	
+
+SHELL=bash
 install-flutter:
 	rm -Rf ~/flutter
 	mkdir -p ~/flutter
@@ -105,22 +106,25 @@ install-flutter:
 	rm -Rf ~/flutter/flutter.zip
 	sudo chmod 777 ~/.bashrc
 	sudo chmod 777 /etc/paths
-	grep -F -- "export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin:"$$"PATH >> ~/.bashrc
+	grep -F -- "export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin:$$HOME/flutter/bin/cache/dart-sdk/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin:$$HOME/flutter/bin/cache/dart-sdk/bin:"$$"PATH >> ~/.bashrc
 	grep -F -- "$$HOME/flutter/bin" /etc/paths || echo $$HOME/flutter/bin >> /etc/paths
 	grep -F -- "$$HOME/flutter/.pub-cache/bin" /etc/paths || echo $$HOME/flutter/.pub-cache/bin >> /etc/paths
+	grep -F -- "$$HOME/flutter/bin/cache/dart-sdk/bin" /etc/paths || echo $$HOME/flutter/bin/cache/dart-sdk/bin >> /etc/paths
 	source ~/.bashrc
 	flutter pub global activate protoc_plugin
 	flutter doctor --android-licenses
 
+SHELL=cmd
 winstall-flutter:
 	if exist  ${HOME_PATH}\flutter rd /q /s  ${HOME_PATH}\flutter
 	mkdir ${HOME_PATH}\flutter
 	curl -L -o ${HOME_PATH}\flutter\flutter.zip https://storage.googleapis.com/flutter_infra/releases/stable/windows/flutter_windows_2.0.1-stable.zip
-	cd /d ${HOME_PATH} &&  tar -xf ${HOME_PATH}\flutter\flutter.zip
+	cd /d ${HOME_PATH} &&  tar -p -xf ${HOME_PATH}\flutter\flutter.zip
 	del /f  ${HOME_PATH}\flutter\flutter.zip
-	flutter\bin\flutter pub global activate protoc_plugin
-	flutter\bin\flutter doctor --android-licenses
+	flutter pub global activate protoc_plugin
+	flutter doctor --android-licenses
 
+SHELL=bash
 gen-go:
 	rm -Rf  ${OUT_DIR}
 	rm -Rf ${ROOT_DOC_DIR}
@@ -134,6 +138,7 @@ gen-go:
 		--grpc-gateway_out=:${OUT_DIR} --openapiv2_out=:${ROOT_DOC_DIR}/${SERVICES_DOC_DIR} \
 		--go-grpc_opt=require_unimplemented_servers=false ${SOURCE_PROTO_DIR}/*/*service.proto
 
+SHELL=cmd
 wgen-go:
 	if exist  ${OUT_DIR} rd /q /s  ${OUT_DIR}
 	if exist  ${ROOT_DOC_DIR} rd /q /s  ${ROOT_DOC_DIR}
@@ -147,7 +152,8 @@ wgen-go:
 	protoc -I. --proto_path=${SOURCE_PROTO_DIR} --go_out=${OUT_DIR} --go-grpc_out=${OUT_DIR} \
 		--grpc-gateway_out=:${OUT_DIR} --openapiv2_out=:${ROOT_DOC_DIR}\${SERVICES_DOC_DIR} \
 		--go-grpc_opt=require_unimplemented_servers=false  $(wildcard $(SOURCE_PROTO_DIR)/**/*_service.proto)
-	
+
+SHELL=bash
 gen-web:
 	rm -Rf  ${JS_OUT_DIR}
 	mkdir -p ${JS_OUT_DIR}
@@ -160,6 +166,8 @@ gen-web:
 		--proto_path=${SOURCE_PROTO_DIR} \
 		--js_out=import_style=commonjs,binary:${JS_OUT_DIR} \
 		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:${JS_OUT_DIR}
+
+SHELL=cmd
 wgen-web:
 	if exist ${WJS_OUT_DIR} rd /q /s ${WJS_OUT_DIR}
 	mkdir ${WJS_OUT_DIR}
@@ -172,6 +180,8 @@ wgen-web:
 		--proto_path=${SOURCE_PROTO_DIR} \
 		--js_out=import_style=commonjs,binary:${JS_OUT_DIR} \
 		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:${JS_OUT_DIR}
+
+SHELL=bash
 gen-dart:
 	rm -Rf  ${DART_OUT_DIR}
 	rm -Rf  ${DART_OUT_DIR2}
@@ -193,6 +203,7 @@ gen-dart:
 		--proto_path=${SOURCE_PROTO_DIR} \
 		--dart_out=grpc:${DART_OUT_DIR2} 
 
+SHELL=cmd
 wgen-dart:
 	pub global activate protoc_plugin
 	if exist ${WDART_OUT_DIR} rd /q /s ${WDART_OUT_DIR}
@@ -214,55 +225,68 @@ wgen-dart:
 		-I. \
 		--proto_path=${SOURCE_PROTO_DIR} \
 		--dart_out=grpc:${WDART_OUT_DIR2}	
+SHELL=bash
 gen-all: gen-go gen-web gen-dart
 
+SHELL=cmd
 wgen-all: wgen-go wgen-web wgen-dart
 
+SHELL=bash
 both-server:
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
 	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
 	go mod tidy
 	reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode both -endpoint 0.0.0.0:9090"
 
+SHELL=cmd
 wboth-server: 
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
 	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
 	go mod tidy
 	nodemon --exec go run cmd\server\main.go -port 9090 -mode both -endpoint 0.0.0.0:9090
 
+SHELL=cmd
 wgrpc-server:
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
 	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
 	go mod tidy
 	nodemon --exec go run cmd\server\main.go -port 9090 -mode grpc
 
+SHELL=bash
 grpc-server:
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
 	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
 	go mod tidy
 	reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode grpc"
 
+SHELL=bash
 rest-server:
 	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
 	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
 	go mod tidy
 	reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9091 -mode rest -endpoint 0.0.0.0:9090"
 
+SHELL=bash
 test-auth:
 	go test -v -cover -race ./features/auth
 
+SHELL=bash
 test-locale-resource:
 	go test -v -cover -race ./features/locale_resource
 
+SHELL=bash
 test-role:
 	go test -v -cover -race ./features/role
 
+SHELL=bash
 test-all:
 	go test -v -cover -race ./...
 
+SHELL=bash
 mock-all:
 	mockgen -package mockdb -destination mock/store.go suntech.com.vn/skygroup/store AuthStore
 
+SHELL=bash
 build:
 	go mod tidy
 	rm -Rf  ${BUILD_DIR}
@@ -277,6 +301,7 @@ build:
 	go env  GOOS=darwin GOARCH=amd64
 	go build -o ${BUILD_DIR}/mac_runner cmd/server/main.go 
 
+SHELL=cmd
 wbuild: wgen-go
 	go mod tidy
 	if exist ${BUILD_DIR} rd /q /s ${BUILD_DIR}
@@ -291,6 +316,7 @@ wbuild: wgen-go
 	go env GOOS=windows GOARCH=amd64
 	go build -o ${BUILD_DIR}\win_runner.exe cmd\server\main.go 
 
+SHELL=bash
 wbuild-linux: wgen-go
 	go mod tidy
 	if exist ${BUILD_DIR} rd /q /s ${BUILD_DIR}
@@ -301,6 +327,7 @@ wbuild-linux: wgen-go
 	go env  GOOS=linux GOARCH=amd64
 	go build -o ${BUILD_DIR}\linux_runner cmd\server\main.go 
 
+SHELL=bash
 docker: 
 	docker rm -f skycore
 	#docker network rm skyplus-network
@@ -309,25 +336,32 @@ docker:
 	docker build -t skycore -f Dockerfile.multistage .
 	docker run -d --rm  -p 9090:7070 -p 9091:7071 --network skyplus-network --name skycore  skycore
 
+SHELL=bash
 start-prod:
 	cd ${BUILD_DIR} && \
 	./main -port 9090 -mode both -endpoint 0.0.0.0:9090 
 
+SHELL=cmd
 wstart-prod:
 	cd ${BUILD_DIR} && \
 	main -port 9090 -mode both -endpoint 0.0.0.0:9090 
 
+SHELL=cmd
 wclient:
 	go run cmd/client/main.go -server 0.0.0.0:9090
 
+SHELL=bash
 client:
 	reflex -r '\.go' -s -- sh -c "go run cmd/client/main.go -server 127.0.0.1:9090"
 
-lonce-dev: install linstall-flutter gen-all grpc-server
-once-dev: install install-flutter gen-all grpc-server
-	
-wonce-dev: winstall wgen-all wgrpc-server
-	echo Server side is Done!
+SHELL=bash
+lonce-dev: install linstall-flutter gen-all both-server
+
+SHELL=bash
+once-dev: install install-flutter gen-all both-server
+
+SHELL=cmd
+wonce-dev: winstall wgen-all wboth-server
 
 .PHONY: client gen-dart wbuild  build start-prod winstall wboth-server
  

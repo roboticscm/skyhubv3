@@ -1,7 +1,7 @@
 @echo off
-@REM if exist C:\ProgramData\chocolatey rd /q /s C:\ProgramData\chocolatey
-@REM powershell -command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
-@REM powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+if exist C:\ProgramData\chocolatey rd /q /s C:\ProgramData\chocolatey
+powershell -command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
+powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
 
 choco install make
 @REM echo Set path for flutter

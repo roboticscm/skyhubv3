@@ -14,7 +14,7 @@ import { Authentication } from 'src/lib/authentication';
 import { RoleControlStore } from 'src/store/role-control';
 import { LoginInfo } from 'src/store/login-info';
 import { MenuStore } from 'src/features/system/menu/store';
-
+import { PartnerService } from 'src/features/system/partner/service';
 export class BaseView {
   tableName = undefined;
   columns = ['name'];
@@ -40,6 +40,7 @@ export class BaseView {
   selectedData$ = new BehaviorSubject();
 
   customFindList = undefined;
+  customGetOne = undefined;
   customWorkListColumns = undefined;
 
   ModalContentView$ = new BehaviorSubject();
@@ -80,7 +81,11 @@ export class BaseView {
     );
   };
 
-  findSimpleList = (textSearch = '') => {
+  findList = (textSearch = '') => {
+    if (this.customFindList) {
+      return this.customFindList(this, textSearch);
+    }
+
     return new Promise((resolve, reject) => {
       TableUtilStore.findSimpleList({
         tableName: this.tableName,
@@ -94,7 +99,7 @@ export class BaseView {
       }).then((data) => {
         if (data.payload.length === 0 && this.page > 1) {
           this.page--;
-          this.findSimpleList(textSearch);
+          this.findList(textSearch);
         } else {
           this.dataList$.next(data.payload);
           this.fullCount$.next(data.fullCount);
@@ -116,7 +121,10 @@ export class BaseView {
     });
   };
 
-  getOneById = (id) => {
+  getOne = (id) => {
+    if (this.customGetOne) {
+      return this.customGetOne(id);
+    }
     return TableUtilStore.getOneById(this.tableName, id);
   };
 
@@ -613,13 +621,15 @@ export class BaseView {
 
   doNotifyConflictData = async (form, data, selectedId, isReadOnlyMode, scRef) => {
     const changedObj = SObject.convertFieldsToCamelCase(data);
+    const updatedAt =  changedObj.updatedAt;
+    const updatedBy = changedObj.updatedBy;
     delete changedObj.id;
     delete changedObj.password;
     delete changedObj.updatedBy;
     delete changedObj.updatedAt;
     delete changedObj.deletedBy;
     delete changedObj.deletedAt;
-
+    delete changedObj.document;
     const obj = SObject.clone(form);
     const formObj = {};
 
@@ -630,10 +640,10 @@ export class BaseView {
     const changed = this.checkObjectChange(formObj, changedObj);
     if (changed) {
       if (!isReadOnlyMode) {
-        const editedUser = await this._getEditedUserDetail(changedObj.updatedBy);
+        const editedUser = await this._getEditedUserDetail(updatedBy);
         scRef
           .confirmConflictDataModalRef()
-          .show(this._getChangedDataMessage(changed), editedUser, changedObj.updatedAt)
+          .show(this._getChangedDataMessage(changed), editedUser, updatedAt)
           .then((buttonPressed) => {
             if (buttonPressed === ButtonPressed.ok) {
               this.needSelectId$.next(selectedId);
@@ -651,9 +661,13 @@ export class BaseView {
   };
 
   _getEditedUserDetail = async (userId) => {
-    // const user = await HumanOrOrgStore.sysGetUserInfoById(userId);
-    // return `${user[0].lastName} ${user[0].firstName} - <b>${user[0].username} </b>`;
-    return 'abc';
+    try {
+      const user = await PartnerService.getOne(userId);
+      return `${user.lastName} ${user.firstName} - <b>${user.username} </b>`;
+    } catch (err) {
+      log.error(err);
+      return 'Unknown user';
+    } 
   };
 
   _getChangedDataMessage = (changedData) => {

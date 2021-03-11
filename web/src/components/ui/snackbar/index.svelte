@@ -27,7 +27,12 @@
   };
 
   export const showUnknownError = (extraMsg = '') => {
-    show(T('SYS.MSG.UNKNOWN_ERROR') + (StringUtil.isEmpty(extraMsg) ? '' : '. ' + extraMsg));
+    if (log.isDebugMode) {
+      show(T('SYS.MSG.UNKNOWN_ERROR') + (StringUtil.isEmpty(extraMsg) ? '' : '. ' + extraMsg));
+    } else {
+      show(T('SYS.MSG.UNKNOWN_ERROR'));
+    }
+    
   };
 
   export const showTrashEmpty = (extraMsg = '') => {

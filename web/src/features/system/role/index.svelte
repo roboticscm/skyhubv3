@@ -9,6 +9,8 @@
   import ProgressBar from 'src/components/ui/progress-bar';
   import { Store } from './store';
   import {App} from 'src/lib/constants';
+  import { RoleService} from './service';
+
   // Props
   export let showTitle = true;
   export let menuPath;
@@ -27,12 +29,9 @@
   export const getMenuInfo$ = () => view.menuInfo$;
   export const getViewTitle = () => view.getViewTitle();
 
-  // view.customFindList = () => {
-  //   view.dataList$.next([{
-  //     id: 1,
-  //     name: 'abc'
-  //   }]);
-  // }
+  view.customFindList = RoleService.findList
+  view.customGetOne = RoleService.getOne;
+
   // view.customWorkListColumns = () => {
   //   return [{name: 'id', type: 'number', title: 'id1', width: '40%'}, {name: 'name', type: 'text', title: 'name1', width: '60%'}];
   // }

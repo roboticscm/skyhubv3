@@ -268,8 +268,8 @@
 
   const loadSettings = () => {
     const headerEle = window['$'](`#${id} thead tr th`);
-
-    SettingsStore.getUserSettings({ element: id, menuPath }).then((res) => {
+    
+    SettingsStore.getUserSettings({ elementId: id, menuPath }).then((res) => {
       if (res && res.length > 0) {
         headerEle.each(function(col) {
           const filter = res.filter((it) => it.key === `col${col}`);

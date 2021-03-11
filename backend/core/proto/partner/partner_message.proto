@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package partner;
+
+option go_package = ".;pt";
+
+message Partner {
+    int64 id = 10 [ jstype = JS_STRING];
+    string first_name = 2;
+    string last_name = 3;
+    int64 account_id = 4 [ jstype = JS_STRING];
+    string username = 5;
+}

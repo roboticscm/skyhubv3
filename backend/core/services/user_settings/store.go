@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+
 	"github.com/elliotchance/orderedmap"
 	"github.com/lib/pq"
 	"suntech.com.vn/skygroup/models"
@@ -96,7 +97,6 @@ func (store *Store) Find(userID int64, branchID int64, menuPath, elementID, key,
 	if err := q.Query(sqlStr, values, &userSettings); err != nil {
 		return nil, err
 	}
-
 	return userSettings, nil
 }
 
@@ -126,10 +126,10 @@ func (store *Store) Upsert(userID int64, req *pt.UpsertUserSettingsRequest, keys
 
 		cond := orderedmap.NewOrderedMap()
 		cond.Set("account_id", userID)
-		cond.Set("branch_id",  filterBranchID)
-		cond.Set("menu_path",  filterMenuPath)
+		cond.Set("branch_id", filterBranchID)
+		cond.Set("menu_path", filterMenuPath)
 		cond.Set("element_id", filterElementID)
-		cond.Set("key",       key)
+		cond.Set("key", key)
 		_, err := store.q.Upsert(&userSetting, cond)
 
 		if err != nil {

@@ -70,12 +70,7 @@
     return new Promise((resolve, reject) => {
       tableRef && tableRef.unSelectAll();
       view.checkDeletedRecord(false);
-
-      if (view.customFindList) {
-        view.customFindList(textSearch).then((res) => resolve(res));
-      } else {
-        view.findSimpleList(textSearch).then((res) => resolve(res));
-      }
+      view.findList(textSearch).then((res) => resolve(res));
     });
   };
 
@@ -92,7 +87,7 @@
     view.pageSize = event.detail;
   };
 
-  const onInput = (e, filterFunc) => {
+  const onSearch = (e, filterFunc) => {
     textSearch = e.target.value.trim();
     reload().then(() => {
       filterFunc(textSearch);
@@ -140,7 +135,7 @@
     id={`${view.getViewName()}_TableId`}>
     <span style="display: flex; padding-bottom: 6px;" slot="header" let:filter>
       <div style="width: 100%;">
-        <QuickSearch on:input={(e) => onInput(e, filter)} />
+        <QuickSearch on:input={(e) => onSearch(e, filter)} />
       </div>
     </span>
   </SelectableTable>

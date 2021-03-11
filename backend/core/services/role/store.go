@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
+
 	"github.com/elliotchance/orderedmap"
 	"suntech.com.vn/skygroup/models"
 	"suntech.com.vn/skygroup/pt"
@@ -38,6 +39,7 @@ type RoleStore interface {
 	FindRoleControlDetail(roleDetailID, menuID int64) ([]*pt.FindRoleControlDetailItem, error)
 	GetRoleDetail(roleID, depID, menuID int64) (*pt.GetRoleDetailResponse, error)
 	UpsertRoleDetail(ctx context.Context, req *pt.UpsertRoleDetailRequest) error
+	Get(ID int64) (*pt.Role, error)
 }
 
 //Upsert function: save or update data into table and return saved/updated record
@@ -132,6 +134,17 @@ func (store *Store) Find(filterText string, page, pageSize int32) ([]*pt.Role, i
 	return out.Payload, out.FullCount, nil
 }
 
+//Get function
+func (store *Store) Get(ID int64) (*pt.Role, error) {
+	item := pt.Role{Id: ID}
+
+	if err := store.q.ReadWithID(&item); err != nil {
+		return nil, err
+	}
+
+	return &item, nil
+}
+
 type jsonWithPagination struct {
 	FullCount int32      `json:"full_count"`
 	Payload   []*pt.Role `json:"payload"`
@@ -178,17 +191,17 @@ func (store *Store) UpsertRoleDetail(ctx context.Context, req *pt.UpsertRoleDeta
 		if err := store.q.Read(&menuOrg, cond); err != nil {
 			return err
 		}
-		fmt.Printf("rd.MenuId,  rd.DepId, menuOrg.Id: %v %v %v\n", rd.MenuId,  rd.DepId, menuOrg.Id)
+		fmt.Printf("rd.MenuId,  rd.DepId, menuOrg.Id: %v %v %v\n", rd.MenuId, rd.DepId, menuOrg.Id)
 		roleDetail := models.RoleDetail{Id: rd.Id}
 		if rd.Id > 0 {
 			if err := store.q.ReadWithID(&roleDetail); err != nil {
 				return err
 			}
-		} 
+		}
 
 		roleDetail.MenuOrgId = &menuOrg.Id
 		roleDetail.RoleId = &rd.RoleId
-		roleDetail.IsPrivate =  &rd.IsPrivate
+		roleDetail.IsPrivate = &rd.IsPrivate
 		roleDetail.DataLevel = &rd.DataLevel
 		roleDetail.Approve = &rd.Approve
 
@@ -201,23 +214,23 @@ func (store *Store) UpsertRoleDetail(ctx context.Context, req *pt.UpsertRoleDeta
 		if roleDetailID == 0 {
 			roleDetailID = out.(*models.RoleDetail).Id
 		}
-		
+
 		for _, rc := range rd.RoleControlItems {
 			roleControl := models.RoleControl{Id: rc.Id}
 			if rc.Id > 0 {
 				if err := store.q.ReadWithID(&roleControl); err != nil {
 					return err
 				}
-			} 
+			}
 
 			var menuControl models.MenuControl
 			cond := orderedmap.NewOrderedMap()
 			cond.Set("menu_id", rd.MenuId)
 			cond.Set("control_id", rc.ControlId)
 			store.q.Read(&menuControl, cond)
-			fmt.Printf("rd.MenuId,  rc.ControlId, menuControl.Id: %v %v %v\n", rd.MenuId,  rc.ControlId, menuControl.Id)
+			fmt.Printf("rd.MenuId,  rc.ControlId, menuControl.Id: %v %v %v\n", rd.MenuId, rc.ControlId, menuControl.Id)
 			roleControl.MenuControlId = &menuControl.Id
-			roleControl.RoleDetailId =  &roleDetailID
+			roleControl.RoleDetailId = &roleDetailID
 			roleControl.RenderControl = &rc.RenderControl
 			roleControl.DisableControl = &rc.DisableControl
 			roleControl.Confirm = &rc.Confirm

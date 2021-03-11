@@ -21,6 +21,7 @@ import (
 	"suntech.com.vn/skygroup/services/notify"
 	"suntech.com.vn/skygroup/services/org"
 	"suntech.com.vn/skygroup/services/role"
+	"suntech.com.vn/skygroup/services/partner"
 	"suntech.com.vn/skygroup/services/search_util"
 	sky_log "suntech.com.vn/skygroup/services/skylog"
 	"suntech.com.vn/skygroup/services/table_util"
@@ -103,6 +104,7 @@ func init() {
 	mapFunc["search_util.Service"] = map[string]interface{}{"grpc": pt.RegisterSearchUtilServiceServer, "rest": pt.RegisterSearchUtilServiceHandlerFromEndpoint, "instance": search_util.DefaultService()}
 	mapFunc["skylog.Service"] = map[string]interface{}{"grpc": pt.RegisterSkylogServiceServer, "rest": pt.RegisterSkylogServiceHandlerFromEndpoint, "instance": sky_log.DefaultService()}
 	mapFunc["table_util.Service"] = map[string]interface{}{"grpc": pt.RegisterTableUtilServiceServer, "rest": pt.RegisterTableUtilServiceHandlerFromEndpoint, "instance": table_util.DefaultService()}
+	mapFunc["partner.Service"] = map[string]interface{}{"grpc": pt.RegisterPartnerServiceServer, "rest": pt.RegisterPartnerServiceHandlerFromEndpoint, "instance": partner.DefaultService()}
 	dbLisnterService := notify.NewService()
 	mapFunc["notify.Service"] = map[string]interface{}{"grpc": pt.RegisterNotifyServiceServer, "rest": nil, "instance": dbLisnterService}
 	//...

@@ -37,6 +37,10 @@ message FindRoleResponse {
   repeated Role data = 2;
 }
 
+message GetRoleRequest {
+  int64 id = 1 [ jstype = JS_STRING];
+}
+
 message FindRoleControlDetailRequest {
   int64 role_detail_id = 1 [ jstype = JS_STRING ];
   int64 menu_id = 2 [ jstype = JS_STRING ];
@@ -96,6 +100,18 @@ message UpsertRoleDetailRequest {
 }
 
 service RoleService {
+  rpc FindHandler(FindRoleRequest) returns (FindRoleResponse) {
+    option (google.api.http) = {
+      get : "/role"
+    };
+  }
+
+  rpc GetHandler(GetRoleRequest) returns (Role) {
+    option (google.api.http) = {
+      get : "/role/{id}"
+    };
+  }
+
   rpc UpsertHandler(Role) returns (Role) {
     option (google.api.http) = {
       post : "/role"
@@ -103,11 +119,6 @@ service RoleService {
     };
   };
 
-  rpc FindHandler(FindRoleRequest) returns (FindRoleResponse) {
-    option (google.api.http) = {
-      get : "/role"
-    };
-  }
 
   rpc FindRoleControlHandler(FindRoleControlRequest)
       returns (FindRoleControlResponse) {

@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package partner;
+
+option go_package = ".;pt";
+
+import "proto/partner/partner_message.proto";
+import "google/api/annotations.proto";
+
+message GetPartnerRequest {
+    int64 id = 1 [ jstype = JS_STRING];
+}
+
+service PartnerService {
+    rpc GetHandler(GetPartnerRequest) returns (Partner) {
+        option (google.api.http) = {
+            get : "/partner/{id}"
+        };
+    }
+}
+

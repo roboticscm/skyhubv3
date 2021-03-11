@@ -3,7 +3,6 @@ package role
 import (
 	"context"
 	"strings"
-
 	"google.golang.org/protobuf/types/known/emptypb"
 	"suntech.com.vn/skygroup/models"
 	"suntech.com.vn/skygroup/pt"
@@ -98,6 +97,20 @@ func (service *Service) FindHandler(ctx context.Context, req *pt.FindRoleRequest
 	}
 
 	return &pt.FindRoleResponse{Data: payload, FullCount: fullCount}, nil
+}
+
+//GetHandler function
+func (service *Service) GetHandler(ctx context.Context, req *pt.GetRoleRequest) (*pt.Role, error) {
+	if req.Id == 0 {
+		return nil, skyutl.Error400("SYS.MSG.MISSING_ID", "", nil)
+	}
+
+	item, err := service.Store.Get(req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return item, nil
 }
 
 //FindRoleControlDetailHandler function

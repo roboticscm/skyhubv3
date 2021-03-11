@@ -10,7 +10,8 @@ import { SearchUtilServicePromiseClient } from "src/pt/proto/search_util/search_
 import { SkylogServicePromiseClient } from "src/pt/proto/skylog/skylog_service_grpc_web_pb";
 import { TableUtilServicePromiseClient } from "src/pt/proto/table_util/table_util_service_grpc_web_pb";
 import { NotifyServicePromiseClient } from "src/pt/proto/notify/notify_service_grpc_web_pb";
-import _, { lowerFirst } from 'lodash';
+import { PartnerServicePromiseClient } from "src/pt/proto/partner/partner_service_grpc_web_pb";
+import _ from 'lodash';
 import { Authentication } from './authentication';
 
 export const grpcLocaleResourceClient = new LocaleResourceServicePromiseClient(BaseUrl.GRPC_CORE);
@@ -24,6 +25,7 @@ export const grpcSearchUtilClient = new SearchUtilServicePromiseClient(BaseUrl.G
 export const grpcSkylogClient = new SkylogServicePromiseClient(BaseUrl.GRPC_CORE);
 export const grpcTableUtilClient = new TableUtilServicePromiseClient(BaseUrl.GRPC_CORE);
 export const grpcNotifyClient = new NotifyServicePromiseClient(BaseUrl.GRPC_CORE);
+export const grpcPartnerClient = new PartnerServicePromiseClient(BaseUrl.GRPC_CORE);
 
 export const protoFromObject = (protoObj, plainObj, path) => {
     for (const fieldName in plainObj) {
