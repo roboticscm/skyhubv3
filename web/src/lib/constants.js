@@ -25,4 +25,13 @@ export class App {
   static DEFAULT_END_TIME_FILTER_OFFSET = 30 * 24 * 60 * 60 * 1000;
   static SAVE_USER_SETTINGS = true;
   static REFRESH_QR_CODE_TIMEOUT = 1000*60*5;
+  static POWERED_BY = 'Suntech';
+}
+
+
+export class Session {
+  static SCREEN_LOCK_MINUTE = 1;
+  static EXP_MINUTE = 30;
+  static CHECK_TIME = 60 * 1; // ms
+  static DELAY_TIME = 10; // ms
 }

@@ -10,10 +10,39 @@
   import Notification from 'src/components/layout/notification/index.svelte';
   import UserProfiles from 'src/components/layout/user-profiles/index.svelte';
   import WaterMark from 'src/components/layout/water-mark/index.svelte';
+  import { ModalType } from 'src/components/ui/modal/types';
+  import ConfirmPasswordModal from 'src/components/ui/modal/base';
+  import { Authentication } from 'src/lib/authentication';
+  import { LoginInfo } from 'src/store/login-info';
+
   const { isDetailPage$ } = AppStore;
   const windowWidth = window.innerWidth;
   const SMALL_SCREEN_WIDTH = 768;
+  let confirmPasswordModalRef;
+
+  const { screenLock$ } = AppStore;
+  const { isLoggedIn$ } = LoginInfo;
+
+  $: if ($screenLock$) {
+    console.log('???');
+    confirmPasswordModalRef &&
+      confirmPasswordModalRef.show().then(() => {
+        Authentication.unlockScreen();
+      });
+  }
 </script>
+
+{#if $isLoggedIn$}
+  <ConfirmPasswordModal
+    transparent={false}
+    okButtonTitle={'COMMON.LABEL.OK'.t}
+    id="confirmPasswordLockScreenId"
+    showCloseButton={false}
+    showCancelButton={false}
+    modalType={ModalType.ConfirmPassword}
+    menuPath="screenLock"
+    bind:this={confirmPasswordModalRef} />
+{/if}
 
 {#if windowWidth >= SMALL_SCREEN_WIDTH}
   <MainLayout>

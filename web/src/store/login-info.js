@@ -10,6 +10,7 @@ export class LoginInfo {
   static departmentId$ = new BehaviorSubject();
   static menuPath$ = new BehaviorSubject();
   static ip;
+  static isLoggedIn$ = new BehaviorSubject(false);
 
   static getUserId = () =>
     localStorage.getItem('remember') === 'true' ? localStorage.getItem('userId') : sessionStorage.getItem('userId');

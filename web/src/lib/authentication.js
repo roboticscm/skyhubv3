@@ -1,12 +1,13 @@
 import { grpcAuthClient, callGRPC } from 'src/lib/grpc';
+import { LoginInfo } from 'src/store/login-info';
+import { App } from 'src/lib/constants';
+
 const empty = require('google-protobuf/google/protobuf/empty_pb');
 
 import {
   LoginRequest, RefreshTokenRequest, UpdateRemoteAuthenticatedRequest
 } from "src/pt/proto/auth/auth_service_pb";
 
-
-const axios = require('axios');
 export let defaultHeader = {};
 
 
@@ -15,6 +16,7 @@ export class Authentication {
     Authentication.logoutAPI().then((res) => {
       sessionStorage.clear();
       localStorage.clear();
+      LoginInfo.isLoggedIn$.next(false);
       window.location.replace('/');
     });
   };
@@ -22,6 +24,7 @@ export class Authentication {
   static forceLogout = () => {
     sessionStorage.clear();
     localStorage.clear();
+    LoginInfo.isLoggedIn$.next(false);
     window.location.replace('/');
   };
 
@@ -52,6 +55,10 @@ export class Authentication {
     Authentication.setHeader(token);
   };
 
+  static isRememberLogin = () => {
+    return localStorage.getItem('remember') === 'true';
+  };
+
   static login = (accessToken, refreshToken, userId, username) => {
     if (localStorage.getItem('remember') === 'true') {
       localStorage.setItem('accessToken', accessToken);
@@ -66,6 +73,7 @@ export class Authentication {
     }
     Authentication.setHeader(accessToken);
     window.location.replace('/');
+    Authentication.unlockScreen();
   };
 
   static isLoggedIn = () => {
@@ -73,7 +81,9 @@ export class Authentication {
     if (token) {
       Authentication.setHeader(token);
     }
-    return (token || '').length > 0;
+    const result = (token || '').length > 0;
+    LoginInfo.isLoggedIn$.next(true);
+    return result;
   };
 
 
@@ -84,7 +94,7 @@ export class Authentication {
     return grpcAuthClient.loginHandler(req);
   };
 
-  static verifyPassword  = (username, password) => {
+  static verifyPassword = (username, password) => {
     const req = new LoginRequest();
     req.setUsername(username);
     req.setPassword(password);
@@ -100,13 +110,13 @@ export class Authentication {
   };
 
   static updateAuthenticated = (id) => {
-    const req =  new UpdateRemoteAuthenticatedRequest();
+    const req = new UpdateRemoteAuthenticatedRequest();
     req.setRecordId(id);
     return callGRPC(() => {
       return grpcAuthClient.updateRemoteAuthenticatedHandler(req, defaultHeader);
     })
   };
-  
+
   static setHeader = (token) => {
     // axios.defaults.headers['Content-Type'] = 'application/json';
     // axios.defaults.headers['Authorization'] = `Bearer ${token}`;
@@ -138,4 +148,16 @@ export class Authentication {
       })
     });
   }
+
+  static isLockScreen = () => {
+    return sessionStorage.getItem('PoweredBy') === App.POWERED_BY;
+  }
+
+  static lockScreen = () => {
+    return sessionStorage.setItem('PoweredBy', App.POWERED_BY);
+  }
+
+  static unlockScreen = () => {
+    return sessionStorage.removeItem('PoweredBy');
+  };
 }
