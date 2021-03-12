@@ -1,6 +1,7 @@
 import { grpcAuthClient, callGRPC } from 'src/lib/grpc';
 import { LoginInfo } from 'src/store/login-info';
 import { App } from 'src/lib/constants';
+import { Browser } from 'src/lib/browser';
 
 const empty = require('google-protobuf/google/protobuf/empty_pb');
 
@@ -17,6 +18,7 @@ export class Authentication {
       sessionStorage.clear();
       localStorage.clear();
       LoginInfo.isLoggedIn$.next(false);
+      Authentication.unlockScreen();
       window.location.replace('/');
     });
   };
@@ -25,12 +27,21 @@ export class Authentication {
     sessionStorage.clear();
     localStorage.clear();
     LoginInfo.isLoggedIn$.next(false);
+    Authentication.unlockScreen();
     window.location.replace('/');
   };
 
   static getRefreshToken = () => {
+    const token = localStorage.getItem('remember') === 'true'
+      ?  localStorage.getItem('refreshToken')
+      : sessionStorage.getItem('refreshToken');
+
+      return Authentication.decodeToken(token);
+  };
+
+  static getRawRefreshToken = () => {
     return localStorage.getItem('remember') === 'true'
-      ? localStorage.getItem('refreshToken')
+      ?  localStorage.getItem('refreshToken')
       : sessionStorage.getItem('refreshToken');
   };
 
@@ -59,7 +70,55 @@ export class Authentication {
     return localStorage.getItem('remember') === 'true';
   };
 
+  static encodeToken = (token) => {
+    if (!token) {
+      return token;
+    }
+
+    const browserID = Browser.getBrowserID();
+    const position = token.length / 2;
+    const encodedTotken = token.insertAt(position, browserID);
+    
+    return encodedTotken;
+  }
+
+  static decodeToken = (token) => {
+    if (!token) {
+      return token;
+    }
+
+    const browserID = Browser.getBrowserID();
+    const decodedToken = token.replace(browserID, "");
+    return decodedToken;
+  }
+
+  static encodeRefreshToken = () => {
+    const refreshToken = Authentication.getRawRefreshToken();
+    if (!refreshToken) {
+      return;
+    }
+    localStorage.setItem('refreshToken', Authentication.encodeToken(refreshToken));
+    sessionStorage.setItem('refreshToken', Authentication.encodeToken(refreshToken));
+  }
+
+  static decodeRefreshToken = () => {
+    const refreshToken = Authentication.getRefreshToken();
+    if (!refreshToken) {
+      return;
+    }
+    const browserID = Browser.getBrowserID();
+
+    localStorage.setItem('refreshToken', refreshToken.replaceAll(browserID, ""));
+    sessionStorage.setItem('refreshToken', refreshToken.replaceAll(browserID, ""));
+  }
+
   static login = (accessToken, refreshToken, userId, username) => {
+    if (Authentication.isLockScreen()) {
+      Authentication.logout();
+      Authentication.forceLogout();
+      return;
+    }
+
     if (localStorage.getItem('remember') === 'true') {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
@@ -71,6 +130,7 @@ export class Authentication {
       sessionStorage.setItem('userId', userId);
       sessionStorage.setItem('username', username);
     }
+
     Authentication.setHeader(accessToken);
     window.location.replace('/');
     Authentication.unlockScreen();
@@ -82,7 +142,11 @@ export class Authentication {
       Authentication.setHeader(token);
     }
     const result = (token || '').length > 0;
-    LoginInfo.isLoggedIn$.next(true);
+    LoginInfo.isLoggedIn$.next(result);
+    if (Authentication.isLockScreen()) {
+      Authentication.logout();
+      Authentication.forceLogout();
+    }
     return result;
   };
 
@@ -150,14 +214,20 @@ export class Authentication {
   }
 
   static isLockScreen = () => {
-    return sessionStorage.getItem('PoweredBy') === App.POWERED_BY;
+    const refreshToken = Authentication.getRawRefreshToken();
+    
+    if (!refreshToken) {
+      return false;
+    }
+
+    return refreshToken.includes(Browser.getBrowserID());
   }
 
   static lockScreen = () => {
-    return sessionStorage.setItem('PoweredBy', App.POWERED_BY);
+    Authentication.encodeRefreshToken();
   }
 
   static unlockScreen = () => {
-    return sessionStorage.removeItem('PoweredBy');
+    Authentication.decodeRefreshToken();
   };
 }

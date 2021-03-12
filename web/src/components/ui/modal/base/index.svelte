@@ -19,6 +19,7 @@
   import CloseIcon from 'src/icons/cancel-submit.svelte';
   import Error from 'src/components/ui/error';
   import { Authentication } from 'src/lib/authentication';
+  import { CommonValidation } from 'src/lib/common-validation';
 
   const dispatch = createEventDispatcher();
 
@@ -195,6 +196,7 @@
 
       case ModalType.confirmPassword:
         preset(ModalId.confirmPassword, 'CONFIRM_PASSWORD', '<i class="fa fa-key"></i>', true, 'YES', 'NO');
+        beforeOK = validatePassword
         break;
 
       case ModalType.inputText:
@@ -228,6 +230,25 @@
   export const raisePasswordError = (err) => {
     form.errors.errors = form.recordErrors({
       password: err,
+    });
+  };
+
+  const validatePassword = () => {
+    return new Promise((resolve, reject) => {
+      if (StringUtil.isEmpty(form.password)) {
+        raisePasswordError(CommonValidation.REQUIRED_VALUE.t());
+        reject(false);
+      } else {
+         Authentication.verifyPassword(Authentication.getUsername(), form.password)
+        .then(() => {
+          resolve(true);
+        })
+        .catch((e) => {
+          raisePasswordError(e.message.t());
+          reject(false);
+        });
+        
+      }
     });
   };
 </script>

@@ -24,7 +24,6 @@
   const { isLoggedIn$ } = LoginInfo;
 
   $: if ($screenLock$) {
-    console.log('???');
     confirmPasswordModalRef &&
       confirmPasswordModalRef.show().then(() => {
         Authentication.unlockScreen();
@@ -34,13 +33,12 @@
 
 {#if $isLoggedIn$}
   <ConfirmPasswordModal
-    transparent={false}
-    okButtonTitle={'COMMON.LABEL.OK'.t}
     id="confirmPasswordLockScreenId"
+    modalType={ModalType.confirmPassword}
+    menuPath="screenLock"
     showCloseButton={false}
     showCancelButton={false}
-    modalType={ModalType.ConfirmPassword}
-    menuPath="screenLock"
+    okButtonTitle={'COMMON.LABEL.OK'.t}
     bind:this={confirmPasswordModalRef} />
 {/if}
 

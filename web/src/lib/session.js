@@ -10,10 +10,9 @@ let screenLockCounter = 0;
 
 let timer;
 LoginInfo.isLoggedIn$.subscribe((isLogged) => {
-    console.log('??? ', isLogged);
   if (isLogged) {
     timer = setInterval(() => {
-      if (screenLockCounter >= Session.SCREEN_LOCK_MINUTE) {
+      if (!Authentication.isLockScreen() && screenLockCounter >= Session.SCREEN_LOCK_MINUTE) {
         AppStore.screenLock$.next(Date.now());
         Authentication.lockScreen();
         screenLockCounter = 0;
@@ -21,6 +20,8 @@ LoginInfo.isLoggedIn$.subscribe((isLogged) => {
 
       if (expCounter >= Session.EXP_MINUTE) {
         Authentication.logout();
+        Authentication.forceLogout();
+        
         if (timer) {
           clearInterval(timer);
         }

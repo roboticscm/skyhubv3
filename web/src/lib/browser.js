@@ -18,4 +18,17 @@ export class Browser {
     const browser = Bowser.getParser(window.navigator.userAgent).parsedResult;
     return browser.browser.name;
   }
+
+  static getBrowserID = () => {
+    let nav = window.navigator;
+    let screen = window.screen;
+    let guid = nav.mimeTypes.length + '';
+    guid += nav.userAgent.replace(/\D+/g, '');
+    guid += nav.plugins.length;
+    guid += screen.height || '';
+    guid += screen.width || '';
+    guid += screen.pixelDepth || '';
+  
+    return guid;
+  };
 }

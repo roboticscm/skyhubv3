@@ -30,8 +30,8 @@ export class App {
 
 
 export class Session {
-  static SCREEN_LOCK_MINUTE = 1;
-  static EXP_MINUTE = 30;
-  static CHECK_TIME = 60 * 1; // ms
+  static SCREEN_LOCK_MINUTE = 10;
+  static EXP_MINUTE = 60;
+  static CHECK_TIME = 1000*60; // ms
   static DELAY_TIME = 10; // ms
 }

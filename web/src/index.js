@@ -10,6 +10,7 @@ window['$'] = jquery;
 import 'src/lib/vendor/jquery.ztree.all';
 import ServerErrorPage from 'src/pages/error/server';
 import 'src/lib/session';
+import 'src/lib/prototype/string';
 
 init().then((res) => {
   new App({
