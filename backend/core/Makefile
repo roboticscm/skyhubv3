@@ -31,60 +31,46 @@ GRPC_WEB_PLUGIN_URL_MAC=https://github.com/grpc/grpc-web/releases/download/1.2.1
 GRPC_WEB_PLUGIN_URL_WIN=https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-windows-x86_64.exe
 GRPC_WEB_PLUGIN_URL_LINUX=https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-linux-x86_64
 
-FLUTTER_URL_MAC=https://storage.googleapis.com/flutter_infra/releases/stable/macos/flutter_macos_2.0.1-stable.zip
-FLUTTER_URL_WIN=https://storage.googleapis.com/flutter_infra/releases/stable/windows/flutter_windows_2.0.1-stable.zip
-FLUTTER_URL_LINUX=https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_2.0.1-stable.tar.xz
+FLUTTER_URL_MAC=https://storage.googleapis.com/flutter_infra/releases/stable/macos/flutter_macos_2.0.2-stable.zip
+FLUTTER_URL_WIN=https://storage.googleapis.com/flutter_infra/releases/stable/windows/flutter_windows_2.0.2-stable.zip
+FLUTTER_URL_LINUX=https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_2.0.2-stable.tar.xz
 
-NODE_URL_MAC=https://nodejs.org/dist/v14.16.0/node-v14.16.0-darwin-x64.tar.gz
-NODE_URL_WIN=https://nodejs.org/dist/v14.16.0/node-v14.16.0-win-x64.zip
-NODE_URL_LINUX=https://nodejs.org/dist/v14.16.0/node-v14.16.0-linux-x64.tar.xz
+NODE_VERSION=v14.16.0
+NODE_URL_MAC=https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-darwin-x64.tar.gz
+NODE_URL_WIN=https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-win-x64.zip
+NODE_URL_LINUX=https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz
 
 GIT_URL_WIN=https://github.com/git-for-windows/git/releases/download/v2.30.2.windows.1/PortableGit-2.30.2-64-bit.7z.exe
+UNAME=""
 
-install:
-	go clean -modcache
-	rm -Rf go.mod
-	go mod init suntech.com.vn/skygroup
-	rm -Rf ~/go
-	mkdir -p ~/go/bin
-	go get github.com/cespare/reflex
-	curl -L -o ~/go/bin/protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.15.3/protoc-3.15.3-osx-x86_64.zip
-	cd ~/go/bin && unzip protoc.zip
-	cp ~/go/bin/bin/protoc ~/go/bin
-	rm -f  ~/go/bin/protoc.zip
-	go get google.golang.org/protobuf/cmd/protoc-gen-go
-	go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
-	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
-	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
-	curl -L -o ~/go/bin/protoc-gen-grpc-web https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-darwin-x86_64 
-	chmod +x ~/go/bin/protoc-gen-grpc-web
-	sudo chmod 777 ~/.bashrc
-	sudo chmod 777 /etc/paths
-	grep -F -- "$$HOME/go/bin" /etc/paths || echo $$HOME/go/bin >> /etc/paths
-	grep -F -- "export PATH=$$HOME/go/bin" ~/.bashrc || echo export PATH=$$HOME/go/bin:"$$"PATH >> ~/.bashrc
-	source ~/.bashrc
-	go get github.com/ktr0731/evans
+env:
+	if [ $(shell uname) == "Linux" ]; then\
+		grep -F -- "export PATH=$$HOME/flutter/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin:"$$"PATH >> ~/.bashrc; \
+		grep -F -- "export PATH=$$HOME/flutter/.pub-cache/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/.pub-cache/bin:"$$"PATH >> ~/.bashrc; \
+		grep -F -- "export PATH=$$HOME/flutter/bin/cache/dart-sdk/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin/cache/dart-sdk/bin:"$$"PATH >> ~/.bashrc; \
+		grep -F -- "export PATH=$$HOME/go/bin" ~/.bashrc || echo export PATH=$$HOME/go/bin:"$$"PATH >> ~/.bashrc; \
+		grep -F -- "export PATH=$$HOME/golang/go/bin" ~/.bashrc || echo export PATH=$$HOME/golang/go/bin:"$$"PATH >> ~/.bashrc; \
+		grep -F -- "export PATH=$$HOME/node/node-${NODE_VERSION}-linux-x64/bin" ~/.bashrc || echo export PATH=$$HOME/node/node-${NODE_VERSION}-linux-x64/bin:"$$"PATH >> ~/.bashrc; \
+		grep -F -- "export PATH=$$HOME/Android/Sdk/platform-tools" ~/.bashrc || echo export PATH=$$HOME/Android/Sdk/platform-tools:"$$"PATH >> ~/.bashrc; \
+		source ~/.bashrc;\
+	fi;
 
 install-go:
 	rm -Rf ~/golang
 	mkdir -p ~/golang
-	@if [  ${OS} == "Windows_NT" ]; then \
+	if [  "${OS}" == "Windows_NT" ]; then \
 		curl -L -o ~/golang/golang.zip ${GO_LANG_URL_WIN}; \
 		cd ~/golang && unzip golang.zip && rm -Rf golang.zip; \
-	fi;
-
-	#TODO
-	@if [  ${OS} == "MAC" ]; then \
-		curl -L -o ~/golang/golang.tar.gz ${GO_LANG_URL_MAC}; \
-		cd ~/golang && tar -xf golang.zip && rm -Rf golang.tar.gz; \
-	fi;
-	#TODO
-	@if [  ${OS} == "Linux" ]; then \
+	elif [ "$(shell uname)" == "Linux" ]; then \
 		curl -L -o ~/golang/golang.tar.gz ${GO_LANG_URL_LINUX}; \
-		cd ~/golang && tar -xf golang.zip && rm -Rf golang.tar.gz; \
+		cd ~/golang && tar -xf golang.tar.gz && rm -Rf golang.tar.gz; \
+	elif [ "$(shell uname)" == "Darwin"]; then \
+		curl -L -o ~/golang/golang.tar.gz ${GO_LANG_URL_MAC}; \
+		cd ~/golang && tar -xf golang.tar.gz && rm -Rf golang.tar.gz; \
 	fi;
 
 install-project:
+	rm -Rf go.sum
 	rm -Rf go.mod
 	go clean -modcache
 	go mod init suntech.com.vn/skygroup
@@ -93,40 +79,29 @@ install-project:
 	go mod tidy
 
 install-protoc:
-	rm -Rf ~/go
+	sudo rm -Rf ~/go
 	mkdir -p ~/go/bin
-	@if [  ${OS} == "Windows_NT" ]; then \
+	if [  "${OS}" == "Windows_NT" ]; then \
 		curl -L -o ~/go/bin/protoc.zip ${PROTOC_URL_WIN}; \
-	fi;
-
-	#TODO
-	@if [  ${OS} == "MAC" ]; then \
+	elif [ "$(shell uname)" == "Linux" ]; then \
+		curl -L -o ~/go/bin/protoc.zip ${PROTOC_URL_LINUX}; \
+	elif [ "$(shell uname)" == "Darwin" ]; then \
 		curl -L -o ~/go/bin/protoc.zip ${PROTOC_URL_MAC}; \
 	fi;
 
-	#TODO
-	@if [  ${OS} == "Linux" ]; then \
-		curl -L -o ~/go/bin/protoc.zip ${PROTOC_URL_LINUX}; \
-	fi;
 	cd ~/go/bin && unzip protoc.zip && rm -Rf protoc.zip; 
 	cp ~/go/bin/bin/protoc ~/go/bin; 
 
-	@if [  ${OS} == "Windows_NT" ]; then \
+	if [  "${OS}" == "Windows_NT" ]; then \
 		curl -L -o ~/go/bin/protoc-gen-grpc-web.exe ${GRPC_WEB_PLUGIN_URL_WIN}; \
 		npm uninstall -g nodemon;\
 		npm install -g nodemon;\
-	fi;
-
-	#TODO
-	@if [  ${OS} == "MAC" ]; then \
-		curl -L -o ~/go/bin/protoc-gen-grpc-web ${GRPC_WEB_PLUGIN_URL_MAC}; \
+	elif [ $(shell uname) == "Linux" ]; then \
+		curl -L -o ~/go/bin/protoc-gen-grpc-web ${GRPC_WEB_PLUGIN_URL_LINUX}; \
 		chmod +x ~/go/bin/protoc-gen-grpc-web; \
 		go get github.com/cespare/reflex; \
-	fi;
-
-	#TODO
-	@if [  ${OS} == "LINUX" ]; then \
-		curl -L -o ~/go/bin/protoc-gen-grpc-web ${GRPC_WEB_PLUGIN_URL_LINUX}; \
+	elif [ $(shell uname) == "Darwin" ]; then \
+		url -L -o ~/go/bin/protoc-gen-grpc-web ${GRPC_WEB_PLUGIN_URL_MAC}; \
 		chmod +x ~/go/bin/protoc-gen-grpc-web; \
 		go get github.com/cespare/reflex; \
 	fi;
@@ -136,112 +111,37 @@ install-protoc:
 	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
 	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 	go get github.com/ktr0731/evans
-
-	# sudo chmod 777 ~/.bashrc
-	# sudo chmod 777 /etc/paths
-	# grep -F -- "$$HOME/go/bin" /etc/paths || echo $$HOME/go/bin >> /etc/paths
-	# grep -F -- "export PATH=$$HOME/go/bin" ~/.bashrc || echo export PATH=$$HOME/go/bin:"$$"PATH >> ~/.bashrc
-	# source ~/.bashrc
 
 install-nodejs:
 	rm -Rf ~/node
 	rm -Rf ~/node.zip
 	mkdir -p ~/node
 
-	@if [  ${OS} == "Windows_NT" ]; then \
+	if [  "${OS}" == "Windows_NT" ]; then \
 		curl -L -o ~/node/node.zip ${NODE_URL_WIN}; \
 		cd ~/node && unzip node.zip && rm -Rf node.zip; \
+	elif [ "$(shell uname)" == "Linux" ]; then \
+		curl -L -o ~/node/node.tar.xz ${NODE_URL_LINUX}; \
+		cd ~/node && tar -xf node.tar.xz && rm -Rf node.tar.xz; \
 	fi;
 
-
-winstall:
-	if exist  "${HOME_PATH}\node" rd /q /s  "${HOME_PATH}\node"
-	mkdir "${HOME_PATH}\node"
-	if exist  "${HOME_PATH}\git" rd /q /s  "${HOME_PATH}\git"
-	mkdir "${HOME_PATH}\git"
-
-	if exist  "${HOME_PATH}\golang\" rd /q /s  "${HOME_PATH}\golang"
-	mkdir "${HOME_PATH}\golang"
-	curl -L -o "${HOME_PATH}\golang\go.zip"  https://golang.org/dl/go1.16.windows-amd64.zip
-	cd /d "${HOME_PATH}\golang" && tar -xf go.zip
-	del /f  "${HOME_PATH}\go.zip"
-
-	curl -L -o ${HOME_PATH}\node\node.zip https://nodejs.org/dist/v14.16.0/node-v14.16.0-win-x64.zip
-	cd /d ${HOME_PATH}\node && tar -xf node.zip
-	del /f  ${HOME_PATH}\node\node.zip
-
-	go clean -modcache
-	if exist  go.mod del /f go.mod
-	del /f go.mod
-	go mod init suntech.com.vn/skygroup
-	npm uninstall -g nodemon
-	npm install -g nodemon
-	npm install -g yarn
-	if exist  ${HOME_PATH}\go\bin rd /q /s  ${HOME_PATH}\go\bin
-	mkdir ${HOME_PATH}\go\bin
-	curl -L -o ${HOME_PATH}\go\bin\protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.15.3/protoc-3.15.3-win64.zip 
-	cd /d ${HOME_PATH}\go\bin && tar -xf protoc.zip
-	copy ${HOME_PATH}\go\bin\bin\protoc.exe ${HOME_PATH}\go\bin
-	
-	del /f  ${HOME_PATH}\go\bin\protoc.zip
-	go get google.golang.org/protobuf/cmd/protoc-gen-go
-	go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
-	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
-	go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
-	curl -L -o ${HOME_PATH}\go\bin\protoc-gen-grpc-web.exe https://github.com/grpc/grpc-web/releases/download/1.2.1/protoc-gen-grpc-web-1.2.1-windows-x86_64.exe 
-	go get github.com/ktr0731/evans
-
-linstall-flutter:
-	rm -Rf ~/flutter
-	mkdir -p ~/flutter
-	curl -L -o ~/flutter/flutter.tar.xz https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_2.0.1-stable.tar.xz
-	cd ~ && tar -xf ~/flutter/flutter.tar.xz 
-	rm -Rf ~/flutter/flutter.tar.xz
-	sudo chmod 777 ~/.bashrc
-	grep -F -- "export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin:$$HOME/flutter/bin/cache/dark-sdk/bin:" $$"PATH >> ~/.bashrc
-	source ~/.bashrc
-	flutter pub global activate protoc_plugin
-	sudo apt-get update
-	sudo apt-get install openjdk-8-jdk
-	flutter doctor --android-licenses
 
 install-flutter:
 	rm -Rf ~/flutter
 	rm -Rf ~/flutter.zip
-	@if [  ${OS} == "Windows_NT" ]; then \
+	if [  "${OS}" == "Windows_NT" ]; then \
 		curl -L -o ~/flutter.zip ${FLUTTER_URL_WIN}; \
 		cd ~ && unzip flutter.zip && rm -Rf flutter.zip; \
-	fi;
-
-	#TODO
-	@if [  ${OS} == "MAC" ]; then \
+	elif [ "$(shell uname)" == "Linux" ]; then \
+		curl -f -L -o ~/flutter.tar.xz ${FLUTTER_URL_LINUX}; \
+		cd ~ && tar -xf flutter.tar.xz && rm -Rf flutter.tar.xz; \
+		sudo apt-get update; \
+		sudo apt-get install openjdk-8-jdk; \
+	elif [ "$(shell uname)" == "Darwin" ]; then \
 		curl -L -o ~/flutter.zip ${FLUTTER_URL_MAC}; \
 		cd ~ && unzip flutter.zip && rm -Rf flutter.zip; \
 	fi;
-
-	#TODO
-	@if [  ${OS} == "Linux" ]; then \
-		curl -L -o ~/flutter.tar.xz ${FLUTTER_URL_MAC}; \
-		cd ~ && tar -xz flutter.tar.xz && rm -Rf flutter.tar.xz; \
-	fi;
-
 	
-	# sudo chmod 777 ~/.bashrc
-	# sudo chmod 777 /etc/paths
-	# grep -F -- "export PATH=$$HOME/flutter/bin:$$HOME/flutter/.pub-cache/bin:$$HOME/flutter/bin/cache/dart-sdk/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin:$$HOME/flutter/bin/cache/dart-sdk/bin:"$$"PATH >> ~/.bashrc
-	# grep -F -- "$$HOME/flutter/bin" /etc/paths || echo $$HOME/flutter/bin >> /etc/paths
-	# grep -F -- "$$HOME/flutter/.pub-cache/bin" /etc/paths || echo $$HOME/flutter/.pub-cache/bin >> /etc/paths
-	# grep -F -- "$$HOME/flutter/bin/cache/dart-sdk/bin" /etc/paths || echo $$HOME/flutter/bin/cache/dart-sdk/bin >> /etc/paths
-	# source ~/.bashrc
-	flutter pub global activate protoc_plugin
-	flutter doctor --android-licenses
-
-winstall-flutter:
-	if exist  ${HOME_PATH}\flutter rd /q /s  ${HOME_PATH}\flutter
-	mkdir ${HOME_PATH}\flutter
-	curl -L -o ${HOME_PATH}\flutter\flutter.zip https://storage.googleapis.com/flutter_infra/releases/stable/windows/flutter_windows_2.0.1-stable.zip
-	cd /d ${HOME_PATH} &&  tar -p -xf ${HOME_PATH}\flutter\flutter.zip
-	del /f  ${HOME_PATH}\flutter\flutter.zip
 	flutter pub global activate protoc_plugin
 	flutter doctor --android-licenses
 
@@ -258,21 +158,6 @@ gen-go:
 		--grpc-gateway_out=:${OUT_DIR} --openapiv2_out=:${ROOT_DOC_DIR}/${SERVICES_DOC_DIR} \
 		--go-grpc_opt=require_unimplemented_servers=false ${SOURCE_PROTO_DIR}/*/*service.proto
 
-
-wgen-go:
-	if exist  ${OUT_DIR} rd /q /s  ${OUT_DIR}
-	if exist  ${ROOT_DOC_DIR} rd /q /s  ${ROOT_DOC_DIR}
-	mkdir ${OUT_DIR}
-
-	mkdir ${ROOT_DOC_DIR}\${SERVICES_DOC_DIR} 
-	mkdir ${ROOT_DOC_DIR}\${MESSAGES_DOC_DIR}
-	protoc --go_out=${OUT_DIR} --go-grpc_out=${OUT_DIR} \
-		--grpc-gateway_out=:${OUT_DIR} --openapiv2_out=:${ROOT_DOC_DIR}\${MESSAGES_DOC_DIR} \
-		--go-grpc_opt=require_unimplemented_servers=false $(wildcard $(SOURCE_PROTO_DIR)/**/*_message.proto)
-	protoc -I. --proto_path=${SOURCE_PROTO_DIR} --go_out=${OUT_DIR} --go-grpc_out=${OUT_DIR} \
-		--grpc-gateway_out=:${OUT_DIR} --openapiv2_out=:${ROOT_DOC_DIR}\${SERVICES_DOC_DIR} \
-		--go-grpc_opt=require_unimplemented_servers=false  $(wildcard $(SOURCE_PROTO_DIR)/**/*_service.proto)
-
 gen-web:
 	rm -Rf  ${JS_OUT_DIR}
 	mkdir -p ${JS_OUT_DIR}
@@ -281,19 +166,6 @@ gen-web:
 		--js_out=import_style=commonjs,binary:${JS_OUT_DIR} \
 		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:${JS_OUT_DIR}
 	protoc ${SOURCE_PROTO_DIR}/*/*service.proto google/api/annotations.proto google/api/http.proto \
-		-I. \
-		--proto_path=${SOURCE_PROTO_DIR} \
-		--js_out=import_style=commonjs,binary:${JS_OUT_DIR} \
-		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:${JS_OUT_DIR}
-
-wgen-web:
-	if exist ${WJS_OUT_DIR} rd /q /s ${WJS_OUT_DIR}
-	mkdir ${WJS_OUT_DIR}
-	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_message.proto) \
-		-I. \
-		--js_out=import_style=commonjs,binary:${JS_OUT_DIR} \
-		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:${JS_OUT_DIR}
-	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_service.proto) google/api/annotations.proto google/api/http.proto \
 		-I. \
 		--proto_path=${SOURCE_PROTO_DIR} \
 		--js_out=import_style=commonjs,binary:${JS_OUT_DIR} \
@@ -320,31 +192,8 @@ gen-dart:
 		--proto_path=${SOURCE_PROTO_DIR} \
 		--dart_out=grpc:${DART_OUT_DIR2} 
 
-wgen-dart:
-	pub global activate protoc_plugin
-	if exist ${WDART_OUT_DIR} rd /q /s ${WDART_OUT_DIR}
-	mkdir ${WDART_OUT_DIR}
-	if exist ${WDART_OUT_DIR2} rd /q /s ${WDART_OUT_DIR2}
-	mkdir ${WDART_OUT_DIR2}
-	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_message.proto) \
-		-I. \
-		--dart_out=grpc:${WDART_OUT_DIR} 
-	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_service.proto) google/api/annotations.proto google/api/http.proto google/protobuf/empty.proto \
-		-I. \
-		--proto_path=${SOURCE_PROTO_DIR} \
-		--dart_out=grpc:${WDART_OUT_DIR} 
-
-	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_message.proto) \
-		-I. \
-		--dart_out=grpc:${WDART_OUT_DIR2} 
-	protoc $(wildcard $(SOURCE_PROTO_DIR)/**/*_service.proto) google/api/annotations.proto google/api/http.proto google/protobuf/empty.proto \
-		-I. \
-		--proto_path=${SOURCE_PROTO_DIR} \
-		--dart_out=grpc:${WDART_OUT_DIR2}
-
 gen-all: gen-go gen-web gen-dart
 
-wgen-all: wgen-go wgen-web wgen-dart
 
 both-server:
 	@if [  ${OS} == "Windows_NT" ]; then \
@@ -353,30 +202,20 @@ both-server:
 		reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode both -endpoint 0.0.0.0:9090";\
 	fi;
 	
-
-wboth-server: 
-	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
-	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
-	go mod tidy
-	nodemon --exec go run cmd\server\main.go -port 9090 -mode both -endpoint 0.0.0.0:9090
-
-wgrpc-server:
-	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
-	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
-	go mod tidy
-	nodemon --exec go run cmd\server\main.go -port 9090 -mode grpc
-
 grpc-server:
-	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
-	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
-	go mod tidy
-	reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode grpc"
+	@if [  ${OS} == "Windows_NT" ]; then \
+		nodemon --exec go run cmd/server/main.go -port 9090 -mode grpc; \
+	else \
+		reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode grpc";\
+	fi;
 
 rest-server:
-	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
-	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
-	go mod tidy
-	reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9091 -mode rest -endpoint 0.0.0.0:9090"
+	@if [  ${OS} == "Windows_NT" ]; then \
+		nodemon --exec go run cmd/server/main.go -port 9090 -mode rest -endpoint 0.0.0.0:9090; \
+	else \
+		reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode rest -endpoint 0.0.0.0:9090";\
+	fi;
+
 
 test-auth:
 	go test -v -cover -race ./features/auth
@@ -456,7 +295,7 @@ client:
 
 lonce-dev: install linstall-flutter gen-all both-server
 
-once-dev: install-nodejs install-go install-protoc install-flutter install-project gen-all both-server
+once-dev: env install-nodejs install-go install-protoc install-flutter install-project gen-all both-server
 
 wonce-dev: winstall wgen-all wboth-server
 
