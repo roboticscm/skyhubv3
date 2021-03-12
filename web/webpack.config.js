@@ -217,7 +217,7 @@ module.exports = smp.wrap({
   devServer: {
     contentBase: 'public',
     host: '0.0.0.0',
-    port: 80,
+    port: 2345,
     hot: true,
     overlay: true,
     historyApiFallback: true,

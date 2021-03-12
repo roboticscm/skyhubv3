@@ -1,4 +1,4 @@
-SHELL=bash
+SHELL:=bash
 
 JS_OUT_DIR=../../web/src/pt
 WJS_OUT_DIR=..\..\web\src\pt
@@ -79,13 +79,17 @@ install-project:
 	go mod tidy
 
 install-protoc:
-	sudo rm -Rf ~/go
-	mkdir -p ~/go/bin
 	if [  "${OS}" == "Windows_NT" ]; then \
+		rm -Rf ~/go;\
+		mkdir -p ~/go/bin;\
 		curl -L -o ~/go/bin/protoc.zip ${PROTOC_URL_WIN}; \
 	elif [ "$(shell uname)" == "Linux" ]; then \
+		sudo rm -Rf ~/go;\
+		mkdir -p ~/go/bin;\
 		curl -L -o ~/go/bin/protoc.zip ${PROTOC_URL_LINUX}; \
 	elif [ "$(shell uname)" == "Darwin" ]; then \
+		sudo rm -Rf ~/go;\
+		mkdir -p ~/go/bin;\
 		curl -L -o ~/go/bin/protoc.zip ${PROTOC_URL_MAC}; \
 	fi;
 
@@ -270,7 +274,7 @@ wbuild-linux: wgen-go
 	go env  GOOS=linux GOARCH=amd64
 	go build -o ${BUILD_DIR}\linux_runner cmd\server\main.go 
 
-docker: 
+deploy-server: 
 	docker rm -f skycore
 	#docker network rm skyplus-network
 	#docker network create -d bridge skplus-network
