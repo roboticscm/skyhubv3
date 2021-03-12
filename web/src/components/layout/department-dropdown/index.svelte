@@ -17,7 +17,11 @@
     OrgStore.findRoledDepartments($branchId$).then(() => {
       OrgStore.getLastRoledDepartmentId($branchId$).then((res) => {
         res = res.toObject();
-        res && departmentId$.next(`${res.depId}`);
+        if(res && res.depId != 0) {
+          departmentId$.next(`${res.depId}`);
+        } else {
+          departmentId$.next(null);
+        }
       });
     });
   }
@@ -52,7 +56,7 @@
       }),
     ]).then(() => {
       if (!firstTime) {
-        window.location.reload();
+        // window.location.reload();
       }
       firstTime = false;
     });

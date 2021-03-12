@@ -11,6 +11,7 @@
     "format": "npx prettier --write 'src/**/*.{js,ts,svelte,css,scss}'",
     "eslint": "npx eslint  src/**/*.*",
     "storybook": "start-storybook -p 4061 -s public",
+    "docker": "cross-env NODE_ENV=production CACHE=false  webpack & docker/nginx/build",
     "wdocker": "cross-env NODE_ENV=production CACHE=false  webpack & docker/nginx/build.bat"
   },
   "keywords": [],
