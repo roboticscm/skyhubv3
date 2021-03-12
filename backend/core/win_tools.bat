@@ -2,7 +2,7 @@
 if exist C:\ProgramData\chocolatey rd /q /s C:\ProgramData\chocolatey
 powershell -command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
 powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
-
+choco install git
 choco install make
 @REM echo Set path for flutter
 set "SystemPath="
@@ -57,19 +57,6 @@ ECHO %STRING% | FINDSTR /C:"%SUBSTRING%" >nul & IF ERRORLEVEL 1 (
     echo Path existed
 )
 
-SET SUBSTRING=%USERPROFILE%\git\PortableGit\cmd
-ECHO %STRING% | FINDSTR /C:"%SUBSTRING%" >nul & IF ERRORLEVEL 1 (
-    SET "EXTRA_PATH=%EXTRA_PATH%;%USERPROFILE%\git\PortableGit\cmd;"
-) else (
-    echo Path existed
-)
-
-SET SUBSTRING=%USERPROFILE%\git\PortableGit\bin
-ECHO %STRING% | FINDSTR /C:"%SUBSTRING%" >nul & IF ERRORLEVEL 1 (
-    SET "EXTRA_PATH=%EXTRA_PATH%;%USERPROFILE%\git\PortableGit\bin;"
-) else (
-    echo Path existed
-)
 
 @REM ECHO %STRING% | FINDSTR /C:"C:\Program\ Files\go\bin" >nul & IF ERRORLEVEL 1 (
 @REM     SET "EXTRA_PATH="%EXTRA_PATH%;%PROGRAM_FILES%\go\bin;""
