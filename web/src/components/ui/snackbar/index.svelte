@@ -18,6 +18,10 @@
     show(T('SYS.MSG.SAVE_SUCCESS') + (StringUtil.isEmpty(extraMsg) ? '' : '. ' + extraMsg));
   };
 
+  export const showCopySuccess = (extraMsg = '') => {
+    show(T('SYS.MSG.COPY_SUCCESS') + (StringUtil.isEmpty(extraMsg) ? '' : '. ' + extraMsg));
+  };
+
   export const showDeleteSuccess = (extraMsg = '') => {
     show(T('SYS.MSG.DELETE_SUCCESS') + (StringUtil.isEmpty(extraMsg) ? '' : '. ' + extraMsg));
   };

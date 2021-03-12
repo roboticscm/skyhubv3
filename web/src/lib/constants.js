@@ -3,7 +3,7 @@ const PORT = 8888;
 const HOST = 'localhost';
 
 const GRPC_DEFAULT_PORT = 8080;
-const GRPC_DEFAULT_HOST = 'localhost';
+const GRPC_DEFAULT_HOST = '172.16.30.63';
 
 export class BaseUrl {
   static SYSTEM = `${SCHEME}://${HOST}:${PORT}`;
@@ -31,7 +31,7 @@ export class App {
 
 export class Session {
   static SCREEN_LOCK_MINUTE = 10;
-  static EXP_MINUTE = 60;
-  static CHECK_TIME = 1000*60; // ms
+  static EXP_MINUTE = 600000;
+  static CHECK_TIME = 1000; // ms
   static DELAY_TIME = 10; // ms
 }

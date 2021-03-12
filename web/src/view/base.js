@@ -15,6 +15,7 @@ import { RoleControlStore } from 'src/store/role-control';
 import { LoginInfo } from 'src/store/login-info';
 import { MenuStore } from 'src/features/system/menu/store';
 import { PartnerService } from 'src/features/system/partner/service';
+
 export class BaseView {
   tableName = undefined;
   columns = ['name'];
@@ -26,9 +27,9 @@ export class BaseView {
   includeDisabled = false;
   fullCount$ = new BehaviorSubject();
   loading$ = new BehaviorSubject(false);
+  copyRunning$ = new BehaviorSubject(false);
   saveRunning$ = new BehaviorSubject(false);
   deleteRunning$ = new BehaviorSubject(false);
-  copying$ = new BehaviorSubject(false);
   isReadOnlyMode$ = new BehaviorSubject(false); // true: form can edit, false form disable
   isUpdateMode$ = new BehaviorSubject(false); // true: update mode, false: save mode
   dataList$ = new BehaviorSubject([]);
@@ -128,7 +129,86 @@ export class BaseView {
     return TableUtilStore.getOneById(this.tableName, id);
   };
 
-  doDelete = (id, snackbarRef, doAddNew) => {
+  onAddNew = (event, scRef, doAddNewFunc) => {
+    this.verifyAddNewAction(event.currentTarget.id, scRef).then((_) => {
+      // if everything is OK, call the action
+      if (doAddNewFunc) {
+        doAddNewFunc();
+      } else {
+        this.doAddNew();
+      }
+    });
+  }
+
+  doAddNew = () => {
+    this.isReadOnlyMode$.next(false);
+    this.isUpdateMode$.next(false);
+    this.selectedData$.next(null);
+  } 
+
+  onEdit = (event, scRef, desc, doEditFunc) => {
+    // verify permission
+    this.verifyEditAction(event.currentTarget.id, scRef, desc).then((_) => {
+      if (doEditFunc) {
+        doEditFunc();
+      } else {
+        this.onEdit();
+      }
+    });
+  };
+
+  doEdit = () => {
+    // just switch to edit mode
+    this.isReadOnlyMode$.next(false);
+  } 
+
+  onSave = (event, scRef, doSaveFunc) => {
+    // verify permission
+    this.verifySaveAction(event.currentTarget.id, scRef).then((_) => {
+      // if everything is OK, call the action
+      if (doSaveFunc) {
+        doSaveFunc();
+      } 
+    });
+  };
+
+  onUpdate = (event, scRef, desc, doUpdateFunc) => {
+    // verify permission
+    this.verifyUpdateAction(event.currentTarget.id, scRef, desc).then((_) => {
+      // if everything is OK, call the action
+      if (doUpdateFunc) {
+        doUpdateFunc();
+      } 
+    });
+  };
+
+  doSelect = (selectedData) => {
+    if (selectedData) {
+      selectedData.id = `${selectedData.id}`;
+      isReadOnlyMode$.next(true);
+      isUpdateMode$.next(true);
+      form = new Form({
+        ...selectedData,
+      });
+      orgTreeRef && orgTreeRef.checkNodeById(selectedData.orgId);
+      // save init value for checking data change
+      beforeForm = SObject.clone(form);
+    }
+  };
+
+  onDelete = (event, scRef, id, desc, doEditFunc, postFunc) => {
+    // verify permission
+    this.verifyDeleteAction(event.currentTarget.id, scRef, desc).then((_) => {
+      // if everything is OK, call the action
+      if(doEditFunc) {
+        doEditFunc();
+      } else {
+        this.doDelete(id, scRef.snackbarRef(), postFunc);
+      }
+    });
+  };
+
+  doDelete = (id, snackbarRef, postFunc) => {
     this.deleteRunning$.next(true);
     TableUtilStore.softDeleteMany(this.tableName, [id]).then((res) => {
       const payload = {
@@ -144,16 +224,34 @@ export class BaseView {
     }).catch((err) => {
       snackbarRef.show(err.message);
     }).finally(() => {
-      doAddNew();
+      if(postFunc) {
+        postFunc();
+      }
+      
       this.deleteRunning$.next(false);
     });
   };
 
-  //TODO
-  doCopy = (id, snackbarRef) => {
-    this.copying$.next(true);
-    setTimeout(() => {
-      this.copying$.next(false);
+  onCopy = (event, scRef, id, desc, doCopyFunc, postFunc) => {
+    // verify permission
+    this.verifyCopyAction(event.currentTarget.id, scRef, desc).then((_) => {
+      // if everything is OK, call the action
+      if(doCopyFunc) {
+        doCopyFunc();
+      } else {
+        this.doCopy(id, scRef.snackbarRef(), postFunc);
+      }
+    });
+  };
+
+  doCopy = (id, snackbarRef, postFunc) => {
+    this.copyRunning$.next(true);
+    setTimeout(()=> {
+      this.copyRunning$.next(false);
+      snackbarRef.showCopySuccess();
+      if(postFunc) {
+        postFunc();
+      }
     }, 1000);
   };
 

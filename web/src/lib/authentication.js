@@ -6,7 +6,7 @@ import { Browser } from 'src/lib/browser';
 const empty = require('google-protobuf/google/protobuf/empty_pb');
 
 import {
-  LoginRequest, RefreshTokenRequest, UpdateRemoteAuthenticatedRequest
+  LoginRequest, RefreshTokenRequest, UpdateRemoteAuthenticatedRequest, LockScreenRequest
 } from "src/pt/proto/auth/auth_service_pb";
 
 export let defaultHeader = {};
@@ -33,15 +33,15 @@ export class Authentication {
 
   static getRefreshToken = () => {
     const token = localStorage.getItem('remember') === 'true'
-      ?  localStorage.getItem('refreshToken')
+      ? localStorage.getItem('refreshToken')
       : sessionStorage.getItem('refreshToken');
 
-      return Authentication.decodeToken(token);
+    return Authentication.decodeToken(token);
   };
 
   static getRawRefreshToken = () => {
     return localStorage.getItem('remember') === 'true'
-      ?  localStorage.getItem('refreshToken')
+      ? localStorage.getItem('refreshToken')
       : sessionStorage.getItem('refreshToken');
   };
 
@@ -78,7 +78,7 @@ export class Authentication {
     const browserID = Browser.getBrowserID();
     const position = token.length / 2;
     const encodedTotken = token.insertAt(position, browserID);
-    
+
     return encodedTotken;
   }
 
@@ -215,7 +215,7 @@ export class Authentication {
 
   static isLockScreen = () => {
     const refreshToken = Authentication.getRawRefreshToken();
-    
+
     if (!refreshToken) {
       return false;
     }
@@ -224,7 +224,14 @@ export class Authentication {
   }
 
   static lockScreen = () => {
-    Authentication.encodeRefreshToken();
+    // Authentication.encodeRefreshToken();
+    const req = new LockScreenRequest();
+    req.setIsLocked(true);
+    callGRPC(() => {
+      return grpcAuthClient.lockScreenHandler(req, defaultHeader);
+    }).then((res) => { }).catch((err) => {
+      log.error(err);
+    })
   }
 
   static unlockScreen = () => {

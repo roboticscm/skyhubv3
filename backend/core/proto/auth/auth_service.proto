@@ -57,6 +57,10 @@ message UpdateRemoteAuthenticatedRequest {
   int64 record_id = 1 [ jstype = JS_STRING];
 }
 
+message LockScreenRequest {
+  bool is_locked = 1;
+}
+
 service AuthService {
   rpc LoginHandler(LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
@@ -108,6 +112,13 @@ service AuthService {
   rpc UpdateRemoteAuthenticatedHandler(UpdateRemoteAuthenticatedRequest) returns (UpdateRemoteAuthenticatedResponse) {
     option (google.api.http) = {
       put : "/auth/update-authenticated"
+      body: "*"
+    };
+  }
+
+  rpc LockScreenHandler(LockScreenRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/auth/lock-screen"
       body: "*"
     };
   }

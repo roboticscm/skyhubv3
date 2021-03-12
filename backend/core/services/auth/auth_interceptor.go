@@ -3,6 +3,9 @@ package auth
 import (
 	"context"
 
+	"github.com/avct/uasurfer"
+	"google.golang.org/grpc/metadata"
+
 	"google.golang.org/grpc"
 	"suntech.com.vn/skylib/skylog.git/skylog"
 	"suntech.com.vn/skylib/skyutl.git/skyutl"
@@ -15,7 +18,12 @@ var (
 		"/auth.AuthService/GetQrCodeHandler":                 true,
 		"/auth.AuthService/RefreshTokenHandler":              true,
 		"/locale_resource.LocaleResourceService/FindHandler": true,
+		"user_settings.FindInitialHandler":                   true,
+		"user_settings.UpsertHandler":                        true,
+		"user_settings.FindHandler":                          true,
 	}
+
+	lockScreens = map[int64]bool{}
 )
 
 //AuthInterceptor struct
@@ -56,6 +64,14 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 		return nil
 	}
 
-	_, err := skyutl.GetUserID(ctx)
+	userID, err := skyutl.GetUserID(ctx)
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		ua := uasurfer.Parse(md["user-agent"][0])
+		if ua.DeviceType == uasurfer.DeviceComputer && lockScreens[userID] {
+			return skyutl.NeedLogin
+		}
+	}
+
 	return err
 }

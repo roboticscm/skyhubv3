@@ -10,11 +10,12 @@ let screenLockCounter = 0;
 
 let timer;
 LoginInfo.isLoggedIn$.subscribe((isLogged) => {
-  if (isLogged) {
+  if (isLogged /*&& !log.isDebugMode*/) {
     timer = setInterval(() => {
       if (!Authentication.isLockScreen() && screenLockCounter >= Session.SCREEN_LOCK_MINUTE) {
         AppStore.screenLock$.next(Date.now());
         Authentication.lockScreen();
+        console.log('call server to tell locked')
         screenLockCounter = 0;
       }
 

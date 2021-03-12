@@ -97,6 +97,7 @@ func (service *Service) LogoutHandler(ctx context.Context, _ *emptypb.Empty) (*e
 		skylog.Error(err)
 		return nil, err
 	}
+	lockScreens[userID] = false
 	return &emptypb.Empty{}, service.Store.Logout(userID)
 }
 
@@ -127,7 +128,6 @@ func (service *Service) UpdateAuthTokenHandler(ctx context.Context, req *pt.Upda
 	return &emptypb.Empty{}, nil
 }
 
-
 //UpdateRemoteAuthenticatedHandler function
 func (service *Service) UpdateRemoteAuthenticatedHandler(ctx context.Context, req *pt.UpdateRemoteAuthenticatedRequest) (*pt.UpdateRemoteAuthenticatedResponse, error) {
 	userID, _ := skyutl.GetUserID(ctx)
@@ -138,3 +138,13 @@ func (service *Service) UpdateRemoteAuthenticatedHandler(ctx context.Context, re
 	return &pt.UpdateRemoteAuthenticatedResponse{Authenticated: authenticated}, nil
 }
 
+//LockScreenHandler function
+func (service *Service) LockScreenHandler(ctx context.Context, req *pt.LockScreenRequest) (*emptypb.Empty, error) {
+	userID, err := skyutl.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	lockScreens[userID] = req.IsLocked
+	return &emptypb.Empty{}, nil
+}

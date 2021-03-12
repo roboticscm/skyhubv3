@@ -1,5 +1,5 @@
 <script>
-  import { tick, onMount, onDestroy, createEventDispatcher } from 'svelte';
+  import { tick, onMount, createEventDispatcher } from 'svelte';
   import { switchMap, filter } from 'rxjs/operators';
   import { EMPTY } from 'rxjs';
   import Form from 'src/lib/grpc-form/form';
@@ -21,7 +21,7 @@
   import { SkyLogStore } from 'src/store/skylog';
   import { Role as PtRole } from 'src/pt/proto/role/role_message_pb';
   import { RoleService } from '../service';
-  
+
   // Props
   export let view;
   export let menuPath;
@@ -37,7 +37,7 @@
     hasAnyDeletedRecord$,
     deleteRunning$,
     saveRunning$,
-    copying$,
+    copyRunning$,
     isReadOnlyMode$,
     isUpdateMode$,
   } = view;
@@ -45,10 +45,7 @@
   const { dataList$ } = store;
 
   // Refs
-  let codeRef;
-  let scRef;
-
-  let orgTreeRef;
+  let codeRef, scRef, orgTreeRef;
 
   // Other vars
   let dataChanged;
@@ -98,11 +95,7 @@
    * @return {void}.
    */
   const onAddNew = (event) => {
-    // verify permission
-    view.verifyAddNewAction(event.currentTarget.id, scRef).then((_) => {
-      // if everything is OK, call the action
-      doAddNew();
-    });
+    view.onAddNew(event, scRef, doAddNew);
   };
 
   /**
@@ -111,28 +104,25 @@
    * @return {void}.
    */
   const onEdit = (event) => {
-    // verify permission
-    view.verifyEditAction(event.currentTarget.id, scRef, $selectedData$.name).then((_) => {
-      // just switch to edit mode
-      isReadOnlyMode$.next(false);
-      tick().then(() => {
-        // the moving focus to the first element
-        codeRef.focus();
-      });
-    });
+    view.onEdit(event, scRef, $selectedData$.name, doEdit);
   };
 
   /**
-   * Event handle for Save/Update button.
+   * Event handle for Save button.
    * @param {event} Mouse click event.
    * @return {void}.
    */
-  const onUpsert = (event) => {
-    // verify permission
-    view.verifySaveAction(event.currentTarget.id, scRef).then((_) => {
-      // if everything is OK, call the action
-      doUpsert();
-    });
+  const onSave = (event) => {
+    view.onSave(event, scRef, doUpsert)
+  };
+
+  /**
+   * Event handle for Update button.
+   * @param {event} Mouse click event.
+   * @return {void}.
+   */
+  const onUpdate = (event) => {
+    view.onUpdate(event, scRef, $selectedData$.name, doUpsert)
   };
 
   /**
@@ -142,10 +132,7 @@
    */
   const onDelete = (event) => {
     // verify permission
-    view.verifyDeleteAction(event.currentTarget.id, scRef, $selectedData$.name).then((_) => {
-      // if everything is OK, call the action
-      view.doDelete($selectedData$.id, scRef.snackbarRef(), doAddNew);
-    });
+    view.onDelete(event, scRef, $selectedData$.id, $selectedData$.name, undefined, doAddNew);
   };
 
   /**
@@ -155,10 +142,7 @@
    */
   const onCopy = (event) => {
     // verify permission
-    view.verifyCopyAction(event.currentTarget.id, scRef, $selectedData$.name).then((_) => {
-      // if everything is OK, call the action
-      view.doCopy($selectedData$.id, scRef.snackbarRef());
-    });
+    view.onCopy(event, scRef, $selectedData$.id, $selectedData$.name, undefined, /*post*/doAddNew);
   };
 
   /**
@@ -229,21 +213,30 @@
    * @return {void}.
    */
   const doAddNew = () => {
-    // reset status flag
-    isReadOnlyMode$.next(false);
-    isUpdateMode$.next(false);
-    selectedData$.next(null);
+    view.doAddNew();
 
     // reset form
     form = resetForm();
-
     // moving focus to the first element after DOM updated
     tick().then(() => {
       codeRef.focus();
     });
   };
 
-    /**
+  /**
+   * Called by onEdit event handler
+   * @param {none}
+   * @return {void}.
+   */
+  const doEdit = () => {
+    view.doEdit();
+    // moving focus to the first element after DOM updated
+    tick().then(() => {
+      codeRef.focus();
+    });
+  };
+
+  /**
    * Called by onUpsert event handler
    * @param {none}
    * @return {void}.
@@ -309,13 +302,13 @@
       switchMap((it) => {
         if (!it) return EMPTY;
         return NotifyListener.payload$.pipe(
-          filter((p) => {
+          filter((pl) => {
             return (
-              p &&
+              pl &&
               form.id &&
-              p.table === view.tableName &&
-              p.data.updatedBy != LoginInfo.getUserId() &&
-              p.data.id === it.id
+              pl.table === view.tableName &&
+              pl.data.updatedBy != LoginInfo.getUserId() &&
+              pl.data.id === it.id
             );
           }),
         );
@@ -357,16 +350,13 @@
     // reset form
     doAddNew();
     registerHotKeys();
+
+    return () => {
+      //destroy here
+    }
   });
 
-  /**
-   * oDestroy Hook. Release subscription
-   * @param {none}
-   * @return {void}.
-   */
-  onDestroy(() => {});
   // ============================== //HOOK ==========================
-
 </script>
 
 <!--Invisible Element-->
@@ -394,7 +384,7 @@
     {/if}
 
     {#if isRenderedSave}
-      <Button on:click={onUpsert} btnType={ButtonType.save} disabled={isDisabledSave} running={$saveRunning$} />
+      <Button on:click={onSave} btnType={ButtonType.save} disabled={isDisabledSave} running={$saveRunning$} />
     {/if}
 
     {#if isRenderedEdit}
@@ -402,11 +392,11 @@
     {/if}
 
     {#if isRenderedUpdate}
-      <Button on:click={onUpsert} btnType={ButtonType.update} disabled={isDisabledUpdate} running={$saveRunning$} />
+      <Button on:click={onUpdate} btnType={ButtonType.update} disabled={isDisabledUpdate} running={$saveRunning$} />
     {/if}
 
     {#if isRenderedCopy}
-      <Button btnType={ButtonType.copy} on:click={onCopy} disabled={isDisabledCopy} running={$copying$} />
+      <Button btnType={ButtonType.copy} on:click={onCopy} disabled={isDisabledCopy} running={$copyRunning$} />
     {/if}
   </div>
   <div style="width: 50%; white-space: nowrap; text-align: right">
