@@ -396,7 +396,7 @@ export class BaseView {
   ) => {
     return this.verifyAction(
       buttonId,
-      () => confirmModalRef.show(`${T(`SYS.MSG.${msg}`)} <b>${extraMessage}</b>. ${T('SYS.MSG.ARE_YOU_SURE')}?`),
+      () => confirmModalRef.show({content: `${T(`SYS.MSG.${msg}`)} <b>${extraMessage}</b>. ${T('SYS.MSG.ARE_YOU_SURE')}?`}),
       confirmPasswordModalRef,
       disabled,
     );

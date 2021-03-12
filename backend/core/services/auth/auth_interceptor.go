@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/avct/uasurfer"
 	"google.golang.org/grpc/metadata"
@@ -13,14 +14,16 @@ import (
 
 var (
 	publicMethods = map[string]bool{
-		"/notify.NotifyService/DatabaseListenerHandler":      true,
-		"/auth.AuthService/LoginHandler":                     true,
-		"/auth.AuthService/GetQrCodeHandler":                 true,
-		"/auth.AuthService/RefreshTokenHandler":              true,
-		"/locale_resource.LocaleResourceService/FindHandler": true,
-		"user_settings.FindInitialHandler":                   true,
-		"user_settings.UpsertHandler":                        true,
-		"user_settings.FindHandler":                          true,
+		"/notify.NotifyService/DatabaseListenerHandler":         true,
+		"/auth.AuthService/LoginHandler":                        true,
+		"/auth.AuthService/GetQrCodeHandler":                    true,
+		"/auth.AuthService/RefreshTokenHandler":                 true,
+		"/auth.AuthService/VerifyPasswordHandler":               true,
+		"/auth.AuthService/LockScreenHandler":                   true,
+		"/locale_resource.LocaleResourceService/FindHandler":    true,
+		"/user_settings.UserSettingsService/FindInitialHandler": true,
+		"/user_settings.UserSettingsService/UpsertHandler":      true,
+		"/user_settings.UserSettingsService/FindHandler":        true,
 	}
 
 	lockScreens = map[int64]bool{}
@@ -68,6 +71,7 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ua := uasurfer.Parse(md["user-agent"][0])
+		fmt.Println(lockScreens[userID])
 		if ua.DeviceType == uasurfer.DeviceComputer && lockScreens[userID] {
 			return skyutl.NeedLogin
 		}

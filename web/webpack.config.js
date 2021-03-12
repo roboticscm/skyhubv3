@@ -16,6 +16,7 @@ const onwarn = (warning, onwarn) => warning.code === 'css-unused-selector' || wa
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 
 const smp = new SpeedMeasurePlugin();
+const DotEnv = require('dotenv-webpack');
 
 const alias = {
       svelte: path.resolve('node_modules', 'svelte'),
@@ -190,6 +191,10 @@ module.exports = smp.wrap({
                 { from: './public/favicon.png', to: './favicon.png' },
       ] 
     }),
+    new DotEnv({
+      path: './.prod.env'
+    })
+
   ] : [
     new MiniCssExtractPlugin({
       filename: '[name][contenthash].css',
@@ -206,6 +211,7 @@ module.exports = smp.wrap({
       template: './public/template.html',
       filename: './index.html'
     }),
+    new DotEnv()
   ],
   devtool: prod ? false : 'source-map',
   devServer: {

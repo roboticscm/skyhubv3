@@ -24,7 +24,7 @@
 </script>
 
 <svelte:head>
-  <title>{`${App.NAME} - ${'SYS.LABEL.REDIRECTING'.t()}...`}</title>
+  <title>{`${process.env.APP_NAME} - ${'SYS.LABEL.REDIRECTING'.t()}...`}</title>
 </svelte:head>
 
 <div class="w-100 h-100 center-box">

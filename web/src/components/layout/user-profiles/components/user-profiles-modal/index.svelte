@@ -19,7 +19,7 @@
   import { Authentication } from 'src/lib/authentication';
   import { LanguageStore } from 'src/features/system/language/store';
   import { LoginInfo } from 'src/store/login-info';
-  import { BaseUrl } from 'src/lib/constants';
+
 
   const { languages$ } = LanguageStore;
 
@@ -154,29 +154,7 @@
         }
         resolve(false);
       } else {
-        form
-          .put(BaseUrl.SYSTEM, 'auth/change-pw')
-          .pipe(catchError((error) => of(error)))
-          .subscribe(
-            (res) => {
-              if (res.response && res.response.data) {
-                if (res.response.data.field) {
-                  form.errors.errors = form.recordErrors(res.response.data);
-                } else {
-                  snackbarRef.showUnknownError(res.response.data.message || res.response.data);
-                }
-                resolve(false);
-              } else {
-                if (res.data.message === 1) {
-                  snackbarRef.show(T('SYS.MSG.CHANGE_PASSWORD_SUCCESS'));
-                }
-
-                form = resetForm();
-                resolve(true);
-              }
-            },
-            (error) => reject(false),
-          );
+        // TODO
       }
     });
   };

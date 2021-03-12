@@ -14,18 +14,18 @@ import { PartnerServicePromiseClient } from "src/pt/proto/partner/partner_servic
 import _ from 'lodash';
 import { Authentication } from './authentication';
 
-export const grpcLocaleResourceClient = new LocaleResourceServicePromiseClient(BaseUrl.GRPC_CORE);
-export const grpcAuthClient = new AuthServicePromiseClient(BaseUrl.GRPC_CORE);
-export const grpcRoleClient = new RoleServicePromiseClient(BaseUrl.GRPC_CORE);
-export const grpcOrgClient = new OrgServicePromiseClient(BaseUrl.GRPC_CORE);
-export const grpcLanguageClient = new LanguageServicePromiseClient(BaseUrl.GRPC_CORE);
-export const grpcUserSettingsClient = new UserSettingsServicePromiseClient(BaseUrl.GRPC_CORE);
-export const grpcMenuClient = new MenuServicePromiseClient(BaseUrl.GRPC_CORE);
-export const grpcSearchUtilClient = new SearchUtilServicePromiseClient(BaseUrl.GRPC_CORE);
-export const grpcSkylogClient = new SkylogServicePromiseClient(BaseUrl.GRPC_CORE);
-export const grpcTableUtilClient = new TableUtilServicePromiseClient(BaseUrl.GRPC_CORE);
-export const grpcNotifyClient = new NotifyServicePromiseClient(BaseUrl.GRPC_CORE);
-export const grpcPartnerClient = new PartnerServicePromiseClient(BaseUrl.GRPC_CORE);
+export const grpcLocaleResourceClient = new LocaleResourceServicePromiseClient(process.env.URL_GRPC_CORE);
+export const grpcAuthClient = new AuthServicePromiseClient(process.env.URL_GRPC_CORE);
+export const grpcRoleClient = new RoleServicePromiseClient(process.env.URL_GRPC_CORE);
+export const grpcOrgClient = new OrgServicePromiseClient(process.env.URL_GRPC_CORE);
+export const grpcLanguageClient = new LanguageServicePromiseClient(process.env.URL_GRPC_CORE);
+export const grpcUserSettingsClient = new UserSettingsServicePromiseClient(process.env.URL_GRPC_CORE);
+export const grpcMenuClient = new MenuServicePromiseClient(process.env.URL_GRPC_CORE);
+export const grpcSearchUtilClient = new SearchUtilServicePromiseClient(process.env.URL_GRPC_CORE);
+export const grpcSkylogClient = new SkylogServicePromiseClient(process.env.URL_GRPC_CORE);
+export const grpcTableUtilClient = new TableUtilServicePromiseClient(process.env.URL_GRPC_CORE);
+export const grpcNotifyClient = new NotifyServicePromiseClient(process.env.URL_GRPC_CORE);
+export const grpcPartnerClient = new PartnerServicePromiseClient(process.env.URL_GRPC_CORE);
 
 export const protoFromObject = (protoObj, plainObj, path) => {
     for (const fieldName in plainObj) {

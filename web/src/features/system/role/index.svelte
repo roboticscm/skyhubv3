@@ -64,7 +64,7 @@
 <ProgressBar loading$={view.loading$} />
 
 <svelte:head>
-  <title>{`${App.NAME} - ${view.getViewTitle()}`}</title>
+  <title>{`${process.env.APP_NAME} - ${view.getViewTitle()}`}</title>
 </svelte:head>
 <TwoColumnView minLeftPane={!showWorkList} {showTitle} {menuPath}>
   <section style="height: 100%" slot="leftView">

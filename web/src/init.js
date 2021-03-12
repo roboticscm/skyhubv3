@@ -8,6 +8,7 @@ const protobuf = require('google-protobuf/google/protobuf/empty_pb');
 import { NotifyListener } from 'src/store/notify-listener';
 
 export const init = () => {
+  
   callGRPC(() => {
     return new Promise((resolve, reject) => {
       const stream = grpcNotifyClient.databaseListenerHandler(new protobuf.Empty());

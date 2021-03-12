@@ -79,20 +79,19 @@
     dispatch('mouseUp', undefined);
   };
 
-  export const show = (content = '', _disabled = false, min = 0, max = undefined, defaultValue = undefined) => {
-    minValue = min;
-    maxValue = max;
+  export const show = (param={}) => {
+    minValue = param.min;
+    maxValue = param.max;
     form.errors.errors = {};
-
-    disabled = _disabled;
+    disabled = param.disabled;
     return new Promise((resolve, reject) => {
-      useModal.state.content = content;
+      useModal.state.content = param.content || '';
       useModal.state.resolve = resolve;
       form.reset();
       form = new Form({
         username: Authentication.getUsername(),
         password: '',
-        inputNumber: defaultValue || 1,
+        inputNumber: param.defaultValue || 1,
       });
 
       setTimeout(() => {

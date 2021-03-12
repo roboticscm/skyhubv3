@@ -22,7 +22,7 @@
 </script>
 
 <svelte:head>
-  <title>{`${App.NAME} - Server Error`}</title>
+  <title>{`${process.env.APP_NAME} - Server Error`}</title>
 </svelte:head>
 
 <div class="w-100 h-100 center-box">

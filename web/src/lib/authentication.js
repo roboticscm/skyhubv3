@@ -1,6 +1,5 @@
 import { grpcAuthClient, callGRPC } from 'src/lib/grpc';
 import { LoginInfo } from 'src/store/login-info';
-import { App } from 'src/lib/constants';
 import { Browser } from 'src/lib/browser';
 
 const empty = require('google-protobuf/google/protobuf/empty_pb');
@@ -11,14 +10,18 @@ import {
 
 export let defaultHeader = {};
 
+let screenLocked = false;
 
 export class Authentication {
   static logout = () => {
     Authentication.logoutAPI().then((res) => {
       sessionStorage.clear();
       localStorage.clear();
-      LoginInfo.isLoggedIn$.next(false);
-      Authentication.unlockScreen();
+      if (LoginInfo.isLoggedIn$.value) {
+        LoginInfo.isLoggedIn$.next(false);
+      }
+
+      
       window.location.replace('/');
     });
   };
@@ -26,8 +29,9 @@ export class Authentication {
   static forceLogout = () => {
     sessionStorage.clear();
     localStorage.clear();
-    LoginInfo.isLoggedIn$.next(false);
-    Authentication.unlockScreen();
+    if (LoginInfo.isLoggedIn$.value) {
+      LoginInfo.isLoggedIn$.next(false);
+    }
     window.location.replace('/');
   };
 
@@ -113,11 +117,6 @@ export class Authentication {
   }
 
   static login = (accessToken, refreshToken, userId, username) => {
-    if (Authentication.isLockScreen()) {
-      Authentication.logout();
-      Authentication.forceLogout();
-      return;
-    }
 
     if (localStorage.getItem('remember') === 'true') {
       localStorage.setItem('accessToken', accessToken);
@@ -133,7 +132,6 @@ export class Authentication {
 
     Authentication.setHeader(accessToken);
     window.location.replace('/');
-    Authentication.unlockScreen();
   };
 
   static isLoggedIn = () => {
@@ -142,11 +140,10 @@ export class Authentication {
       Authentication.setHeader(token);
     }
     const result = (token || '').length > 0;
-    LoginInfo.isLoggedIn$.next(result);
-    if (Authentication.isLockScreen()) {
-      Authentication.logout();
-      Authentication.forceLogout();
+    if (LoginInfo.isLoggedIn$.value != result) {
+      LoginInfo.isLoggedIn$.next(result);
     }
+    
     return result;
   };
 
@@ -213,28 +210,24 @@ export class Authentication {
     });
   }
 
-  static isLockScreen = () => {
-    const refreshToken = Authentication.getRawRefreshToken();
 
-    if (!refreshToken) {
-      return false;
-    }
-
-    return refreshToken.includes(Browser.getBrowserID());
-  }
-
-  static lockScreen = () => {
-    // Authentication.encodeRefreshToken();
+  static lockScreen = (lock = true) => {
     const req = new LockScreenRequest();
-    req.setIsLocked(true);
+    req.setIsLocked(lock);
     callGRPC(() => {
       return grpcAuthClient.lockScreenHandler(req, defaultHeader);
-    }).then((res) => { }).catch((err) => {
+    }).then((res) => {
+      screenLocked = lock
+     }).catch((err) => {
       log.error(err);
     })
   }
 
   static unlockScreen = () => {
-    Authentication.decodeRefreshToken();
+    Authentication.lockScreen(false);
   };
+
+  static isScreenLocked = () => {
+    return screenLocked;
+  }
 }

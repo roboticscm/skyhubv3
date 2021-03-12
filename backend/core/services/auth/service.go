@@ -56,7 +56,7 @@ func (service *Service) LoginHandler(ctx context.Context, req *pt.LoginRequest) 
 	}
 
 	service.Store.UpdateFreshToken(account.Id, refreshToken)
-
+	lockScreens[account.Id] = false
 	return &pt.LoginResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,

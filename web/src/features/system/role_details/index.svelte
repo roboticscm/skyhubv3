@@ -311,7 +311,7 @@
 
 <ProgressBar loading$={view.loading$} />
 <svelte:head>
-  <title>{`${App.NAME} - ${view.getViewTitle()}`}</title>
+  <title>{`${process.env.APP_NAME} - ${view.getViewTitle()}`}</title>
 </svelte:head>
 <section class="view-container">
   {#if !$next$}

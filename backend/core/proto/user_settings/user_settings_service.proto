@@ -40,20 +40,20 @@ message FindUserSettingsResponse {
 }
 
 service UserSettingsService {
-  rpc findInitialHandler(google.protobuf.Empty) returns (FindInitialUserSettingsResponse) {
+  rpc FindInitialHandler(google.protobuf.Empty) returns (FindInitialUserSettingsResponse) {
     option (google.api.http) = {
       get : "/user-settings/initial"
     };
   };
 
-  rpc upsertHandler(UpsertUserSettingsRequest) returns (google.protobuf.Empty) {
+  rpc UpsertHandler(UpsertUserSettingsRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post : "/user-settings"
       body : "*"
     };
   };
 
-  rpc findHandler(FindUserSettingsRequest) returns (FindUserSettingsResponse) {
+  rpc FindHandler(FindUserSettingsRequest) returns (FindUserSettingsResponse) {
     option (google.api.http) = {
       get : "/user-settings"
     };

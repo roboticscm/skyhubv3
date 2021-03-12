@@ -25,7 +25,8 @@
 
   $: if ($screenLock$) {
     confirmPasswordModalRef &&
-      confirmPasswordModalRef.show().then(() => {
+      confirmPasswordModalRef.show({wrapperClass: 'bg-black'}).then(() => {
+        console.log('confirmPasswordModalRef')
         Authentication.unlockScreen();
       });
   }
@@ -33,6 +34,7 @@
 
 {#if $isLoggedIn$}
   <ConfirmPasswordModal
+    wrapperClass = "bg-black"
     id="confirmPasswordLockScreenId"
     modalType={ModalType.confirmPassword}
     menuPath="screenLock"

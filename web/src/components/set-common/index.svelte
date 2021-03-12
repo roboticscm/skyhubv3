@@ -58,25 +58,6 @@
     return _confirmConflictDataModalRef;
   };
 
-  const validatePassword = () => {
-    return new Promise((resolve, reject) => {
-      if (StringUtil.isEmpty(_confirmPasswordModalRef.getPassword())) {
-        _confirmPasswordModalRef.raisePasswordError(CommonValidation.REQUIRED_VALUE.t());
-        reject(false);
-      } else {
-         Authentication.verifyPassword(Authentication.getUsername(), _confirmPasswordModalRef.getPassword())
-        .then(() => {
-          resolve(true);
-        })
-        .catch((e) => {
-          console.log(e.message)
-          _confirmPasswordModalRef.raisePasswordError(e.message.t());
-          reject(false);
-        });
-        
-      }
-    });
-  };
 
   
 </script>
@@ -94,7 +75,7 @@
   modalType={ModalType.confirm}
   {menuPath}
   bind:this={_confirmDeleteModalRef} />
-<ConfirmPasswordModal beforeOK={validatePassword} id={'confirmPassword' + view.getViewName() + 'Modal'} modalType={ModalType.confirmPassword} {menuPath} bind:this={_confirmPasswordModalRef} />
+<ConfirmPasswordModal id={'confirmPassword' + view.getViewName() + 'Modal'} modalType={ModalType.confirmPassword} {menuPath} bind:this={_confirmPasswordModalRef} />
 <ConfigModal
   {menuPath}
   subTitle={view.getViewTitle()}

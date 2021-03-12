@@ -1,15 +1,13 @@
 <script>
-  import { onMount, tick } from 'svelte';
-  import { take } from 'rxjs/operators';
   import { BaseView } from 'src/view/base';
-  import { ButtonType, ButtonId } from 'src/components/ui/button/types';
+  import { ButtonType } from 'src/components/ui/button/types';
   import Button from 'src/components/ui/button/flat-button';
   import ProgressBar from 'src/components/ui/progress-bar';
   import { Store } from './store';
   import { App } from 'src/lib/constants';
   import { BehaviorSubject } from 'rxjs';
   import { RxHttp } from 'src/lib/rx-http';
-  import { BaseUrl } from 'src/lib/constants';
+
 
   // Props
   export let showTitle = true;
@@ -27,30 +25,15 @@
   callFrom;
   showWorkList;
 
-  let viewWrapperModalRef,
-    modalContentViewRef,
-    modalMenuPath,
-    orgRoleTreeRef,
-    filterOrgTreeRef,
-    orgMenuTreeRef,
-    next$ = new BehaviorSubject(undefined);
-
-  let nexting = false,
-    loadingFilterOrg = false,
-    loadingOrgMenu = false;
   // Init view
   const view = new BaseView(menuPath);
   view.fullControl = fullControl;
   view.roleControls = roleControls;
   export const getView = () => view;
 
-  const { ModalContentView$, modalFullControl$, modalRoleControls$, isReadOnlyMode$, copying$ } = view;
-
-  const store = new Store(view);
-
   const onGateClick = (event) => {
     RxHttp.get({
-      baseUrl: BaseUrl.CONTROL,
+      baseUrl: process.env.URL_CONTROL_DEVICE,
       url: `SET?${event}`,
     }).subscribe((res) => {
       console.log(res);
@@ -58,7 +41,7 @@
 
     setTimeout(() => {
       RxHttp.get({
-        baseUrl: BaseUrl.CONTROL,
+        baseUrl: process.env.URL_CONTROL_DEVICE,
         url: `CLR?${event}`,
       }).subscribe((res) => {
         console.log(res);
@@ -69,7 +52,7 @@
 
 <ProgressBar loading$={view.loading$} />
 <svelte:head>
-  <title>{`${App.NAME} - ${view.getViewTitle()}`}</title>
+  <title>{`${process.env.APP_NAME} - ${view.getViewTitle()}`}</title>
 </svelte:head>
 <section class="view-container">
 
