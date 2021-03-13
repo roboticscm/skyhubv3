@@ -13,10 +13,9 @@ proxy:
 dev:
 	yarn
 	@if [  "${OS}" == "Windows_NT" ]; then \
-		start http://localhost:2345;\
 		yarn wdev;\
-	else \
 		start http://localhost:2345;\
+	else \
 		yarn dev;\
 	fi;
 
@@ -27,8 +26,14 @@ build:
 deploy-web:
 	@if [  "${OS}" == "Windows_NT" ]; then \
 		yarn wdocker;\
-	else \
+		start http://localhost; \
+	elif [ "$(shell uname)" == "Linux" ]; then \
 		yarn docker;\
+		x-www-browser http://localhost; \
+	elif [ "$(shell uname)" == "Darwin"]; then \
+		yarn docker; \
+		open http://localhost;\
 	fi;
+	
 
 .PHONY: docker
