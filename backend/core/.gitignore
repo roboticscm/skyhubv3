@@ -17,5 +17,6 @@ build
 saved_log
 *.log
 www
+workspace.code-workspace
 
 

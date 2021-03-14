@@ -18,10 +18,9 @@ KEYS_DIR=keys
 HOME_PATH=${USERPROFILE}
 PROGRAM_FILES=C:\Program Files
 
-GO_LANG_URL_MAC=https://golang.org/dl/go1.16.2.darwin-arm64.tar.gz
+GO_LANG_URL_MAC=https://golang.org/dl/go1.16.2.darwin-amd64.tar.gz
 GO_LANG_URL_WIN=https://golang.org/dl/go1.16.windows-amd64.zip
 GO_LANG_URL_LINUX=https://golang.org/dl/go1.16.2.linux-amd64.tar.gz
-GO_LANG_URL=${GO_LANG_URL_MAC}
 
 PROTOC_URL_MAC=https://github.com/protocolbuffers/protobuf/releases/download/v3.15.6/protoc-3.15.6-osx-x86_64.zip
 PROTOC_URL_WIN=https://github.com/protocolbuffers/protobuf/releases/download/v3.15.6/protoc-3.15.6-win64.zip
@@ -91,31 +90,25 @@ env-etc-paths:
 	else \
 		grep -F -- "$$HOME/node/node-${NODE_VERSION}-darwin-x64/bin" /etc/paths || echo $$HOME/node/node-${NODE_VERSION}-darwin-x64/bin >> /etc/paths ;\
 	fi;
-
+	
 env:
-	@if [  "${OS}" == "Windows_NT" ]; then \
-		echo This target only run on Linux Or MacOS;\
-		exit 0;\
-	fi; 
-
-	echo $(eval bashFile=.bashrc)
-	
-	@if [ $(wildcard ~/.profile) ]; then \
+	echo $(eval bashFile=.bashrc);\
+	if [ "${OS}" != "Windows_NT" ] && [ "$(wildcard ~/.profile)" ]; then\
 		echo $(eval bashFile=.profile); \
-	fi;\
+	fi;
 
-	
-	@if [ "${bashFile}" == ".bashrc" ]; then\
+	if [ "${OS}" != "Windows_NT" ] && [ "${bashFile}" == ".bashrc" ]; then\
 		make env-bashrc;\
 	fi;
 
-	@if [ "${bashFile}" == ".profile" ]; then\
+	if [ "${OS}" != "Windows_NT" ] && [ "${bashFile}" == ".profile" ]; then\
 		make env-profile;\
 	fi;
 
-	@if [ $(wildcard /etc/paths) ]; then\
+	if [ "${OS}" != "Windows_NT" ] && [ $(wildcard /etc/paths) ]; then\
 		make env-etc-paths;\
 	fi;
+
 
 install-go:
 	rm -Rf ~/golang
@@ -344,11 +337,11 @@ wbuild-linux: wgen-go
 	go env  GOOS=linux GOARCH=amd64
 	go build -o ${BUILD_DIR}\linux_runner cmd\server\main.go 
 
-deploy-server: 
+deploy-server: install-project gen-all
 	docker rm -f skycore || true
 	docker image rm -f skycore || true
 	docker build -t skycore -f Dockerfile.multistage .
-	docker run -d --rm  -p 9090:7070 -p 9091:7071 --network skyplus-network --name skycore  skycore
+	docker run -d --rm  -p 9090:7070 -p 9091:7071 --name skycore  skycore
 
 start-prod:
 	cd ${BUILD_DIR} && \
