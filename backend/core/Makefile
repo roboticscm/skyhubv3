@@ -43,28 +43,90 @@ NODE_URL_LINUX=https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linu
 GIT_URL_WIN=https://github.com/git-for-windows/git/releases/download/v2.30.2.windows.1/PortableGit-2.30.2-64-bit.7z.exe
 UNAME=""
 
-env:
-	if [ $(shell uname) == "Linux" ]; then\
-		grep -F -- "export PATH=$$HOME/flutter/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin:"$$"PATH >> ~/.bashrc; \
-		grep -F -- "export PATH=$$HOME/flutter/.pub-cache/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/.pub-cache/bin:"$$"PATH >> ~/.bashrc; \
-		grep -F -- "export PATH=$$HOME/flutter/bin/cache/dart-sdk/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin/cache/dart-sdk/bin:"$$"PATH >> ~/.bashrc; \
-		grep -F -- "export PATH=$$HOME/go/bin" ~/.bashrc || echo export PATH=$$HOME/go/bin:"$$"PATH >> ~/.bashrc; \
-		grep -F -- "export PATH=$$HOME/golang/go/bin" ~/.bashrc || echo export PATH=$$HOME/golang/go/bin:"$$"PATH >> ~/.bashrc; \
+
+env-bashrc:
+	sudo chmod +w ~/.bashrc
+	grep -F -- "export PATH=$$HOME/flutter/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin:"$$"PATH >> ~/.bashrc
+	grep -F -- "export PATH=$$HOME/flutter/.pub-cache/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/.pub-cache/bin:"$$"PATH >> ~/.bashrc
+	grep -F -- "export PATH=$$HOME/flutter/bin/cache/dart-sdk/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin/cache/dart-sdk/bin:"$$"PATH >> ~/.bashrc
+	grep -F -- "export PATH=$$HOME/go/bin" ~/.bashrc || echo export PATH=$$HOME/go/bin:"$$"PATH >> ~/.bashrc
+	grep -F -- "export PATH=$$HOME/golang/go/bin" ~/.bashrc || echo export PATH=$$HOME/golang/go/bin:"$$"PATH >> ~/.bashrc
+	
+	grep -F -- "export PATH=$$HOME/Android/Sdk/platform-tools" ~/.bashrc || echo export PATH=$$HOME/Android/Sdk/platform-tools:"$$"PATH >> ~/.bashrc
+
+	@if [ $(shell uname) == "Linux" ]; then \
 		grep -F -- "export PATH=$$HOME/node/node-${NODE_VERSION}-linux-x64/bin" ~/.bashrc || echo export PATH=$$HOME/node/node-${NODE_VERSION}-linux-x64/bin:"$$"PATH >> ~/.bashrc; \
-		grep -F -- "export PATH=$$HOME/Android/Sdk/platform-tools" ~/.bashrc || echo export PATH=$$HOME/Android/Sdk/platform-tools:"$$"PATH >> ~/.bashrc; \
-		source ~/.bashrc;\
+	else \
+		grep -F -- "export PATH=$$HOME/node/node-${NODE_VERSION}-darwin-x64/bin" ~/.bashrc || echo export PATH=$$HOME/node/node-${NODE_VERSION}-darwin-x64/bin:"$$"PATH >> ~/.bashrc; \
+	fi;
+
+	source ~/.bashrc
+
+env-profile:
+	sudo chmod +w ~/.profile
+	grep -F -- "export PATH=$$HOME/flutter/bin" ~/.profile || echo export PATH=$$HOME/flutter/bin:"$$"PATH >> ~/.profile
+	grep -F -- "export PATH=$$HOME/flutter/.pub-cache/bin" ~/.profile || echo export PATH=$$HOME/flutter/.pub-cache/bin:"$$"PATH >> ~/.profile
+	grep -F -- "export PATH=$$HOME/flutter/bin/cache/dart-sdk/bin" ~/.profile || echo export PATH=$$HOME/flutter/bin/cache/dart-sdk/bin:"$$"PATH >> ~/.profile
+	grep -F -- "export PATH=$$HOME/go/bin" ~/.profile || echo export PATH=$$HOME/go/bin:"$$"PATH >> ~/.profile
+	grep -F -- "export PATH=$$HOME/golang/go/bin" ~/.profile || echo export PATH=$$HOME/golang/go/bin:"$$"PATH >> ~/.profile
+	grep -F -- "export PATH=$$HOME/Android/Sdk/platform-tools" ~/.profile || echo export PATH=$$HOME/Android/Sdk/platform-tools:"$$"PATH >> ~/.profile; 
+	@if [ $(shell uname) == "Linux" ]; then \
+		grep -F -- "export PATH=$$HOME/node/node-${NODE_VERSION}-linux-x64/bin" ~/.profile || echo export PATH=$$HOME/node/node-${NODE_VERSION}-linux-x64/bin:"$$"PATH >> ~/.profile; \
+	else \
+		grep -F -- "export PATH=$$HOME/node/node-${NODE_VERSION}-darwin-x64/bin" ~/.profile || echo export PATH=$$HOME/node/node-${NODE_VERSION}-darwin-x64/bin:"$$"PATH >> ~/.profile; \
+	fi;
+	source ~/.profile
+
+env-etc-paths:
+	sudo chmod +w /etc/paths
+	grep -F -- "$$HOME/flutter/bin" /etc/paths || echo $$HOME/flutter/bin >> /etc/paths
+	grep -F -- "$$HOME/flutter/.pub-cache/bin" /etc/paths || echo $$HOME/flutter/.pub-cache/bin >> /etc/paths
+	grep -F -- "$$HOME/flutter/bin/cache/dart-sdk/bin" /etc/paths || echo $$HOME/flutter/bin/cache/dart-sdk/bin >> /etc/paths
+	grep -F -- "$$HOME/go/bin" /etc/paths || echo $$HOME/go/bin >> /etc/paths
+	grep -F -- "$$HOME/golang/go/bin" /etc/paths || echo $$HOME/golang/go/bin >> /etc/paths
+	grep -F -- "$$HOME/Android/Sdk/platform-tools" /etc/paths || echo $$HOME/Android/Sdk/platform-tools >> /etc/paths
+
+	@if [ $(shell uname) == "Linux" ]; then \
+		grep -F -- "$$HOME/node/node-${NODE_VERSION}-linux-x64/bin" /etc/paths || echo $$HOME/node/node-${NODE_VERSION}-linux-x64/bin >> /etc/paths ;\
+	else \
+		grep -F -- "$$HOME/node/node-${NODE_VERSION}-darwin-x64/bin" /etc/paths || echo $$HOME/node/node-${NODE_VERSION}-darwin-x64/bin >> /etc/paths ;\
+	fi;
+
+env:
+	@if [  "${OS}" == "Windows_NT" ]; then \
+		echo This target only run on Linux Or MacOS;\
+		exit 0;\
+	fi; 
+
+	echo $(eval bashFile=.bashrc)
+	
+	@if [ $(wildcard ~/.profile) ]; then \
+		echo $(eval bashFile=.profile); \
+	fi;\
+
+	
+	@if [ "${bashFile}" == ".bashrc" ]; then\
+		make env-bashrc;\
+	fi;
+
+	@if [ "${bashFile}" == ".profile" ]; then\
+		make env-profile;\
+	fi;
+
+	@if [ $(wildcard /etc/paths) ]; then\
+		make env-etc-paths;\
 	fi;
 
 install-go:
 	rm -Rf ~/golang
 	mkdir -p ~/golang
-	if [  "${OS}" == "Windows_NT" ]; then \
+	@if [  "${OS}" == "Windows_NT" ]; then \
 		curl -L -o ~/golang/golang.zip ${GO_LANG_URL_WIN}; \
 		cd ~/golang && unzip golang.zip && rm -Rf golang.zip; \
 	elif [ "$(shell uname)" == "Linux" ]; then \
 		curl -L -o ~/golang/golang.tar.gz ${GO_LANG_URL_LINUX}; \
 		cd ~/golang && tar -xf golang.tar.gz && rm -Rf golang.tar.gz; \
-	elif [ "$(shell uname)" == "Darwin"]; then \
+	elif [ "$(shell uname)" == "Darwin" ]; then \
 		curl -L -o ~/golang/golang.tar.gz ${GO_LANG_URL_MAC}; \
 		cd ~/golang && tar -xf golang.tar.gz && rm -Rf golang.tar.gz; \
 	fi;
@@ -84,7 +146,7 @@ tidy:
 	go mod tidy
 
 install-protoc:
-	if [  "${OS}" == "Windows_NT" ]; then \
+	@if [  "${OS}" == "Windows_NT" ]; then \
 		rm -Rf ~/go;\
 		mkdir -p ~/go/bin;\
 		curl -L -o ~/go/bin/protoc.zip ${PROTOC_URL_WIN}; \
@@ -101,7 +163,7 @@ install-protoc:
 	cd ~/go/bin && unzip protoc.zip && rm -Rf protoc.zip; 
 	cp ~/go/bin/bin/protoc ~/go/bin; 
 
-	if [  "${OS}" == "Windows_NT" ]; then \
+	@if [  "${OS}" == "Windows_NT" ]; then \
 		curl -L -o ~/go/bin/protoc-gen-grpc-web.exe ${GRPC_WEB_PLUGIN_URL_WIN}; \
 		npm uninstall -g nodemon;\
 		npm install -g nodemon;\
@@ -110,7 +172,7 @@ install-protoc:
 		chmod +x ~/go/bin/protoc-gen-grpc-web; \
 		go get github.com/cespare/reflex; \
 	elif [ $(shell uname) == "Darwin" ]; then \
-		url -L -o ~/go/bin/protoc-gen-grpc-web ${GRPC_WEB_PLUGIN_URL_MAC}; \
+		curl -L -o ~/go/bin/protoc-gen-grpc-web ${GRPC_WEB_PLUGIN_URL_MAC}; \
 		chmod +x ~/go/bin/protoc-gen-grpc-web; \
 		go get github.com/cespare/reflex; \
 	fi;
@@ -126,19 +188,22 @@ install-nodejs:
 	rm -Rf ~/node.zip
 	mkdir -p ~/node
 
-	if [  "${OS}" == "Windows_NT" ]; then \
+	@if [  "${OS}" == "Windows_NT" ]; then \
 		curl -L -o ~/node/node.zip ${NODE_URL_WIN}; \
 		cd ~/node && unzip node.zip && rm -Rf node.zip; \
 	elif [ "$(shell uname)" == "Linux" ]; then \
 		curl -L -o ~/node/node.tar.xz ${NODE_URL_LINUX}; \
 		cd ~/node && tar -xf node.tar.xz && rm -Rf node.tar.xz; \
+	elif [ "$(shell uname)" == "Darwin" ]; then \
+		curl -L -o ~/node/node.tar.gz ${NODE_URL_MAC}; \
+		cd ~/node && tar -xf node.tar.gz && rm -Rf node.tar.gz; \
 	fi;
 
 
 install-flutter:
 	rm -Rf ~/flutter
 	rm -Rf ~/flutter.zip
-	if [  "${OS}" == "Windows_NT" ]; then \
+	@if [  "${OS}" == "Windows_NT" ]; then \
 		curl -L -o ~/flutter.zip ${FLUTTER_URL_WIN}; \
 		cd ~ && unzip flutter.zip && rm -Rf flutter.zip; \
 	elif [ "$(shell uname)" == "Linux" ]; then \
@@ -241,7 +306,7 @@ test-all:
 mock-all:
 	mockgen -package mockdb -destination mock/store.go suntech.com.vn/skygroup/store AuthStore
 
-build:
+build: gen-go
 	go mod tidy
 	rm -Rf  ${BUILD_DIR}
 	mkdir -p ${BUILD_DIR}/${CONFIG_DIR}
@@ -302,11 +367,7 @@ wclient:
 client:
 	reflex -r '\.go' -s -- sh -c "go run cmd/client/main.go -server 127.0.0.1:9090"
 
-lonce-dev: install linstall-flutter gen-all both-server
-
 once-dev: env install-nodejs install-go install-protoc install-flutter install-project gen-all both-server
-
-wonce-dev: winstall wgen-all wboth-server
 
 .PHONY: client gen-dart wbuild  build start-prod winstall wboth-server
  
