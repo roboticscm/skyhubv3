@@ -92,7 +92,7 @@ env-etc-paths:
 	fi;
 
 env:
-	echo $(eval bashFile=.bashrc);\
+	echo $(eval bashFile=.bashrc);
 	@if [ "${OS}" != "Windows_NT" ] && [ "$(wildcard ~/.profile)" ]; then\
 		echo $(eval bashFile=.profile); \
 	fi;
