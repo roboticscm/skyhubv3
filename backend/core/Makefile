@@ -90,22 +90,22 @@ env-etc-paths:
 	else \
 		grep -F -- "$$HOME/node/node-${NODE_VERSION}-darwin-x64/bin" /etc/paths || echo $$HOME/node/node-${NODE_VERSION}-darwin-x64/bin >> /etc/paths ;\
 	fi;
-	
+
 env:
 	echo $(eval bashFile=.bashrc);\
-	if [ "${OS}" != "Windows_NT" ] && [ "$(wildcard ~/.profile)" ]; then\
+	@if [ "${OS}" != "Windows_NT" ] && [ "$(wildcard ~/.profile)" ]; then\
 		echo $(eval bashFile=.profile); \
 	fi;
 
-	if [ "${OS}" != "Windows_NT" ] && [ "${bashFile}" == ".bashrc" ]; then\
+	@if [ "${OS}" != "Windows_NT" ] && [ "${bashFile}" == ".bashrc" ]; then\
 		make env-bashrc;\
 	fi;
 
-	if [ "${OS}" != "Windows_NT" ] && [ "${bashFile}" == ".profile" ]; then\
+	@if [ "${OS}" != "Windows_NT" ] && [ "${bashFile}" == ".profile" ]; then\
 		make env-profile;\
 	fi;
 
-	if [ "${OS}" != "Windows_NT" ] && [ $(wildcard /etc/paths) ]; then\
+	@if [ "${OS}" != "Windows_NT" ] && [ $(wildcard /etc/paths) ]; then\
 		make env-etc-paths;\
 	fi;
 
@@ -358,7 +358,7 @@ wclient:
 client:
 	reflex -r '\.go' -s -- sh -c "go run cmd/client/main.go -server 127.0.0.1:9090"
 
-once-dev: env install-nodejs install-go install-protoc install-flutter install-project gen-all both-server
+once-dev: env install-nodejs install-go install-protoc install-flutter gen-all install-project both-server
 
 .PHONY: client gen-dart wbuild  build start-prod winstall wboth-server
  
