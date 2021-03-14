@@ -13,7 +13,7 @@
 
   const createSplit = () => {
     // loadSettings
-    SettingsStore.getUserSettings({
+    SettingsStore.findUserSettings({
       menuPath,
       elementId: 'leftModal',
     }).then((res) => {

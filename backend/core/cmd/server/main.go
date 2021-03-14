@@ -15,13 +15,14 @@ import (
 	"suntech.com.vn/skygroup/keys"
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skygroup/services/auth"
+	"suntech.com.vn/skygroup/services/file"
 	"suntech.com.vn/skygroup/services/language"
 	"suntech.com.vn/skygroup/services/locale_resource"
 	"suntech.com.vn/skygroup/services/menu"
 	"suntech.com.vn/skygroup/services/notify"
 	"suntech.com.vn/skygroup/services/org"
-	"suntech.com.vn/skygroup/services/role"
 	"suntech.com.vn/skygroup/services/partner"
+	"suntech.com.vn/skygroup/services/role"
 	"suntech.com.vn/skygroup/services/search_util"
 	sky_log "suntech.com.vn/skygroup/services/skylog"
 	"suntech.com.vn/skygroup/services/table_util"
@@ -32,7 +33,7 @@ import (
 )
 
 var (
-	mapFunc = map[string]map[string]interface{}{}
+	serviceList = map[string]map[string]interface{}{}
 )
 
 func moveLogFiles(folder string) error {
@@ -94,19 +95,21 @@ func init() {
 	skyutl.JwtManagerInstance = skyutl.NewJwtManager(keys.SignKey, keys.VerifyKey)
 
 	//Begin add more service to register
-	mapFunc["auth.Service"] = map[string]interface{}{"grpc": pt.RegisterAuthServiceServer, "rest": pt.RegisterAuthServiceHandlerFromEndpoint, "instance": auth.DefaultService(skyutl.JwtManagerInstance)}
-	mapFunc["locale_resource.Service"] = map[string]interface{}{"grpc": pt.RegisterLocaleResourceServiceServer, "rest": pt.RegisterLocaleResourceServiceHandlerFromEndpoint, "instance": locale_resource.DefaultService()}
-	mapFunc["role.Service"] = map[string]interface{}{"grpc": pt.RegisterRoleServiceServer, "rest": pt.RegisterRoleServiceHandlerFromEndpoint, "instance": role.DefaultService()}
-	mapFunc["user_settings.Service"] = map[string]interface{}{"grpc": pt.RegisterUserSettingsServiceServer, "rest": pt.RegisterUserSettingsServiceHandlerFromEndpoint, "instance": user_settings.DefaultService()}
-	mapFunc["org.Service"] = map[string]interface{}{"grpc": pt.RegisterOrgServiceServer, "rest": pt.RegisterOrgServiceHandlerFromEndpoint, "instance": org.DefaultService()}
-	mapFunc["language.Service"] = map[string]interface{}{"grpc": pt.RegisterLanguageServiceServer, "rest": pt.RegisterLanguageServiceHandlerFromEndpoint, "instance": language.DefaultService()}
-	mapFunc["menu.Service"] = map[string]interface{}{"grpc": pt.RegisterMenuServiceServer, "rest": pt.RegisterMenuServiceHandlerFromEndpoint, "instance": menu.DefaultService()}
-	mapFunc["search_util.Service"] = map[string]interface{}{"grpc": pt.RegisterSearchUtilServiceServer, "rest": pt.RegisterSearchUtilServiceHandlerFromEndpoint, "instance": search_util.DefaultService()}
-	mapFunc["skylog.Service"] = map[string]interface{}{"grpc": pt.RegisterSkylogServiceServer, "rest": pt.RegisterSkylogServiceHandlerFromEndpoint, "instance": sky_log.DefaultService()}
-	mapFunc["table_util.Service"] = map[string]interface{}{"grpc": pt.RegisterTableUtilServiceServer, "rest": pt.RegisterTableUtilServiceHandlerFromEndpoint, "instance": table_util.DefaultService()}
-	mapFunc["partner.Service"] = map[string]interface{}{"grpc": pt.RegisterPartnerServiceServer, "rest": pt.RegisterPartnerServiceHandlerFromEndpoint, "instance": partner.DefaultService()}
+	serviceList["auth.Service"] = map[string]interface{}{"grpc": pt.RegisterAuthServiceServer, "rest": pt.RegisterAuthServiceHandlerFromEndpoint, "instance": auth.DefaultService(skyutl.JwtManagerInstance)}
+	serviceList["locale_resource.Service"] = map[string]interface{}{"grpc": pt.RegisterLocaleResourceServiceServer, "rest": pt.RegisterLocaleResourceServiceHandlerFromEndpoint, "instance": locale_resource.DefaultService()}
+	serviceList["role.Service"] = map[string]interface{}{"grpc": pt.RegisterRoleServiceServer, "rest": pt.RegisterRoleServiceHandlerFromEndpoint, "instance": role.DefaultService()}
+	serviceList["user_settings.Service"] = map[string]interface{}{"grpc": pt.RegisterUserSettingsServiceServer, "rest": pt.RegisterUserSettingsServiceHandlerFromEndpoint, "instance": user_settings.DefaultService()}
+	serviceList["org.Service"] = map[string]interface{}{"grpc": pt.RegisterOrgServiceServer, "rest": pt.RegisterOrgServiceHandlerFromEndpoint, "instance": org.DefaultService()}
+	serviceList["language.Service"] = map[string]interface{}{"grpc": pt.RegisterLanguageServiceServer, "rest": pt.RegisterLanguageServiceHandlerFromEndpoint, "instance": language.DefaultService()}
+	serviceList["menu.Service"] = map[string]interface{}{"grpc": pt.RegisterMenuServiceServer, "rest": pt.RegisterMenuServiceHandlerFromEndpoint, "instance": menu.DefaultService()}
+	serviceList["search_util.Service"] = map[string]interface{}{"grpc": pt.RegisterSearchUtilServiceServer, "rest": pt.RegisterSearchUtilServiceHandlerFromEndpoint, "instance": search_util.DefaultService()}
+	serviceList["skylog.Service"] = map[string]interface{}{"grpc": pt.RegisterSkylogServiceServer, "rest": pt.RegisterSkylogServiceHandlerFromEndpoint, "instance": sky_log.DefaultService()}
+	serviceList["table_util.Service"] = map[string]interface{}{"grpc": pt.RegisterTableUtilServiceServer, "rest": pt.RegisterTableUtilServiceHandlerFromEndpoint, "instance": table_util.DefaultService()}
+	serviceList["partner.Service"] = map[string]interface{}{"grpc": pt.RegisterPartnerServiceServer, "rest": pt.RegisterPartnerServiceHandlerFromEndpoint, "instance": partner.DefaultService()}
+	serviceList["file.Service"] = map[string]interface{}{"grpc": pt.RegisterFileServiceServer, "rest": pt.RegisterFileServiceHandlerFromEndpoint, "instance": file.DefaultService()}
+
 	dbLisnterService := notify.NewService()
-	mapFunc["notify.Service"] = map[string]interface{}{"grpc": pt.RegisterNotifyServiceServer, "rest": nil, "instance": dbLisnterService}
+	serviceList["notify.Service"] = map[string]interface{}{"grpc": pt.RegisterNotifyServiceServer, "rest": nil, "instance": dbLisnterService}
 	//...
 	//End add more service
 	dbLisnterService.Start()
@@ -132,7 +135,7 @@ func main() {
 	address := fmt.Sprintf("0.0.0.0:%v", *port)
 
 	services := []interface{}{}
-	for _, value := range mapFunc {
+	for _, value := range serviceList {
 		// Get instance of Service and push to services slice
 		services = append(services, value["instance"])
 	}
@@ -144,20 +147,20 @@ func main() {
 
 	if *mode == "rest" {
 		skylog.Infof("REST Server is running on port: %v", *port)
-		server_helper.StartRESTServer(listener, *grpcEndPoint, mapFunc, services...)
+		server_helper.StartRESTServer(listener, *grpcEndPoint, serviceList, services...)
 	} else if *mode == "grpc" {
 		skylog.Infof("GRPC Server is running on port: %v", *port)
-		server_helper.StartGRPCServer(listener, skyutl.JwtManagerInstance, mapFunc, services...)
+		server_helper.StartGRPCServer(listener, skyutl.JwtManagerInstance, serviceList, services...)
 	} else {
 		skylog.Infof("GRPC Server is running on port: %v", *port)
-		go server_helper.StartGRPCServer(listener, skyutl.JwtManagerInstance, mapFunc, services...)
+		go server_helper.StartGRPCServer(listener, skyutl.JwtManagerInstance, serviceList, services...)
 		skylog.Infof("REST Server is running on port: %v", *port+1)
 		address := fmt.Sprintf("0.0.0.0:%v", *port+1)
 		listener2, err := net.Listen("tcp", address)
 		if err != nil {
 			skylog.Fatal(err)
 		}
-		server_helper.StartRESTServer(listener2, *grpcEndPoint, mapFunc, services...)
+		server_helper.StartRESTServer(listener2, *grpcEndPoint, serviceList, services...)
 	}
 
 	if skydba.MainDB != nil {

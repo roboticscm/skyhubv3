@@ -1,6 +1,7 @@
 import { protoFromObject, callGRPC, grpcRoleClient } from 'src/lib/grpc';
 import { FindRoleRequest, GetRoleRequest } from "src/pt/proto/role/role_service_grpc_web_pb";
 import { defaultHeader } from 'src/lib/authentication';
+import { Role } from 'src/pt/proto/role/role_message_pb';
 
 export class RoleService {
     static findList = (view, filterText = '') => {
@@ -32,9 +33,9 @@ export class RoleService {
         });
     }
 
-    static upsert = async (UpsertRoleRequestClass, data) => {
+    static upsert = async (data) => {
         return callGRPC(() => {
-            const req = protoFromObject(new UpsertRoleRequestClass(), data);
+            const req = protoFromObject(new Role(), data);
             return grpcRoleClient.upsertHandler(req, defaultHeader);
         });
     };

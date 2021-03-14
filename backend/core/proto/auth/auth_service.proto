@@ -61,6 +61,22 @@ message LockScreenRequest {
   bool is_locked = 1;
 }
 
+message UpdateAvatarRequest {
+  int64 icon_filesystem_id = 1 [ jstype = JS_STRING];
+  string icon_filepath = 2;
+  string icon_filename = 3;
+}
+
+message GetAuthRequest {
+  int64 id = 1 [ jstype = JS_STRING];
+}
+
+message GetAuthResponse {
+  int64 icon_filesystem_id = 1 [ jstype = JS_STRING];
+  string icon_filepath = 2;
+  string icon_filename = 3;
+}
+
 service AuthService {
   rpc LoginHandler(LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
@@ -120,6 +136,19 @@ service AuthService {
     option (google.api.http) = {
       put: "/auth/lock-screen"
       body: "*"
+    };
+  }
+
+  rpc UpdateAvatarHandler(UpdateAvatarRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/auth/avatar"
+      body: "*"
+    };
+  }
+
+  rpc GetHandler(GetAuthRequest) returns (GetAuthResponse) {
+    option (google.api.http) = {
+      get: "/auth"
     };
   }
 }

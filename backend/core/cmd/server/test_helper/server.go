@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	mapFunc = map[string]map[string]interface{}{}
+	serviceList = map[string]map[string]interface{}{}
 )
 
 //InitServer function
@@ -28,7 +28,7 @@ func InitServer(parentPath string, grpcService interface{}, restService interfac
 	skyutl.JwtManagerInstance = skyutl.NewJwtManager()
 
 	//Add more service handle function
-	mapFunc["role.Service"] = map[string]interface{}{"grpc": grpcService, "rest": restService, "instance": serviceInstance}
+	serviceList["role.Service"] = map[string]interface{}{"grpc": grpcService, "rest": restService, "instance": serviceInstance}
 }
 
 //StartServer function
@@ -39,7 +39,7 @@ func StartServer() {
 		address      = fmt.Sprintf("0.0.0.0:%v", port)
 	)
 	services := []interface{}{}
-	for _, value := range mapFunc {
+	for _, value := range serviceList {
 		// Get instance of Service and push to services slice
 		services = append(services, value["instance"])
 	}
@@ -50,10 +50,10 @@ func StartServer() {
 	}
 
 	log.Printf("GRPC Server is running on port: %v", port)
-	go server_helper.StartGRPCServer(listener, skyutl.JwtManagerInstance, mapFunc, services...)
+	go server_helper.StartGRPCServer(listener, skyutl.JwtManagerInstance, serviceList, services...)
 
 	log.Printf("REST Server is running on port: %v", port+1)
 	address = fmt.Sprintf("0.0.0.0:%v", port+1)
 	listener2, err := net.Listen("tcp", address)
-	go server_helper.StartRESTServer(listener2, grpcEndPoint, mapFunc, services...)
+	go server_helper.StartRESTServer(listener2, grpcEndPoint, serviceList, services...)
 }

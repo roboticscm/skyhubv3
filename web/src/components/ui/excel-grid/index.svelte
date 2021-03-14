@@ -152,7 +152,7 @@
 
   const loadSettings = () => {
     fireResizeEvent = false;
-    SettingsStore.getUserSettings({ elementId: id, menuPath })
+    SettingsStore.findUserSettings({ elementId: id, menuPath })
       .then((res) => {
         if (res) {
           res.map((item) => {

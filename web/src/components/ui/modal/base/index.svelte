@@ -41,6 +41,7 @@
   export let transparent = true;
   export let wrapperClass = '';
   export let beforeOK = undefined;
+  export let okRunning = false;
 
   let modalWrapperRef;
   let modalRef;
@@ -320,9 +321,9 @@
         <div class="modal-controller">
           {#if showOkButton}
             {#if modalType === ModalType.confirmPassword}
-              <Button showIcon={true} type="submit" btnType={ButtonType.okModal} title={okButtonTitle} {disabled} />
+              <Button running={okRunning} showIcon={true} type="submit" btnType={ButtonType.okModal} title={okButtonTitle} {disabled} />
             {:else}
-              <Button showIcon={true} on:click={onOK} btnType={ButtonType.okModal} title={okButtonTitle} {disabled} />
+              <Button running={okRunning} showIcon={true} on:click={onOK} btnType={ButtonType.okModal} title={okButtonTitle} {disabled} />
             {/if}
           {/if}
           {#if showCancelButton}

@@ -11,6 +11,7 @@ import { SkylogServicePromiseClient } from "src/pt/proto/skylog/skylog_service_g
 import { TableUtilServicePromiseClient } from "src/pt/proto/table_util/table_util_service_grpc_web_pb";
 import { NotifyServicePromiseClient } from "src/pt/proto/notify/notify_service_grpc_web_pb";
 import { PartnerServicePromiseClient } from "src/pt/proto/partner/partner_service_grpc_web_pb";
+import { FileServicePromiseClient } from "src/pt/proto/file/file_service_grpc_web_pb";
 import _ from 'lodash';
 import { Authentication } from './authentication';
 
@@ -26,6 +27,7 @@ export const grpcSkylogClient = new SkylogServicePromiseClient(process.env.URL_G
 export const grpcTableUtilClient = new TableUtilServicePromiseClient(process.env.URL_GRPC_CORE);
 export const grpcNotifyClient = new NotifyServicePromiseClient(process.env.URL_GRPC_CORE);
 export const grpcPartnerClient = new PartnerServicePromiseClient(process.env.URL_GRPC_CORE);
+export const grpcFileClient = new FileServicePromiseClient(process.env.URL_GRPC_CORE);
 
 export const protoFromObject = (protoObj, plainObj, path) => {
     for (const fieldName in plainObj) {

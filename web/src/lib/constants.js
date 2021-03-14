@@ -10,12 +10,14 @@ export class App {
   static PROGRESS_BAR = '<i class="fa fa-spinner fa-spin" />';
   static DEFAULT_END_TIME_FILTER_OFFSET = 30 * 24 * 60 * 60 * 1000;
   static SAVE_USER_SETTINGS = true;
-  static REFRESH_QR_CODE_TIMEOUT = 1000*60*5;
+  static REFRESH_QR_CODE_TIMEOUT = 1000 * 60 * 5;
+  static MAX_AVATAR_SIZE = 1024 * 1024;
+  static SIZE_DETAIL = App.MAX_AVATAR_SIZE / (1024 * 1024) >= 1 ? `${App.MAX_AVATAR_SIZE / (1024 * 1024)}MB` : `${App.MAX_AVATAR_SIZE / (1024)}KB`
 }
 
 export class Session {
   static SCREEN_LOCK_MINUTE = 10;
   static EXP_MINUTE = 60;
-  static CHECK_TIME = 1000*60; // ms
+  static CHECK_TIME = 1000 * 60; // ms
   static DELAY_TIME = 50; // ms
 }

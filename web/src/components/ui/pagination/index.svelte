@@ -53,7 +53,7 @@
 
   export const loadSettings = () => {
     return new Promise((resolve, reject) => {
-      SettingsStore.getUserSettings({ elementId: 'pageSizeSelectId', menuPath })
+      SettingsStore.findUserSettings({ elementId: 'pageSizeSelectId', menuPath })
         .then((res) => {
           const filter = res.filter((it) => it.key === 'lastPageSize');
           if (filter.length > 0) {

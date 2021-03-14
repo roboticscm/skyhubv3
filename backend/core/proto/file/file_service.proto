@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package file;
+option go_package = ".;pt";
+
+import "google/api/annotations.proto";
+
+
+message FileUploadRequest {
+    string category = 1;
+    string file_type = 2;
+    bytes data = 3;
+
+    int64 old_file_system_id = 4 [ jstype = JS_STRING];
+    string old_file_path = 5;
+    string old_file_name = 6;
+}
+
+message FileUploadResponse {
+    int64 file_system_id = 1 [ jstype = JS_STRING ];
+    string file_path = 2;
+    string file_name = 3;
+    int64 file_size  = 4;
+}
+
+message FileDownloadRequest {
+    int64 file_system_id = 1 [ jstype = JS_STRING ];
+    string file_path = 2;
+    string file_name = 3;
+}
+
+message FileInfo {
+    string file_type = 1;
+    int64 file_size = 2;
+}
+message FileDownloadResponse {
+    oneof data {
+        FileInfo info = 1;
+        bytes chunk_data = 2;
+    }
+}
+service FileService {
+    rpc UploadHandler(FileUploadRequest) returns (FileUploadResponse) {
+        option (google.api.http) = {
+            put: "/upload"
+            body: "*"
+        };
+    }
+
+    rpc DownloadHandler(FileDownloadRequest) returns (stream FileDownloadResponse) {
+        option (google.api.http) = {
+            get: "/upload"
+        };
+    }
+}

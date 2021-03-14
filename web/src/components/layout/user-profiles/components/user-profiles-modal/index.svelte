@@ -1,6 +1,5 @@
 <script>
   import Modal from 'src/components/ui/modal/base/index.svelte';
-  import { T } from 'src/lib/locale';
   import Tabs from 'src/components/ui/tabs';
   import PasswordField from 'src/components/ui/float-input/custom-password-field/index.svelte';
   import InputField from 'src/components/ui/float-input/text-input';
@@ -12,14 +11,15 @@
   import { SObject } from 'src/lib/sobject';
   import { validation } from './validation';
   import Snackbar from 'src/components/ui/snackbar/index.svelte';
-  import { catchError } from 'rxjs/operators';
-  import { of } from 'rxjs';
+  import ImagePicker from 'src/components/ui/image-picker';
   import { StringUtil } from 'src/lib/string-util';
   import FloatSelect from 'src/components/ui/float-input/select';
   import { Authentication } from 'src/lib/authentication';
   import { LanguageStore } from 'src/features/system/language/store';
   import { LoginInfo } from 'src/store/login-info';
-
+  import { ProfileService } from './service';
+  import { base64ToUint8Array } from 'src/lib/image';
+  import { App } from 'src/lib/constants';
 
   const { languages$ } = LanguageStore;
 
@@ -40,6 +40,7 @@
 
   let currentTheme;
   let snackbarRef;
+  let running = false;
 
   const columns = [
     {
@@ -48,14 +49,14 @@
     },
     {
       type: 'text',
-      title: T('SYS.LABEL.AVAILABLE_THEME'),
+      title: 'SYS.LABEL.AVAILABLE_THEME'.t(),
       name: 'theme',
       width: 120,
       readOnly: true,
     },
     {
       type: 'color',
-      title: T('SYS.LABEL.PREVIEW'),
+      title: 'SYS.LABEL.PREVIEW'.t(),
       name: 'preview',
       width: 120,
       readOnly: true,
@@ -63,7 +64,7 @@
     },
     {
       type: 'radio',
-      title: T('SYS.LABEL.CHOOSE'),
+      title: 'SYS.LABEL.CHOOSE'.t(),
       name: 'choose',
       width: 80,
     },
@@ -76,10 +77,14 @@
       currentPassword: '',
       newPassword: '',
       confirmPassword: '',
+      avatarData: undefined,
+      avatarSize: 0,
+      avatarType: '',
+      avatarExt: '',
     });
   };
   let form = resetForm();
-
+  let beforeForm;
   let mappedThemes = SObject.clone(themes);
 
   const onResize = (event) => {
@@ -93,8 +98,23 @@
     height = `${h - 100}px`;
   };
 
+  const loadAvatar = () => {
+    ProfileService.getOne(LoginInfo.getUserId())
+      .then((r) => {
+        const res = r.toObject();
+        const stream = ProfileService.downloadAvatar(res.iconFilesystemId, res.iconFilepath, res.iconFilename);
+        stream.on('data', function(r) {
+          const res = r.toObject();
+          console.log(res);
+        });
+      })
+      .catch((err) => {
+        log.error(err);
+      });
+  };
   export const show = () => {
     form = resetForm();
+    loadAvatar();
     calcHeight();
     return new Promise((resolve, reject) => {
       import('src/components/ui/excel-grid/index.svelte').then((res) => {
@@ -133,28 +153,91 @@
   };
 
   const saveTheme = () => {
-    SettingsStore.saveUserSettings({
-      keys: ['theme'],
-      values: [currentTheme],
-    }, false);
+    SettingsStore.saveUserSettings(
+      {
+        keys: ['theme'],
+        values: [currentTheme],
+      },
+      false,
+    );
   };
 
   const saveAccountSettings = () => {
     return new Promise((resolve, reject) => {
       // client validation
-      if (StringUtil.isEmpty(form.currentPassword) && StringUtil.isEmpty(form.newPassword)) {
+      if (
+        StringUtil.isEmpty(form.currentPassword) &&
+        StringUtil.isEmpty(form.newPassword) &&
+        StringUtil.isEmpty(form.confirmPassword) &&
+        beforeForm.avatarData === form.avatarData
+      ) {
         resolve(true);
         return;
-      }
-      form.errors.errors = form.recordErrors(validation(form));
-      if (form.errors.any()) {
-        if (activeTab !== 'ACCOUNT') {
-          snackbarRef.show(T('SYS.MSG.ACCOUNT_SETTING_ERROR'));
-          activeTab = 'ACCOUNT';
-        }
-        resolve(false);
       } else {
-        // TODO
+        if (
+          !StringUtil.isEmpty(form.currentPassword) ||
+          !StringUtil.isEmpty(form.newPassword) ||
+          !StringUtil.isEmpty(form.confirmPassword)
+        ) {
+          form.errors.errors = form.recordErrors(validation(form));
+          if (form.errors.any()) {
+            if (activeTab !== 'ACCOUNT') {
+              snackbarRef.show('SYS.MSG.ACCOUNT_SETTING_ERROR'.t());
+              activeTab = 'ACCOUNT';
+            }
+            resolve(false);
+          }
+        }
+
+        running = true;
+        let changePasswordPromise;
+        if (!StringUtil.isEmpty(form.currentPassword)) {
+          // change password
+          changePasswordPromise = new Promise((resolve, reject) => {
+            setTimeout(() => {
+              resolve(true);
+            }, 5000);
+          });
+        }
+
+        let updateAvatarPromise;
+        if (beforeForm.avatarData !== form.avatarData) {
+          updateAvatarPromise = new Promise((resolve, reject) => {
+            // update data
+            ProfileService.uploadAvatar({
+              fileType: form.avatarExt,
+              data: base64ToUint8Array(form.avatarData.replace('data:image/jpeg;base64,', '')),
+              category: 'PROFILE_AVATAR',
+            })
+              .then((res) => {
+                const uploadRes = res.toObject();
+                ProfileService.updateAvatar(uploadRes.fileSystemId, uploadRes.filePath, uploadRes.fileName)
+                  .then((_) => {
+                    resolve(true);
+                  })
+                  .catch((err) => {
+                    log.error(err);
+                    reject(err);
+                  });
+              })
+              .catch((err) => {
+                log.error(err);
+                reject(err);
+              });
+          });
+        }
+
+        Promise.all([updateAvatarPromise, changePasswordPromise])
+          .then(() => {
+            resolve(true);
+          })
+          .catch((err) => {
+            log.error(err);
+            reject(err);
+          })
+          .finally(() => {
+            running = false;
+          });
       }
     });
   };
@@ -176,10 +259,19 @@
   const onApplyLanguage = (event) => {
     window.location.reload();
   };
+
+  beforeForm = {
+    avatarData: undefined,
+  };
+
+  const onImageError = (e) => {
+    snackbarRef.show(`${e.detail.t()}. ${'SYS.MSG.MAX_SIZE'.t()}: ${App.SIZE_DETAIL}`);
+  };
 </script>
 
 <Snackbar bind:this={snackbarRef} />
 <Modal
+  okRunning={running}
   beforeOK={saveAccountSettings}
   {defaultWidth}
   {defaultHeight}
@@ -187,11 +279,11 @@
   {menuPath}
   contentClass="full-modal-content"
   fontIcon="<i class='fa fa-user-circle'></i>"
-  title={T('SYS.LABEL.USER_PROFILES')}
+  title={'SYS.LABEL.USER_PROFILES'.t()}
   id="userProfilesModalId"
   bind:this={modalRef}>
 
-  <Tabs titleKeys={tabTitleKeys} bind:activeTab>
+  <Tabs id="userProfilesTabs" titleKeys={tabTitleKeys} bind:activeTab saveState={true}>
     {#if activeTab === 'GENERAL'}
       <FloatSelect
         on:change={onApplyLanguage}
@@ -204,33 +296,52 @@
               it.id = it.locale;
               return it;
             }) : $languages$}
-        placeholder={T('SYS.LABEL.LANGUAGE')} />
+        placeholder={'SYS.LABEL.LANGUAGE'.t()} />
     {:else if activeTab === 'ACCOUNT'}
       <form class="form" on:keydown={(event) => form.errors.clear(event.target.name)}>
-        <div>
-          <InputField readonly={true} value={Authentication.getUsername()} placeholder={T('SYS.LABEL.USERNAME')} />
+        <div class="row">
+          <div class="col-18">
+            <div>
+              <InputField readonly={true} value={Authentication.getUsername()} placeholder={'SYS.LABEL.USERNAME'.t()} />
+            </div>
+
+            <div>
+              <PasswordField
+                name="currentPassword"
+                bind:value={form.currentPassword}
+                placeholder={'SYS.LABEL.CURRENT_PASSWORD'.t()} />
+              <Error {form} field="currentPassword" />
+            </div>
+
+            <div>
+              <PasswordField
+                name="newPassword"
+                bind:value={form.newPassword}
+                placeholder={'SYS.LABEL.NEW_PASSWORD'.t()} />
+              <Error {form} field="newPassword" />
+            </div>
+
+            <div>
+              <PasswordField
+                name="confirmPassword"
+                bind:value={form.confirmPassword}
+                placeholder={'SYS.LABEL.CONFIRM_PASSWORD'.t()} />
+              <Error {form} field="confirmPassword" />
+            </div>
+          </div>
+
+          <div class="col-6">
+            <ImagePicker
+              on:error={onImageError}
+              id="avatar"
+              maxSize={App.MAX_AVATAR_SIZE}
+              bind:outExt={form.avatarExt}
+              bind:outSize={form.avatarSize}
+              bind:outType={form.avatarType}
+              bind:src={form.avatarData} />
+          </div>
         </div>
 
-        <div>
-          <PasswordField
-            name="currentPassword"
-            bind:value={form.currentPassword}
-            placeholder={T('SYS.LABEL.CURRENT_PASSWORD')} />
-          <Error {form} field="currentPassword" />
-        </div>
-
-        <div>
-          <PasswordField name="newPassword" bind:value={form.newPassword} placeholder={T('SYS.LABEL.NEW_PASSWORD')} />
-          <Error {form} field="newPassword" />
-        </div>
-
-        <div>
-          <PasswordField
-            name="confirmPassword"
-            bind:value={form.confirmPassword}
-            placeholder={T('SYS.LABEL.CONFIRM_PASSWORD')} />
-          <Error {form} field="confirmPassword" />
-        </div>
       </form>
     {:else if activeTab === 'THEME'}
       <div style="margin-top: 10px;">
@@ -245,7 +356,7 @@
           {containerWidth}
           on:changed={onThemeChanged}
           fullWidth={true}>
-          <span slot="label" class="label">{T('SYS.LABEL.CONTROL_LIST')}:</span>
+          <span slot="label" class="label">{'SYS.LABEL.CONTROL_LIST'.t()}:</span>
         </svelte:component>
       </div>
     {/if}

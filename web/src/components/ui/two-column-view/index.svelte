@@ -19,7 +19,7 @@
 
     document.querySelector('.left-grid-vertical-gutter').appendChild(divElement);
     // loadSettings
-    SettingsStore.getUserSettings({
+    SettingsStore.findUserSettings({
       menuPath,
       elementId: 'leftForm',
     }).then((res) => {

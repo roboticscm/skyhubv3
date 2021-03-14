@@ -3,9 +3,8 @@ package auth
 import (
 	"context"
 
-	"suntech.com.vn/skygroup/config"
-
 	"google.golang.org/protobuf/types/known/emptypb"
+	"suntech.com.vn/skygroup/config"
 	"suntech.com.vn/skygroup/pt"
 	"suntech.com.vn/skylib/skylog.git/skylog"
 	"suntech.com.vn/skylib/skyutl.git/skyutl"
@@ -147,4 +146,28 @@ func (service *Service) LockScreenHandler(ctx context.Context, req *pt.LockScree
 
 	lockScreens[userID] = req.IsLocked
 	return &emptypb.Empty{}, nil
+}
+
+func (service *Service) UpdateAvatarHandler(ctx context.Context, req *pt.UpdateAvatarRequest) (*emptypb.Empty, error) {
+	userID, _ := skyutl.GetUserID(ctx)
+	if err := service.Store.UpdateAvatar(userID, req.IconFilesystemId, req.IconFilepath, req.IconFilename); err != nil {
+		return nil, err
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+func (service *Service) GetHandler(ctx context.Context, req *pt.GetAuthRequest) (*pt.GetAuthResponse, error) {
+	userID, _ := skyutl.GetUserID(ctx)
+	item, err := service.Store.Get(userID)
+
+	if err != nil {
+		return nil, skylog.ReturnError(err)
+	}
+
+	var out pt.GetAuthResponse
+	if err := skyutl.ProtoStructConvert(item, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
 }

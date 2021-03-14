@@ -19,7 +19,6 @@
   import { LoginInfo } from 'src/store/login-info';
   import { NotifyListener } from 'src/store/notify-listener';
   import { SkyLogStore } from 'src/store/skylog';
-  import { Role as PtRole } from 'src/pt/proto/role/role_message_pb';
   import { RoleService } from '../service';
 
   // Props
@@ -247,7 +246,7 @@
     }
 
     saveRunning$.next(true);
-    RoleService.upsert(PtRole, form.data())
+    RoleService.upsert(form.data())
       .then((res) => {
         // success
         setTimeout(() => {

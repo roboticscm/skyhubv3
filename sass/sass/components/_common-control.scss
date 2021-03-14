@@ -133,7 +133,7 @@
 
 .progress-bar-wrapper {
   position: fixed;
-  z-index: $modal-wrapper-z-index;
+  z-index: $modal-wrapper-z-index + 5;
   top: 50%;
   left: 50%;
   background: rgba(0, 0, 0, 0.5);
@@ -400,4 +400,12 @@
 .in-box {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.show {
+  display: block;
+}
+
+.hide {
+  display: none;
 }

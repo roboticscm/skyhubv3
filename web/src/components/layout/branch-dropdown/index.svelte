@@ -14,7 +14,7 @@
   };
 
   $: if ($branchId$) {
-    SettingsStore.getUserSettings({
+    SettingsStore.findUserSettings({
       key: 'theme',
     }, false).then((res) => {
       if (res && res.length > 0) {

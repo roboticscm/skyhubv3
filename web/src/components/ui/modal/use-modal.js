@@ -121,7 +121,7 @@ export const createModal = (menuPath, widthInPixel = null, heightInPixel = null)
       return;
     }
 
-    SettingsStore.getUserSettings({ elementId: modalRef.id, menuPath })
+    SettingsStore.findUserSettings({ elementId: modalRef.id, menuPath })
       .then((res) => {
         if (res && res.length >= 4) {
           if (modalRef) {

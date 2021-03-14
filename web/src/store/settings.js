@@ -24,7 +24,7 @@ export class SettingsStore {
     });
   }
 
-  static getUserSettings(params, useBranch = true) {
+  static findUserSettings(params, useBranch = true) {
     if (!App.SAVE_USER_SETTINGS) {
       return new Promise((resolve, reject) => {
         resolve([])
@@ -60,7 +60,7 @@ export class SettingsStore {
           // load branch
           OrgStore.findBranches();
 
-          SettingsStore.getUserSettings({
+          SettingsStore.findUserSettings({
             key: 'lastSelected',
             menuPath: 'sys/user-profiles-modal',
             elementId: 'localeResourceUsedLanguageSelectId',

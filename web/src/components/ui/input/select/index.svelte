@@ -61,7 +61,7 @@
 
   export const loadSettings = () => {
     return new Observable((observer) => {
-      SettingsStore.getUserSettings({ elementId: id, menuPath })
+      SettingsStore.findUserSettings({ elementId: id, menuPath })
         .then((res) => {
           if (res.length > 0) {
             if (res[0].key === 'lastSelected') {

@@ -78,6 +78,11 @@ install-project:
 	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
 	go mod tidy
 
+tidy:
+	go env -w GOPRIVATE=suntech.com.vn/skylib/skylog.git,suntech.com.vn/skylib/skyutl.git,suntech.com.vn/skylib/skydba.git
+	git config --global url.https://git.suntech.com.vn:8443/.insteadOf https://suntech.com.vn
+	go mod tidy
+
 install-protoc:
 	if [  "${OS}" == "Windows_NT" ]; then \
 		rm -Rf ~/go;\
@@ -200,21 +205,21 @@ gen-all: gen-go gen-web gen-dart
 
 
 both-server:
-	@if [  ${OS} == "Windows_NT" ]; then \
+	@if [  "${OS}" == "Windows_NT" ]; then \
 		nodemon --exec go run cmd/server/main.go -port 9090 -mode both -endpoint 0.0.0.0:9090; \
 	else \
 		reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode both -endpoint 0.0.0.0:9090";\
 	fi;
 	
 grpc-server:
-	@if [  ${OS} == "Windows_NT" ]; then \
+	@if [  "${OS}" == "Windows_NT" ]; then \
 		nodemon --exec go run cmd/server/main.go -port 9090 -mode grpc; \
 	else \
 		reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode grpc";\
 	fi;
 
 rest-server:
-	@if [  ${OS} == "Windows_NT" ]; then \
+	@if [  "${OS}" == "Windows_NT" ]; then \
 		nodemon --exec go run cmd/server/main.go -port 9090 -mode rest -endpoint 0.0.0.0:9090; \
 	else \
 		reflex -r '\.go' -s -- sh -c "go run cmd/server/main.go -port 9090 -mode rest -endpoint 0.0.0.0:9090";\

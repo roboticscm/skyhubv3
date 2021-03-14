@@ -11,5 +11,6 @@
     "dbPassword": "skyhubv3",
     "privateKey": "Skyhub@010116",
     "jwtExpDuration": 6000000,
-    "callTimeout": 5
+    "callTimeout": 5,
+    "profileAvatarPath": "/var/profile"
 }

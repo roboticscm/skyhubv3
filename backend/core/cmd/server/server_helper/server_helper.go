@@ -19,7 +19,7 @@ import (
 )
 
 //StartGRPCServer function
-func StartGRPCServer(listener net.Listener, jwtManager *skyutl.JwtManager, mapFunc map[string]map[string]interface{}, services ...interface{}) {
+func StartGRPCServer(listener net.Listener, jwtManager *skyutl.JwtManager, serviceList map[string]map[string]interface{}, services ...interface{}) {
 	interceptor := auth.NewAuthInterceptor(jwtManager)
 	var grpcServer *grpc.Server
 	if config.GlobalConfig.Authenticate {
@@ -36,7 +36,7 @@ func StartGRPCServer(listener net.Listener, jwtManager *skyutl.JwtManager, mapFu
 		params := []reflect.Value{reflect.ValueOf(grpcServer), reflect.ValueOf(service)}
 
 		fnKey := strings.Replace(reflect.TypeOf(service).String(), "*", "", 1)
-		fnValues := mapFunc[fnKey]
+		fnValues := serviceList[fnKey]
 		if len(fnValues) > 0 {
 			fn := reflect.ValueOf(fnValues["grpc"])
 			fn.Call(params)
@@ -54,7 +54,7 @@ func StartGRPCServer(listener net.Listener, jwtManager *skyutl.JwtManager, mapFu
 }
 
 //StartRESTServer function
-func StartRESTServer(listener net.Listener, endpoint string, mapFunc map[string]map[string]interface{}, services ...interface{}) {
+func StartRESTServer(listener net.Listener, endpoint string, serviceList map[string]map[string]interface{}, services ...interface{}) {
 	mux := runtime.NewServeMux()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -64,7 +64,7 @@ func StartRESTServer(listener net.Listener, endpoint string, mapFunc map[string]
 		params := []reflect.Value{reflect.ValueOf(ctx), reflect.ValueOf(mux), reflect.ValueOf(endpoint), reflect.ValueOf(dialOption)}
 
 		fnKey := strings.Replace(reflect.TypeOf(service).String(), "*", "", 1)
-		fnValues := mapFunc[fnKey]
+		fnValues := serviceList[fnKey]
 		if len(fnValues) > 1 {
 			if fnValues["rest"] != nil {
 				fn := reflect.ValueOf(fnValues["rest"])

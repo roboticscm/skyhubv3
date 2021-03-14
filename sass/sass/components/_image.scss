@@ -6,12 +6,18 @@
   .image {
     width: 100%;
     height: 100%;
+  }
+
+  .no-image {
+    width: 100%;
+    height: 100%;
     display: block;
     background: url('img/no-image.png');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
   }
+
   .overlap {
     position: absolute;
     display: none;

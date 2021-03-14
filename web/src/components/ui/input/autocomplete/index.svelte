@@ -227,7 +227,7 @@
 
   export const loadSettings = () => {
     return new Observable((observer) => {
-      SettingsStore.getUserSettings({ elementId: id, menuPath })
+      SettingsStore.findUserSettings({ elementId: id, menuPath })
         .then((res) => {
           const idFilter = res.filter((it) => it.key === 'autoId');
 

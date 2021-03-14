@@ -2,7 +2,9 @@ package auth
 
 import (
 	"crypto/subtle"
+	"fmt"
 	"sync"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"suntech.com.vn/skygroup/config"
@@ -40,6 +42,8 @@ type AuthStore interface {
 	GetQrCode() (int64, error)
 	UpdateAuthToken(companyID, branchID, userID, recordID int64, username, accessToken, refreshToken, lastLocaleLanguage string) error
 	UpdateRemoteAuthenticated(recordID, userID int64) (bool, error)
+	UpdateAvatar(userID, iconFilesystemId int64, iconFilepath, iconFilename string) error
+	Get(userID int64) (*models.Account, error)
 }
 
 //Login return Account if username and password are correct
@@ -243,11 +247,10 @@ func (store *Store) UpdateAuthToken(companyID, branchID, userID, recordID int64,
 	return nil
 }
 
-
 //UpdateRemoteAuthenticated function
 func (store *Store) UpdateRemoteAuthenticated(recordID, userID int64) (bool, error) {
 	authToken := models.AuthToken{
-		Id:                 recordID,
+		Id: recordID,
 	}
 
 	if err := store.q.ReadWithID(&authToken); err != nil {
@@ -260,4 +263,33 @@ func (store *Store) UpdateRemoteAuthenticated(recordID, userID int64) (bool, err
 	}
 
 	return *authToken.Authenticated, nil
+}
+
+func (store *Store) UpdateAvatar(userID, iconFilesystemId int64, iconFilepath, iconFilename string) error {
+	item := models.Account{Id: userID}
+
+	if err := store.q.ReadWithID(&item); err != nil {
+		return err
+	}
+
+	item.IconFilesystemId = &iconFilesystemId
+	item.IconFilename = &iconFilename
+	item.IconFilepath = &iconFilepath
+	fmt.Println(iconFilesystemId)
+	fmt.Println(iconFilepath)
+	fmt.Println(iconFilename)
+	if _, err := store.q.UpdateWithID(&item); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (store *Store) Get(userID int64) (*models.Account, error) {
+	item := models.Account{Id: userID}
+	if err := store.q.ReadWithID(&item); err != nil {
+		return nil, err
+	}
+
+	return &item, nil
 }
