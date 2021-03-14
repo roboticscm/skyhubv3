@@ -1,1 +1,0 @@
-docker network create -d bridge skyplus-network || true
