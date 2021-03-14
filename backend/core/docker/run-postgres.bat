@@ -1,0 +1,2 @@
+docker rm -f postgres
+docker run  --restart unless-stopped -d --network skyplus-network --name postgres -v /Users/khailv/postgres_data:/var/lib/postgresql/data -p 5432:5432 -e POSTGRES_PASSWORD=1234 postgres
