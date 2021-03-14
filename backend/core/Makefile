@@ -44,7 +44,8 @@ UNAME=""
 
 
 env-bashrc:
-	sudo chmod +w ~/.bashrc
+	sudo touch ~/.bashrc
+	sudo chmod 777 ~/.bashrc
 	grep -F -- "export PATH=$$HOME/flutter/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin:"$$"PATH >> ~/.bashrc
 	grep -F -- "export PATH=$$HOME/flutter/.pub-cache/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/.pub-cache/bin:"$$"PATH >> ~/.bashrc
 	grep -F -- "export PATH=$$HOME/flutter/bin/cache/dart-sdk/bin" ~/.bashrc || echo export PATH=$$HOME/flutter/bin/cache/dart-sdk/bin:"$$"PATH >> ~/.bashrc
@@ -62,7 +63,8 @@ env-bashrc:
 	source ~/.bashrc
 
 env-profile:
-	sudo chmod +w ~/.profile
+	sudo touch ~/.profile
+	sudo chmod 777 ~/.profile
 	grep -F -- "export PATH=$$HOME/flutter/bin" ~/.profile || echo export PATH=$$HOME/flutter/bin:"$$"PATH >> ~/.profile
 	grep -F -- "export PATH=$$HOME/flutter/.pub-cache/bin" ~/.profile || echo export PATH=$$HOME/flutter/.pub-cache/bin:"$$"PATH >> ~/.profile
 	grep -F -- "export PATH=$$HOME/flutter/bin/cache/dart-sdk/bin" ~/.profile || echo export PATH=$$HOME/flutter/bin/cache/dart-sdk/bin:"$$"PATH >> ~/.profile
@@ -77,7 +79,8 @@ env-profile:
 	source ~/.profile
 
 env-etc-paths:
-	sudo chmod +w /etc/paths
+	sudo touch /etc/paths
+	sudo chmod 777 /etc/paths
 	grep -F -- "$$HOME/flutter/bin" /etc/paths || echo $$HOME/flutter/bin >> /etc/paths
 	grep -F -- "$$HOME/flutter/.pub-cache/bin" /etc/paths || echo $$HOME/flutter/.pub-cache/bin >> /etc/paths
 	grep -F -- "$$HOME/flutter/bin/cache/dart-sdk/bin" /etc/paths || echo $$HOME/flutter/bin/cache/dart-sdk/bin >> /etc/paths
@@ -92,20 +95,9 @@ env-etc-paths:
 	fi;
 
 env:
-	echo $(eval bashFile=.bashrc);
-	@if [ "${OS}" != "Windows_NT" ] && [ "$(wildcard ~/.profile)" ]; then\
-		echo $(eval bashFile=.profile); \
-	fi;
-
-	@if [ "${OS}" != "Windows_NT" ] && [ "${bashFile}" == ".bashrc" ]; then\
+	@if [ "${OS}" != "Windows_NT" ] ; then\
 		make env-bashrc;\
-	fi;
-
-	@if [ "${OS}" != "Windows_NT" ] && [ "${bashFile}" == ".profile" ]; then\
 		make env-profile;\
-	fi;
-
-	@if [ "${OS}" != "Windows_NT" ] && [ $(wildcard /etc/paths) ]; then\
 		make env-etc-paths;\
 	fi;
 
