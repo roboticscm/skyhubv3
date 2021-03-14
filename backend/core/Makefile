@@ -345,10 +345,8 @@ wbuild-linux: wgen-go
 	go build -o ${BUILD_DIR}\linux_runner cmd\server\main.go 
 
 deploy-server: 
-	docker rm -f skycore
-	#docker network rm skyplus-network
-	#docker network create -d bridge skplus-network
-	docker image rm -f skycore
+	docker rm -f skycore || true
+	docker image rm -f skycore || true
 	docker build -t skycore -f Dockerfile.multistage .
 	docker run -d --rm  -p 9090:7070 -p 9091:7071 --network skyplus-network --name skycore  skycore
 
