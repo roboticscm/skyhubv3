@@ -10,8 +10,10 @@ proxy:
 	docker rm -f suntech-envoy-proxy || true
 	docker run -d --restart unless-stopped -p 8080:8080 -p 9901:9901 --name suntech-envoy-proxy suntech/envoy
 
-dev:
+init:
 	yarn
+	
+dev:
 	@if [  "${OS}" == "Windows_NT" ]; then \
 		yarn wdev;\
 		start http://localhost:2345;\

@@ -91,7 +91,7 @@ class MenuTabContent extends StatelessWidget {
   Widget _getWidgetInstance(int depId, String codeKey, String menuName, String menuPath) {
     if (codeKey.toUpperCase() == "ROLE") {
       return RoleListPage(
-        title: "SYS.MENU.${menuName.toUpperCase()}".t,
+        title: menuName,
         depId: depId,
         menuPath: menuPath,
       );

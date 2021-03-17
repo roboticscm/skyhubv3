@@ -105,3 +105,5 @@ mobile2/.metadata
 mobile2/.packages
 mobile2/lib/pt
 backend/core/workspace.code-workspace
+mobile2/ios/Podfile.lock
+mobile2/ios/build/

@@ -22,9 +22,12 @@ class STabBar extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(left: 80, right:75),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [...leftChildren],
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [...leftChildren],
+                ),
               ),
             ),
           ),
