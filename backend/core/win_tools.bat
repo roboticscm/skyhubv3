@@ -2,7 +2,7 @@
 if exist C:\ProgramData\chocolatey rd /q /s C:\ProgramData\chocolatey
 powershell -command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
 powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
-choco install git
+
 choco install make
 @REM echo Set path for flutter
 set "SystemPath="
@@ -71,8 +71,27 @@ ECHO %STRING% | FINDSTR /C:"%SUBSTRING%" >nul & IF ERRORLEVEL 1 (
     echo Path existed
 )
 
+SET SUBSTRING=%USERPROFILE%\PortableGit\bin
+ECHO %STRING% | FINDSTR /C:"%SUBSTRING%" >nul & IF ERRORLEVEL 1 (
+    SET "EXTRA_PATH=%EXTRA_PATH%;%USERPROFILE%\PortableGit\bin;"
+) else (
+    echo Path existed
+)
+
+SET SUBSTRING=%USERPROFILE%\PortableGit\cmd
+ECHO %STRING% | FINDSTR /C:"%SUBSTRING%" >nul & IF ERRORLEVEL 1 (
+    SET "EXTRA_PATH=%EXTRA_PATH%;%USERPROFILE%\PortableGit\cmd;"
+) else (
+    echo Path existed
+)
+
 reg add "HKLM\System\CurrentControlSet\Control\Session Manager\Environment" /f /v Path /t REG_EXPAND_SZ /d "%SystemPath%;%EXTRA_PATH%;"
 reg add "HKLM\System\CurrentControlSet\Control\Session Manager\Environment" /f /v FLUTTER_HOME /t REG_EXPAND_SZ /d "%USERPROFILE%\flutter;"
 echo Successful!
 echo Next. cd <project root>\backend\core. Run make wonce-dev
+
+@REM choco install git
+curl -L -o %USERPROFILE%\git.exe https://github.com/git-for-windows/git/releases/download/v2.30.2.windows.1/PortableGit-2.30.2-64-bit.7z.exe
+%USERPROFILE%\git.exe
+del /f %USERPROFILE%\git.exe
 pause
